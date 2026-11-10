@@ -15,7 +15,9 @@ const serverId = '11111111-1111-4111-8111-111111111111', world = '纪念, 一期
 function messages(rows, name = world) { return [{ id: 'commands.save-all.success', params: [] }, { id: '%%s', params: [rows.map(row => `${name}/${row.path}:${row.size}`).join(', ')] }]; }
 const rows = [{ path: 'level.dat', size: '12' }, { path: 'db/CURRENT', size: '16' }, { path: 'db/MANIFEST-000001', size: '16' }, { path: 'db/000003.ldb', size: '8' }];
 async function sandbox(action) {
-  const parent = await mkdtemp(path.join(os.tmpdir(), 'mcmanager-live-test-')), owner = randomUUID(); await writeFile(path.join(parent, '.owner'), owner);
+  // Match production entry points: low-level backup helpers receive canonical paths.
+  // Windows runners may expose TEMP through a short name or an ancestor junction.
+  const parent = await realpath(await mkdtemp(path.join(os.tmpdir(), 'mcmanager-live-test-'))), owner = randomUUID(); await writeFile(path.join(parent, '.owner'), owner);
   try { await action(parent); }
   finally {
     const actual = await realpath(parent); assert.equal(path.dirname(actual), await realpath(os.tmpdir())); assert.equal(await readFile(path.join(actual, '.owner'), 'utf8'), owner);

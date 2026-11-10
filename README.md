@@ -10,6 +10,8 @@
 
 [快速开始](docs/getting-started.md) · [功能一览](docs/features.md) · [部署指南](docs/deployment.md) · [MCP 接入](mcp/README.md) · [English](README.en.md)
 
+[![CI](https://github.com/wy708/MCManager-archive/actions/workflows/ci.yml/badge.svg)](https://github.com/wy708/MCManager-archive/actions/workflows/ci.yml)
+
 ![状态](https://img.shields.io/badge/status-preview-orange)
 ![Vue](https://img.shields.io/badge/Vue-3-42b883)
 ![Java](https://img.shields.io/badge/Java-21-457b9d)
