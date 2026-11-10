@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { ref } from 'vue'
 import { api } from '../api'
 import { displayTime, type Session } from '../statistics'
@@ -57,27 +59,23 @@ defineExpose({ open, close })
 </script>
 
 <template>
-  <dialog ref="dialog" aria-label="这次游玩的聊天" @close="selected = undefined">
+  <dialog ref="dialog" :aria-label="t('m1428')" @close="selected = undefined">
     <div class="dialog-heading">
-      <h2>这次游玩的聊天</h2>
-      <button class="secondary" type="button" autofocus @click="close">关闭</button>
+      <h2>{{ t('m1428') }}</h2>
+      <button class="secondary" type="button" autofocus @click="close">{{ t('m1084') }}</button>
     </div>
     <template v-if="selected">
       <p class="dialog-description">
-        {{ selected.playerName }} · {{ selected.serverName }}<br />
-        {{ displayTime(data?.startedAt ?? selected.startedAt, zone) }} 至
-        {{ displayTime(data?.confirmedThrough ?? selected.checkpointAt, zone) }}
+        {{ selected.playerName }} · {{ selected.serverName }}<br />{{ t('m1429', [displayTime(data?.startedAt ?? selected.startedAt, zone), displayTime(data?.confirmedThrough ?? selected.checkpointAt, zone)]) }}
       </p>
-      <p class="field-note">
-        这里显示这位玩家在本次已记录游玩时间里发送的公开聊天。
-        <template v-if="data">当前明细保留期为 {{ data.messages.retentionDays }} 天。</template>
+      <p class="field-note">{{ t('m1430') }}<template v-if="data">{{ t('m1431', [data.messages.retentionDays]) }}</template>
       </p>
-      <p v-if="busy" class="small-empty" role="status">正在读取聊天…</p>
+      <p v-if="busy" class="small-empty" role="status">{{ t('m1432') }}</p>
       <p v-else-if="error" class="alert error" role="alert">
-        {{ error }} <button class="text-button" @click="refresh">重试</button>
+        {{ error }} <button class="text-button" @click="refresh">{{ t('m0337') }}</button>
       </p>
       <template v-else-if="data">
-        <ul v-if="data.messages.items.length" class="chat-list" aria-label="公开聊天消息">
+        <ul v-if="data.messages.items.length" class="chat-list" :aria-label="t('m1433')">
           <li v-for="message in data.messages.items" :key="message.eventId">
             <small>
               {{ displayTime(message.occurredAt, zone) }} · {{ message.actorName }} ·
@@ -86,28 +84,24 @@ defineExpose({ open, close })
             <p>{{ message.text }}</p>
           </li>
         </ul>
-        <p v-else class="small-empty">这次游玩没有记录到公开聊天。</p>
+        <p v-else class="small-empty">{{ t('m1434') }}</p>
       </template>
       <div class="dialog-actions">
-        <button class="secondary" type="button" :disabled="busy" @click="restart">刷新</button>
+        <button class="secondary" type="button" :disabled="busy" @click="restart">{{ t('m0331') }}</button>
         <button
           v-if="cursors.length > 1"
           class="secondary"
           type="button"
           :disabled="busy"
           @click="cursors = cursors.slice(0, -1)"
-        >
-          上一页
-        </button>
+        >{{ t('m0869') }}</button>
         <button
           v-if="data?.messages.hasMore"
           class="secondary"
           type="button"
           :disabled="busy"
           @click="cursors = [...cursors, data.messages.nextCursor]"
-        >
-          下一页
-        </button>
+        >{{ t('m0870') }}</button>
       </div>
     </template>
   </dialog>

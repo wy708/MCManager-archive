@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { systemMessage, t } from '../i18n'
+
 import { ref, computed, watch } from 'vue'
 import { api, type ServerArchive } from '../api'
 import { gameName } from '../gameNames'
@@ -35,18 +37,18 @@ async function load() {
       error.value = ''
     }
   } catch (e) {
-    if (seq === sequence) error.value = e instanceof Error ? e.message : '日报读取失败'
+    if (seq === sequence) error.value = e instanceof Error ? e.message : t('m0676')
   }
 }
 watch(() => [props.scope, date.value], load, { immediate: true })
 const labels: Record<string, string> = {
-  'online.millis': '累计在线',
-  'activity.millis': '估算活跃',
-  'blocks.placed': '放置方块',
-  'blocks.mined': '挖掘方块',
-  'items.used': '使用物品',
-  'chat.messages': '聊天发言',
-  deaths: '死亡次数',
+  'online.millis': t('m0677'),
+  'activity.millis': t('m0678'),
+  'blocks.placed': t('m0679'),
+  'blocks.mined': t('m0680'),
+  'items.used': t('m0681'),
+  'chat.messages': t('m0682'),
+  deaths: t('m0683'),
 }
 const totals = computed(() => {
   const values = new Map<string, bigint>()
@@ -56,7 +58,7 @@ const totals = computed(() => {
     metric,
     name: labels[metric] ?? metric,
     value: metric.endsWith('.millis')
-      ? `${value / 3600000n} 小时 ${(value % 3600000n) / 60000n} 分`
+      ? t('m0273', [value / 3600000n, (value % 3600000n) / 60000n])
       : value.toString(),
   }))
 })
@@ -71,7 +73,7 @@ const trend = computed<EChartsOption>(() => {
       data: days,
       axisLabel: { formatter: (value: string) => value.slice(5), hideOverlap: true, margin: 12 },
     },
-    yAxis: { type: 'value', name: '次数', axisLabel: { formatter: compactChartNumber } },
+    yAxis: { type: 'value', name: t('m0684'), axisLabel: { formatter: compactChartNumber } },
     series: ['blocks.placed', 'blocks.mined'].map((metric) => ({
       type: 'line' as const,
       name: labels[metric],
@@ -102,7 +104,7 @@ const blocks = computed<EChartsOption>(() => ({
         (r) =>
           (gameName(r.block, 'block') ?? r.block) +
           ' · ' +
-          (r.metric === 'blocks.placed' ? '放置' : '挖掘'),
+          (r.metric === 'blocks.placed' ? t('m0685') : t('m0686')),
       ),
     axisLabel: { width: 120, overflow: 'truncate' },
   },
@@ -119,33 +121,29 @@ const blocks = computed<EChartsOption>(() => ({
   <section>
     <div class="project-banner">
       <div>
-        <h2>方块世界的一天</h2>
-        <p>看看伙伴的足迹、今天的建设和最近一周的变化。</p>
+        <h2>{{ t('m0687') }}</h2>
+        <p>{{ t('m0688') }}</p>
       </div>
       <label
-        >选择日期<input v-model="date" type="date" aria-label="日报日期" /><small
-          >留空查看昨天</small
+        >{{ t('m0689') }}<input v-model="date" type="date" :aria-label="t('m0690')" /><small
+          >{{ t('m0691') }}</small
         ></label
       >
     </div>
     <label v-if="scope === 'all'"
-      >选择服务器<select @change="emit('select', ($event.target as HTMLSelectElement).value)">
-        <option value="">请选择</option>
+      >{{ t('m0692') }}<select @change="emit('select', ($event.target as HTMLSelectElement).value)">
+        <option value="">{{ t('m0693') }}</option>
         <option v-for="s in servers" :key="s.id" :value="s.id">{{ s.name }}</option>
       </select></label
     >
     <p v-if="error" class="project-error" role="alert">{{ error }}</p>
     <template v-if="report"
       ><h2>{{ report.serverName }} · {{ report.date }}</h2>
-      <p class="project-muted">
-        统计时区：{{
-          ['Asia/Hong_Kong', 'Asia/Shanghai'].includes(report.timezone) ? 'UTC+8' : report.timezone
-        }}
-        · {{ report.notice }}
+      <p class="project-muted">{{ t('m0694', [['Asia/Hong_Kong', 'Asia/Shanghai'].includes(report.timezone) ? 'UTC+8' : report.timezone, systemMessage(report.notice)]) }}
       </p>
       <div class="report-totals">
         <article>
-          <span>留下记录的玩家</span><strong>{{ report.recordedPlayers }}</strong>
+          <span>{{ t('m0695') }}</span><strong>{{ report.recordedPlayers }}</strong>
         </article>
         <article v-for="t in totals" :key="t.metric">
           <span>{{ t.name }}</span
@@ -154,28 +152,27 @@ const blocks = computed<EChartsOption>(() => ({
       </div>
       <div class="report-charts">
         <section class="project-panel">
-          <h3>最近七天的建设</h3>
-          <DataChart :option="trend" label="七天放置与挖掘趋势" />
+          <h3>{{ t('m0696') }}</h3>
+          <DataChart :option="trend" :label="t('m0697')" />
         </section>
         <section class="project-panel">
-          <h3>当天热门方块</h3>
-          <DataChart :option="blocks" label="当天方块行为排行" :height="350" />
+          <h3>{{ t('m0698') }}</h3>
+          <DataChart :option="blocks" :label="t('m0699')" :height="350" />
         </section>
       </div>
       <section class="project-panel">
-        <h3>工程进展</h3>
-        <p v-if="!report.projects.length" class="project-muted">当天没有工程阶段变化记录。</p>
+        <h3>{{ t('m0700') }}</h3>
+        <p v-if="!report.projects.length" class="project-muted">{{ t('m0701') }}</p>
         <p v-for="p in report.projects" :key="p.id + p.revision">
-          <a :href="'/projects/' + p.id" target="_blank" rel="noopener">{{ p.name }}</a> · 第
-          {{ p.revision }} 阶段 · {{ p.endedAt ? '已封存' : '已开始' }}
+          <a :href="'/projects/' + p.id" target="_blank" rel="noopener">{{ p.name }}</a>{{ t('m0703', [p.revision, p.endedAt ? t('m0064') : t('m0702')]) }}
         </p>
       </section>
       <details class="project-panel">
-        <summary>查看统计数值与采集质量</summary>
-        <p v-for="t in report.totals" :key="t.metric + t.quality + t.algorithm">
-          {{ labels[t.metric] ?? t.metric }}：{{ t.value }}（{{
-            t.quality === 'EXACT' ? '精确计数' : t.quality === 'ESTIMATED' ? '估算' : '观察记录'
-          }}；{{ t.algorithm }}）
+        <summary>{{ t('m0704') }}</summary>
+        <p v-for="total in report.totals" :key="total.metric + total.quality + total.algorithm">
+          {{ labels[total.metric] ?? total.metric }}: {{ total.value }} ({{
+            total.quality === 'EXACT' ? t('m0705') : total.quality === 'ESTIMATED' ? t('m0262') : t('m0706')
+          }}; {{ total.algorithm }})
         </p>
         <p v-for="m in report.materials" :key="m.block + m.metric">
           {{ gameName(m.block, 'block') ?? m.block }} · {{ labels[m.metric] }}：{{ m.value }}

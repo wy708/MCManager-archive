@@ -13,3 +13,4 @@ if (project) createApp(PublicProjectView, { id: project[1]! }).mount('#app')
 else createApp(App).mount('#app')
 
 import './garden.css'
+import './localization.css'

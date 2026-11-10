@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import {ref,onMounted,onBeforeUnmount,watch} from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -9,14 +11,14 @@ const bounds=()=>L.latLngBounds([-(props.maxZ+1),props.minX],[-props.minZ,props.
 function fit(){if(!map)return;overview=true;fitting=true;try{map.fitBounds(bounds(),{padding:[24,24],animate:false});map.setMinZoom(Math.min(-10,map.getZoom()-2))}finally{fitting=false}}
 function refresh(){
   if(!map)return
-  pending?.remove();const next=L.imageOverlay(props.url,bounds(),{opacity:0,alt:'施工范围二维地图'});pending=next
+  pending?.remove();const next=L.imageOverlay(props.url,bounds(),{opacity:0,alt:t('m0934')});pending=next
   next.once('load',()=>{if(!alive||pending!==next)return;overlay?.remove();overlay=next;pending=undefined;next.setOpacity(1);error.value=''})
-  next.once('error',()=>{if(!alive||pending!==next)return;next.remove();pending=undefined;error.value='地图图片读取失败，请重试。'})
+  next.once('error',()=>{if(!alive||pending!==next)return;next.remove();pending=undefined;error.value=t('m0935')})
   next.addTo(map)
 }
 onMounted(()=>{
   map=L.map(host.value!,{crs:L.CRS.Simple,minZoom:-16,maxZoom:8,zoomSnap:.25,zoomDelta:.5,zoomControl:false,attributionControl:false})
-  L.control.zoom({position:'bottomright',zoomInTitle:'放大地图',zoomOutTitle:'缩小地图'}).addTo(map)
+  L.control.zoom({position:'bottomright',zoomInTitle:t('m0936'),zoomOutTitle:t('m0937')}).addTo(map)
   map.on('dragstart',()=>{overview=false})
   map.on('zoomstart',()=>{if(!fitting)overview=false})
   map.on('mousedown',()=>{overview=false})
@@ -31,9 +33,9 @@ onBeforeUnmount(()=>{alive=false;observer?.disconnect();map?.remove()})
 </script>
 <template>
   <div class="project-map-view">
-    <div class="project-map-tools"><span>{{position || '拖动移动 · 滚轮缩放 · 双指缩放'}}</span><button @click="fit">全景</button></div>
-    <div ref="host" class="project-map" aria-label="施工范围地图，可拖动和缩放" />
-    <p v-if="error" role="alert" class="project-error">{{error}} <button @click="refresh">重试</button></p>
+    <div class="project-map-tools"><span>{{position || t('m0938')}}</span><button @click="fit">{{ t('m0939') }}</button></div>
+    <div ref="host" class="project-map" :aria-label="t('m0940')" />
+    <p v-if="error" role="alert" class="project-error">{{error}} <button @click="refresh">{{ t('m0337') }}</button></p>
   </div>
 </template>
 <style scoped>

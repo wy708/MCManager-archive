@@ -31,7 +31,7 @@ COPY map_coverage.py /app/services/map_coverage.py
 COPY project_maps.py /app/services/project_maps.py
 COPY patch_project_maps.py /tmp/patch_project_maps.py
 COPY patch_initial_view.py /tmp/patch_initial_view.py
-COPY patch_coordinate_jump.py coordinate_jump.js coordinate_jump.css /tmp/
+COPY patch_coordinate_jump.py coordinate_jump.js coordinate_jump.css viewer_language.js /tmp/
 COPY audit_materials.py /app/audit_materials.py
 RUN python /tmp/patch_web.py
 RUN python /tmp/patch_layers.py

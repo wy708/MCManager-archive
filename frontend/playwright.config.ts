@@ -5,7 +5,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   timeout: 30_000,
-  use: { baseURL: 'http://127.0.0.1:5174', trace: 'retain-on-failure' },
+  use: { locale: 'zh-CN', baseURL: 'http://127.0.0.1:5174', trace: 'retain-on-failure' },
   reporter: 'list',
   webServer: [
     {

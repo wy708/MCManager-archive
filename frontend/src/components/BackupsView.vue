@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t, formatLocale } from '../i18n'
+
 import { computed, nextTick, ref, watch } from 'vue'
 import {
   Download,
@@ -71,10 +73,10 @@ interface Group {
 }
 const tab = ref<'files' | 'tasks' | 'schedule' | 'restores'>('files')
 const tabs = [
-  { id: 'files', label: '存档记录' },
-  { id: 'tasks', label: '备份任务' },
-  { id: 'schedule', label: '每日定时' },
-  { id: 'restores', label: '恢复记录' },
+  { id: 'files', label: t('m0419') },
+  { id: 'tasks', label: t('m0420') },
+  { id: 'schedule', label: t('m0421') },
+  { id: 'restores', label: t('m0422') },
 ] as const
 const savedServer = () => {
   try {
@@ -100,7 +102,7 @@ const page = ref(1),
 const folderSearch = ref(''),
   folderPage = ref(1)
 const dateError = computed(() =>
-  fromDate.value && toDate.value && fromDate.value > toDate.value ? '结束日期不能早于开始日期' : '',
+  fromDate.value && toDate.value && fromDate.value > toDate.value ? t('m0423') : '',
 )
 watch(
   () => props.scope,
@@ -214,7 +216,7 @@ async function restore(backup: Backup) {
   await restores.value?.open(backup)
 }
 function backupTime(value: string) {
-  return new Intl.DateTimeFormat('zh-CN', {
+  return new Intl.DateTimeFormat(formatLocale, {
     timeZone: 'Asia/Shanghai',
     year: 'numeric',
     month: '2-digit',
@@ -226,16 +228,16 @@ function backupTime(value: string) {
   }).format(new Date(value))
 }
 const labels: Record<string, string> = {
-  AWAITING_UPLOAD: '等待上传',
-  RECEIVING: '上传中',
-  VERIFYING: '校验中',
-  READY: '可下载',
-  FAILED: '未完成',
-  MISSING: '文件不可用',
-  DELETING: '删除未完成',
-  DELETED: '已删除',
+  AWAITING_UPLOAD: t('m0424'),
+  RECEIVING: t('m0425'),
+  VERIFYING: t('m0426'),
+  READY: t('m0427'),
+  FAILED: t('m0428'),
+  MISSING: t('m0429'),
+  DELETING: t('m0430'),
+  DELETED: t('m0431'),
 }
-const kinds = { MANUAL: '手动备份', AUTOMATIC: '自动备份', FINAL: '最终封存' }
+const kinds = { MANUAL: t('m0432'), AUTOMATIC: t('m0433'), FINAL: t('m0434') }
 const modal = ref<HTMLDialogElement>(),
   firstField = ref<HTMLSelectElement>()
 const action = ref<'upload' | 'edit' | 'delete'>('upload'),
@@ -253,7 +255,7 @@ const working = ref(false),
   requestId = ref('')
 let opener: HTMLElement | null = null
 const title = computed(
-  () => ({ upload: '上传备份', edit: '编辑备份信息', delete: '删除备份文件' })[action.value],
+  () => ({ upload: t('m0435'), edit: t('m0436'), delete: t('m0437') })[action.value],
 )
 const validUpload = computed(
   () =>
@@ -273,7 +275,7 @@ function bytes(value: string | null | undefined) {
     size /= 1024
     unit++
   }
-  return `${size.toLocaleString('zh-CN', { maximumFractionDigits: unit ? 1 : 0 })} ${units[unit]}`
+  return `${size.toLocaleString(formatLocale, { maximumFractionDigits: unit ? 1 : 0 })} ${units[unit]}`
 }
 async function open(mode: typeof action.value, backup?: Backup) {
   opener = document.activeElement as HTMLElement
@@ -338,7 +340,7 @@ async function submit() {
       await uploadBackup(uploadId.value, file.value, (value) => {
         fraction.value = value
       })
-      message.value = '备份已保存，完整文件校验通过。'
+      message.value = t('m0438')
       chooseServer(serverId.value)
       tab.value = 'files'
     } else if (action.value === 'edit') {
@@ -346,10 +348,10 @@ async function submit() {
         method: 'PUT',
         body: JSON.stringify({ note: note.value, permanent: permanent.value }),
       })
-      message.value = '备份备注和保留设置已更新。'
+      message.value = t('m0439')
     } else {
       await api(`/backups/${selected.value!.id}`, { method: 'DELETE' })
-      message.value = '备份文件已删除，玩家统计历史仍保留。'
+      message.value = t('m0440')
     }
     modal.value?.close()
     await refreshAll()
@@ -374,18 +376,17 @@ async function submit() {
     <article v-if="!currentServer" class="panel data-panel backup-directory">
       <div class="data-panel-heading">
         <div>
-          <h2>服务器备份库</h2>
-          <p>每个服务器独立整理，进入文件夹查看存档和每日计划。</p>
+          <h2>{{ t('m0441') }}</h2>
+          <p>{{ t('m0442') }}</p>
         </div>
         <button class="secondary" :disabled="groups.busy.value" @click="refreshAll">
-          <RefreshCw :size="16" />刷新
-        </button>
+          <RefreshCw :size="16" />{{ t('m0331') }}</button>
       </div>
       <label class="folder-search"
         ><Search :size="18" /><input
           v-model="folderSearch"
-          aria-label="搜索备份服务器"
-          placeholder="搜索服务器名称"
+          :aria-label="t('m0443')"
+          :placeholder="t('m0444')"
       /></label>
       <p v-if="groups.error.value" class="alert error" role="alert">{{ groups.error.value }}</p>
       <div class="backup-folders">
@@ -400,22 +401,22 @@ async function submit() {
           <span
             >{{
               groups.busy.value
-                ? '正在统计…'
-                : `${groupMap.get(server.id)?.readyCount ?? 0} 份可用存档`
+                ? t('m0445')
+                : t('m0446', [groupMap.get(server.id)?.readyCount ?? 0])
             }}
             <span aria-hidden="true">·</span>
             {{ bytes(groupMap.get(server.id)?.archiveBytes ?? '0') }}</span
           >
           <small>{{
             groupMap.get(server.id)?.latestReadyAt
-              ? `最近备份 ${backupTime(groupMap.get(server.id)!.latestReadyAt!)}`
-              : '还没有成功备份'
+              ? t('m0447', [backupTime(groupMap.get(server.id)!.latestReadyAt!)])
+              : t('m0448')
           }}</small>
-          <span class="folder-enter">查看此服务器 →</span>
+          <span class="folder-enter">{{ t('m0449') }}</span>
         </button>
       </div>
       <p v-if="!folders.length" class="small-empty">
-        {{ servers.length ? '没有找到这个服务器' : '先创建服务器档案，再开始备份。' }}
+        {{ servers.length ? t('m0450') : t('m0451') }}
       </p>
       <PaginationControl
         v-if="folders.length > 12"
@@ -428,36 +429,32 @@ async function submit() {
     <template v-else>
       <article class="panel data-panel backup-server-heading">
         <button v-if="scope === 'all'" class="text-button backup-back" @click="chooseServer('')">
-          <ArrowLeft :size="16" />返回服务器列表
-        </button>
+          <ArrowLeft :size="16" />{{ t('m0452') }}</button>
         <div class="data-panel-heading">
           <div>
-            <p class="backup-server-caption"><Server :size="16" />服务器备份库</p>
+            <p class="backup-server-caption"><Server :size="16" />{{ t('m0441') }}</p>
             <h2>{{ currentName }}</h2>
-            <p>世界存档、备份任务与每日计划，都在这个服务器下。</p>
+            <p>{{ t('m0453') }}</p>
           </div>
           <div class="backup-actions">
             <button class="secondary" :disabled="busy" @click="refreshAll">
-              <RefreshCw :size="16" />刷新</button
+              <RefreshCw :size="16" />{{ t('m0331') }}</button
             ><button class="secondary" data-upload-backup @click="open('upload')">
-              <Upload :size="16" />上传备份</button
-            ><button class="primary" @click="tab = 'tasks'">开始备份</button>
+              <Upload :size="16" />{{ t('m0435') }}</button
+            ><button class="primary" @click="tab = 'tasks'">{{ t('m0454') }}</button>
           </div>
         </div>
         <div class="backup-overview">
           <span
-            ><strong>{{ currentGroup?.readyCount ?? 0 }}</strong> 份可用存档</span
+            ><strong>{{ currentGroup?.readyCount ?? 0 }}</strong>{{ t('m0455') }}</span
           ><span
-            >占用 <strong>{{ bytes(currentGroup?.archiveBytes ?? '0') }}</strong></span
+            >{{ t('m0456') }}<strong>{{ bytes(currentGroup?.archiveBytes ?? '0') }}</strong></span
           ><span
-            >最近成功
-            {{
-              currentGroup?.latestReadyAt ? backupTime(currentGroup.latestReadyAt) : '暂无'
-            }}</span
+            >{{ t('m0458', [currentGroup?.latestReadyAt ? backupTime(currentGroup.latestReadyAt) : t('m0457')]) }}</span
           >
         </div>
       </article>
-      <nav class="backup-tabs" aria-label="服务器备份功能">
+      <nav class="backup-tabs" :aria-label="t('m0459')">
         <button
           v-for="item in tabs"
           :key="item.id"
@@ -491,7 +488,7 @@ async function submit() {
         @changed="refreshAll"
       />
       <p v-if="tab === 'schedule' && hostList.error.value" class="alert error">
-        {{ hostList.error.value }}<button @click="hostList.refresh">重试</button>
+        {{ hostList.error.value }}<button @click="hostList.refresh">{{ t('m0337') }}</button>
       </p>
       <RestoreTasks
         v-show="tab === 'restores'"
@@ -504,50 +501,50 @@ async function submit() {
         @changed="refreshAll"
         @archives-changed="emit('archivesChanged')"
       />
-      <section v-if="tab === 'files'" class="backup-file-list" aria-label="存档记录">
+      <section v-if="tab === 'files'" class="backup-file-list" :aria-label="t('m0419')">
         <div class="panel backup-filters">
           <div class="backup-list-heading">
-            <h3>存档记录</h3>
-            <span>按创建时间倒序 · 时间均为 UTC+8</span>
+            <h3>{{ t('m0419') }}</h3>
+            <span>{{ t('m0460') }}</span>
           </div>
           <div class="backup-filter-grid">
             <label
-              >状态<select v-model="stateFilter" aria-label="状态">
-                <option value="">全部状态</option>
-                <option value="READY">可下载</option>
-                <option value="PENDING">处理中</option>
-                <option value="ATTENTION">需要处理</option>
+              >{{ t('m0461') }}<select v-model="stateFilter" :aria-label="t('m0461')">
+                <option value="">{{ t('m0062') }}</option>
+                <option value="READY">{{ t('m0427') }}</option>
+                <option value="PENDING">{{ t('m0462') }}</option>
+                <option value="ATTENTION">{{ t('m0463') }}</option>
               </select></label
             >
             <label
-              >类型<select v-model="kindFilter" aria-label="类型">
-                <option value="">全部类型</option>
-                <option value="AUTOMATIC">自动备份</option>
-                <option value="MANUAL">手动备份</option>
-                <option value="FINAL">最终封存</option>
+              >{{ t('m0464') }}<select v-model="kindFilter" :aria-label="t('m0464')">
+                <option value="">{{ t('m0465') }}</option>
+                <option value="AUTOMATIC">{{ t('m0433') }}</option>
+                <option value="MANUAL">{{ t('m0432') }}</option>
+                <option value="FINAL">{{ t('m0434') }}</option>
               </select></label
             >
-            <label>开始日期<input v-model="fromDate" type="date" /></label
-            ><label>结束日期<input v-model="toDate" type="date" /></label>
+            <label>{{ t('m0466') }}<input v-model="fromDate" type="date" /></label
+            ><label>{{ t('m0095') }}<input v-model="toDate" type="date" /></label>
             <label
-              >每页显示<select v-model.number="pageSize" aria-label="每页显示">
-                <option :value="10">10 条</option>
-                <option :value="25">25 条</option>
-                <option :value="50">50 条</option>
+              >{{ t('m0467') }}<select v-model.number="pageSize" :aria-label="t('m0467')">
+                <option :value="10">{{ t('m0468') }}</option>
+                <option :value="25">{{ t('m0469') }}</option>
+                <option :value="50">{{ t('m0470') }}</option>
               </select></label
             >
-            <button class="text-button" @click="clearFilters">清空筛选</button>
+            <button class="text-button" @click="clearFilters">{{ t('m0471') }}</button>
           </div>
           <p v-if="dateError" class="alert error" role="alert">{{ dateError }}</p>
         </div>
         <p v-if="error" class="alert error" role="alert">
-          {{ error }}<button class="text-button" @click="refresh">重试</button>
+          {{ error }}<button class="text-button" @click="refresh">{{ t('m0337') }}</button>
         </p>
-        <p v-else-if="busy" class="small-empty" role="status">正在加载备份…</p>
+        <p v-else-if="busy" class="small-empty" role="status">{{ t('m0472') }}</p>
         <article v-else-if="!data?.items.length" class="panel small-empty">
           <HardDrive :size="32" />
-          <h3>{{ currentGroup?.total ? '没有符合筛选条件的存档' : '这个服务器还没有备份' }}</h3>
-          <p>成功的备份会出现在这里；执行进度和失败原因请到“备份任务”查看。</p>
+          <h3>{{ currentGroup?.total ? t('m0473') : t('m0474') }}</h3>
+          <p>{{ t('m0475') }}</p>
         </article>
         <article
           v-for="backup in data?.items ?? []"
@@ -562,10 +559,10 @@ async function submit() {
                 {{ kinds[backup.kind] }} ·
                 {{
                   backup.summary?.archiveScope === 'WORLD'
-                    ? '世界存档'
+                    ? t('m0476')
                     : backup.summary
-                      ? '整服备份'
-                      : '等待校验'
+                      ? t('m0477')
+                      : t('m0478')
                 }}
                 · {{ bytes(backup.archiveBytes ?? backup.expectedBytes) }}
               </p>
@@ -577,12 +574,12 @@ async function submit() {
                   (backup.snapshotAt ?? backup.createdAt) === currentGroup?.latestReadyAt
                 "
                 class="latest-backup"
-                >最新可用</span
+                >{{ t('m0479') }}</span
               >
               <span class="neutral-badge">{{
-                backup.interrupted ? '处理已中断' : (labels[backup.status] ?? backup.status)
+                backup.interrupted ? t('m0480') : (labels[backup.status] ?? backup.status)
               }}</span
-              ><span v-if="backup.permanent" class="neutral-badge">永久保留</span>
+              ><span v-if="backup.permanent" class="neutral-badge">{{ t('m0481') }}</span>
             </div>
           </div>
           <p v-if="backup.note" class="backup-note">{{ backup.note }}</p>
@@ -591,120 +588,107 @@ async function submit() {
               v-if="backup.status === 'READY'"
               class="secondary backup-download"
               :href="`/api/backups/${backup.id}/content`"
-              ><Download :size="16" />下载存档</a
-            ><small>编号 {{ backup.id.slice(0, 8) }}</small>
+              ><Download :size="16" />{{ t('m0482') }}</a
+            ><small>{{ t('m0483', [backup.id.slice(0, 8)]) }}</small>
           </div>
           <details class="backup-management">
-            <summary>详情与管理</summary>
+            <summary>{{ t('m0484') }}</summary>
             <dl class="collector-details">
               <div>
-                <dt>归档大小</dt>
+                <dt>{{ t('m0485') }}</dt>
                 <dd>{{ bytes(backup.archiveBytes ?? backup.expectedBytes) }}</dd>
               </div>
               <div>
-                <dt>源文件 / 数量</dt>
+                <dt>{{ t('m0486') }}</dt>
                 <dd>{{ bytes(backup.sourceBytes) }} / {{ backup.fileCount ?? '—' }}</dd>
               </div>
               <div>
-                <dt>游戏版本</dt>
+                <dt>{{ t('m0487') }}</dt>
                 <dd>
                   {{
                     backup.summary?.runtime?.bds?.version ??
-                    (backup.status === 'READY' ? '未识别' : '待校验')
+                    (backup.status === 'READY' ? t('m0488') : t('m0489'))
                   }}
                 </dd>
               </div>
               <div>
-                <dt>实际恢复验证</dt>
-                <dd>未记录实际游玩确认</dd>
+                <dt>{{ t('m0490') }}</dt>
+                <dd>{{ t('m0491') }}</dd>
               </div>
             </dl>
-            <p v-if="backup.status === 'RECEIVING'" class="data-note">
-              已接收 {{ bytes(backup.receivedBytes) }} / {{ bytes(backup.expectedBytes) }}
+            <p v-if="backup.status === 'RECEIVING'" class="data-note">{{ t('m0492', [bytes(backup.receivedBytes), bytes(backup.expectedBytes)]) }}
             </p>
             <p v-if="['FAILED', 'MISSING', 'DELETING'].includes(backup.status)" class="alert error">
               {{
                 backup.status === 'MISSING'
-                  ? '存储中的文件缺失或内容不一致，下载已停止。'
+                  ? t('m0493')
                   : backup.status === 'DELETING'
-                    ? '文件删除未完成，可重试删除。'
-                    : '上传或文件校验未完成，请检查归档后重新上传。'
+                    ? t('m0494')
+                    : t('m0495')
               }}
             </p>
             <details v-if="backup.summary" class="collector-capabilities">
-              <summary>查看完整性与统计衔接说明</summary>
+              <summary>{{ t('m0496') }}</summary>
               <dl class="backup-proof">
-                <dt>备份范围</dt>
+                <dt>{{ t('m0497') }}</dt>
                 <dd>
-                  {{ backup.summary.archiveScope === 'WORLD' ? '仅当前世界存档' : '整服备份' }}
+                  {{ backup.summary.archiveScope === 'WORLD' ? t('m0498') : t('m0477') }}
                 </dd>
-                <dt>备份方式</dt>
+                <dt>{{ t('m0499') }}</dt>
                 <dd>
                   {{
                     backup.summary.snapshotMode === 'BDS_SAVE_QUERY'
-                      ? '运行中世界快照'
+                      ? t('m0500')
                       : backup.summary.snapshotMode === 'STOPPED'
-                        ? '正常停服快照'
-                        : '未记录'
+                        ? t('m0501')
+                        : t('m0502')
                   }}
                 </dd>
                 <dt>SHA-256</dt>
                 <dd>
                   <code>{{ backup.sha256 }}</code>
                 </dd>
-                <dt>原始备份 ID</dt>
+                <dt>{{ t('m0503') }}</dt>
                 <dd>
                   <code>{{ backup.sourceBackupId }}</code>
                 </dd>
-                <dt>本地采集缓存</dt>
+                <dt>{{ t('m0504') }}</dt>
                 <dd>
                   {{
                     backup.summary.archiveScope === 'WORLD'
-                      ? '不包含（世界备份）'
+                      ? t('m0505')
                       : backup.summary.statistics?.cacheIntegrity === 'VERIFIED'
-                        ? '摘要校验通过'
-                        : '未核实'
+                        ? t('m0506')
+                        : t('m0507')
                   }}
                   <span v-if="backup.summary.archiveScope !== 'WORLD'"
-                    >· 待传事件 {{ backup.summary.statistics?.pendingEvents ?? '未知' }}</span
+                    >{{ t('m0509', [backup.summary.statistics?.pendingEvents ?? t('m0508')]) }}</span
                   >
                 </dd>
-                <dt v-if="backup.summary.archiveScope !== 'WORLD'">缓存中最大已确认事件时间</dt>
+                <dt v-if="backup.summary.archiveScope !== 'WORLD'">{{ t('m0510') }}</dt>
                 <dd v-if="backup.summary.archiveScope !== 'WORLD'">
                   {{ displayTime(backup.summary.statistics?.latestAcknowledgedEventAt) }}
                 </dd>
               </dl>
-              <p v-if="backup.summary.archiveScope !== 'WORLD'" class="data-note">
-                此时间不表示此前全部统计都已上传。恢复旧世界时，中央已有历史继续保留；原事件按身份去重，新一期须使用新档案。
-              </p>
-              <p class="data-note">平台数据库和插件外部数据库不包含在此归档中。</p>
+              <p v-if="backup.summary.archiveScope !== 'WORLD'" class="data-note">{{ t('m0511') }}</p>
+              <p class="data-note">{{ t('m0512') }}</p>
               <p
                 v-if="
                   backup.summary.snapshotMode === 'BDS_SAVE_QUERY' &&
                   backup.summary.archiveScope !== 'WORLD'
                 "
                 class="data-note"
-              >
-                世界对应原生存档快照时刻；插件文件是随后取得的稳定副本。需要与世界同步提交的玩法插件，须单独协调或使用停服备份。
-              </p>
+              >{{ t('m0513') }}</p>
             </details>
-            <p v-if="backup.summary?.archiveScope === 'WORLD'" class="data-note">
-              仅包含
-              {{
-                backup.summary.worldDirectory
-              }}。恢复时先解压到新目录，正常停服后再替换世界文件夹；服务端程序、插件、全局资源包和平台统计不包含在内。
-            </p>
+            <p v-if="backup.summary?.archiveScope === 'WORLD'" class="data-note">{{ t('m0514', [backup.summary.worldDirectory]) }}</p>
             <div class="backup-actions">
               <button v-if="backup.status === 'READY'" class="secondary" @click="restore(backup)">
-                <RotateCcw :size="16" />恢复到新目录
-              </button>
+                <RotateCcw :size="16" />{{ t('m0515') }}</button>
               <button
                 class="secondary"
                 :disabled="backup.status === 'DELETING'"
                 @click="open('edit', backup)"
-              >
-                编辑备注与保留
-              </button>
+              >{{ t('m0516') }}</button>
               <button
                 class="text-button danger-text"
                 :disabled="
@@ -713,7 +697,7 @@ async function submit() {
                 "
                 @click="open('delete', backup)"
               >
-                {{ backup.status === 'DELETING' ? '重试删除' : '删除备份' }}
+                {{ backup.status === 'DELETING' ? t('m0517') : t('m0518') }}
               </button>
             </div>
           </details>
@@ -740,7 +724,7 @@ async function submit() {
           <button
             type="button"
             class="icon-button"
-            aria-label="关闭备份窗口"
+            :aria-label="t('m0519')"
             :disabled="working"
             @click="close"
           >
@@ -749,7 +733,7 @@ async function submit() {
         </div>
         <template v-if="action === 'upload'">
           <label
-            >所属服务器<select
+            >{{ t('m0520') }}<select
               ref="firstField"
               v-model="serverId"
               :disabled="working || !!uploadId"
@@ -761,27 +745,24 @@ async function submit() {
             </select></label
           >
           <label
-            >备份用途<select v-model="kind" :disabled="working || !!uploadId">
-              <option value="MANUAL">手动备份</option>
-              <option value="FINAL">最终封存（默认永久保留）</option>
+            >{{ t('m0521') }}<select v-model="kind" :disabled="working || !!uploadId">
+              <option value="MANUAL">{{ t('m0432') }}</option>
+              <option value="FINAL">{{ t('m0522') }}</option>
             </select></label
           >
           <label
-            >备份归档文件<input
+            >{{ t('m0523') }}<input
               type="file"
               accept=".tar.gz,.tgz,.tar"
               :disabled="working"
               required
               @change="chooseFile"
           /></label>
-          <p class="data-note">
-            当前单文件上限
-            {{ bytes(data?.maxUploadBytes) }}。支持本项目备份工具生成的世界存档或整服归档。
-          </p>
+          <p class="data-note">{{ t('m0524', [bytes(data?.maxUploadBytes)]) }}</p>
         </template>
         <template v-if="action !== 'delete'">
           <label
-            >备份备注<textarea v-model="note" maxlength="1000" rows="3" :disabled="working" />
+            >{{ t('m0525') }}<textarea v-model="note" maxlength="1000" rows="3" :disabled="working" />
           </label>
           <label class="backup-check"
             ><input
@@ -790,41 +771,37 @@ async function submit() {
               :disabled="working || (action === 'upload' && kind === 'FINAL')"
             />{{
               action === 'upload' && kind === 'FINAL'
-                ? '最终封存默认永久保留'
-                : '永久保留，免于自动清理旧备份'
+                ? t('m0526')
+                : t('m0527')
             }}</label
           >
         </template>
-        <p v-else class="alert info">
-          将删除“{{
-            selected ? serverName(selected.serverId) : ''
-          }}”的这份游戏备份文件。玩家统计历史继续保留，此操作不能撤销。
-        </p>
+        <p v-else class="alert info">{{ t('m0528', [selected ? serverName(selected.serverId) : '']) }}</p>
         <div v-if="working && action === 'upload'" role="status" class="backup-progress">
           <progress :value="fraction" max="1" />
           <p>
             {{
               fraction < 1
-                ? `正在上传 ${Math.round(fraction * 100)}%…`
-                : '文件已上传，正在核对全部内容，请保持此页面打开…'
+                ? t('m0529', [Math.round(fraction * 100)])
+                : t('m0530')
             }}
           </p>
         </div>
         <p v-if="formError" class="alert error" role="alert">{{ formError }}</p>
         <div class="dialog-actions">
-          <button type="button" class="secondary" :disabled="working" @click="close">取消</button
+          <button type="button" class="secondary" :disabled="working" @click="close">{{ t('m0102') }}</button
           ><button
             :class="action === 'delete' ? 'danger' : 'primary'"
             :disabled="working || (action === 'upload' && !validUpload)"
           >
             {{
               working
-                ? '处理中…'
+                ? t('m0363')
                 : action === 'upload'
-                  ? '上传并校验'
+                  ? t('m0531')
                   : action === 'delete'
-                    ? '确认删除文件'
-                    : '保存设置'
+                    ? t('m0532')
+                    : t('m0533')
             }}
           </button>
         </div>

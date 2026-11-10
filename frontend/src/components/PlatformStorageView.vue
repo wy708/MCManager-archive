@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { ref, watch } from 'vue'
 import { api } from '../api'
 import { formatRestoreBytes } from '../restores'
@@ -81,11 +83,11 @@ async function saveRetention() {
       body: JSON.stringify({ days: reviewed.requestedDays, expectedDays: reviewed.currentDays }),
     })
     preview.value = undefined
-    saved.value = `已保存 ${result.retentionDays} 天保留期，本次清理 ${formatInteger(result.removedEntries)} 条。`
+    saved.value = t('m0881', [result.retentionDays, formatInteger(result.removedEntries)])
     if (result.batchLimitReached)
       saved.value += data.value?.automaticCleanupEnabled
-        ? '其余超期明细由后台分批清理。'
-        : '可再次保存以清理下一批超期明细。'
+        ? t('m0882')
+        : t('m0883')
     await refresh()
   } catch (ex) {
     formError.value = failure(ex)
@@ -100,41 +102,38 @@ async function saveRetention() {
   <section class="panel data-panel" aria-labelledby="platform-storage-title">
     <div class="data-panel-heading">
       <div>
-        <h2 id="platform-storage-title">存储与保留</h2>
-        <p>适用于平台内所有服务器档案</p>
+        <h2 id="platform-storage-title">{{ t('m0884') }}</h2>
+        <p>{{ t('m0885') }}</p>
       </div>
-      <button class="secondary" :disabled="busy || working" @click="refreshStorage">
-        刷新存储
-      </button>
+      <button class="secondary" :disabled="busy || working" @click="refreshStorage">{{ t('m0886') }}</button>
     </div>
     <p v-if="error" class="alert error" role="alert">{{ error }}</p>
-    <p v-else-if="busy" class="data-note" role="status">正在读取存储和保留设置…</p>
+    <p v-else-if="busy" class="data-note" role="status">{{ t('m0887') }}</p>
     <template v-else-if="data">
       <dl class="collector-details">
         <div>
-          <dt>备份目录所在卷可用空间</dt>
+          <dt>{{ t('m0888') }}</dt>
           <dd>{{ formatRestoreBytes(data.storage.volume?.usableBytes) }}</dd>
         </div>
         <div>
-          <dt>所在卷总容量</dt>
+          <dt>{{ t('m0889') }}</dt>
           <dd>{{ formatRestoreBytes(data.storage.volume?.totalBytes) }}</dd>
         </div>
         <div>
-          <dt>备份目录册</dt>
+          <dt>{{ t('m0890') }}</dt>
           <dd>
-            {{ formatInteger(data.storage.readyCount) }} 份 ·
-            {{ formatRestoreBytes(data.storage.readyArchiveBytes) }}
+            {{ t('m0891', [formatInteger(data.storage.readyCount), formatRestoreBytes(data.storage.readyArchiveBytes)]) }}
           </dd>
         </div>
         <div>
-          <dt>单份上传上限</dt>
+          <dt>{{ t('m0892') }}</dt>
           <dd>{{ formatRestoreBytes(data.storage.maxUploadBytes) }}</dd>
         </div>
       </dl>
-      <p class="data-note">目录册大小按可用备份记录合计。所在卷可能还存有其他文件。</p>
+      <p class="data-note">{{ t('m0893') }}</p>
       <form class="retention-form" @submit.prevent="previewRetention">
         <label
-          >行为与聊天明细保留天数<input
+          >{{ t('m0894') }}<input
             v-model.number="days"
             type="number"
             min="1"
@@ -143,30 +142,16 @@ async function saveRetention() {
             required
             :disabled="working"
         /></label>
-        <button type="submit" class="secondary" :disabled="working">预览超期明细</button>
+        <button type="submit" class="secondary" :disabled="working">{{ t('m0895') }}</button>
       </form>
-      <p class="data-note">
-        当前保留
-        {{ data.retentionDays }} 天，按中央收到明细的时间计算。累计统计、去重记录和备份独立保留。
-      </p>
-      <p v-if="!data.automaticCleanupEnabled" class="data-note">
-        自动物理清理已停用。超期明细仍会从查询中隐藏，保存策略可手动清理一批。
-      </p>
+      <p class="data-note">{{ t('m0896', [data.retentionDays]) }}</p>
+      <p v-if="!data.automaticCleanupEnabled" class="data-note">{{ t('m0897') }}</p>
       <div v-if="preview" class="retention-preview">
-        <p>
-          按 {{ preview.requestedDays }} 天策略，截至
-          {{ displayTime(preview.cutoff, 'UTC') }}（UTC）前的明细中，现有聊天
-          {{ formatInteger(preview.chatEntries) }} 条，行为
-          {{ formatInteger(preview.behaviorEntries) }} 条。
-        </p>
-        <p>保存后超期明细将从网页和 MCP 查询中移除，并分批从数据库清理。已清理的明细无法恢复。</p>
+        <p>{{ t('m0898', [preview.requestedDays, displayTime(preview.cutoff, 'UTC'), formatInteger(preview.chatEntries), formatInteger(preview.behaviorEntries)]) }}</p>
+        <p>{{ t('m0899') }}</p>
         <div class="retention-actions">
-          <button class="primary" :disabled="working" @click="saveRetention">
-            保存并清理超期明细
-          </button>
-          <button class="secondary" :disabled="working" @click="preview = undefined">
-            取消预览
-          </button>
+          <button class="primary" :disabled="working" @click="saveRetention">{{ t('m0900') }}</button>
+          <button class="secondary" :disabled="working" @click="preview = undefined">{{ t('m0901') }}</button>
         </div>
       </div>
     </template>

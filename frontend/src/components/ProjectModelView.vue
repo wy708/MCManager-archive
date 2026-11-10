@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { formatLocale, systemMessage, t } from '../i18n'
+
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
@@ -14,7 +16,7 @@ let alive=true,timer:ReturnType<typeof setInterval>|undefined,animationTimer:Ret
 let renderer:THREE.WebGLRenderer|undefined,scene:THREE.Scene,camera:THREE.PerspectiveCamera,controls:OrbitControls,observer:ResizeObserver,object:SceneObject|undefined,radius=10,span=20,manualHeight=false
 interface HeightRange {minY:number;maxY:number;suggestedMinY:number;basis:'PLAYER_PLACEMENT'|'SURFACE_ESTIMATE'}
 const fullRange=ref<HeightRange>(),heightNotice=ref('')
-const loadingStage=ref('正在检查场景状态…')
+const loadingStage=ref(t('m0941'))
 let rangeBuild='',displayedRange='',displayRange:HeightPreference|undefined,requestEpoch=0,loadController:AbortController|undefined,fitAfterLoad=false
 const expanded=ref(false)
 const modelRoot=ref<HTMLDivElement>(),exitButton=ref<HTMLButtonElement>()
@@ -54,8 +56,8 @@ async function enterFullscreen(){
   try{if(element.requestFullscreen)await element.requestFullscreen({navigationUI:'hide'});else await element.webkitRequestFullscreen?.()}catch{/* Keep an edge-to-edge page view when the browser cannot fullscreen an element. */}
   if(alive&&expanded.value){nativeFullscreen=fullscreenElement()===element;resize();exitButton.value?.focus({preventScroll:true})}
 }
-const directions=[{id:'forward',label:'前进',icon:'↑'},{id:'back',label:'后退',icon:'↓'},{id:'left',label:'左移',icon:'←'},{id:'right',label:'右移',icon:'→'},{id:'up',label:'上升',icon:'＋'},{id:'down',label:'下降',icon:'−'}] as const
-const rotations=[{id:'rotateLeft',label:'向左旋转',icon:'↶'},{id:'rotateRight',label:'向右旋转',icon:'↷'},{id:'rotateUp',label:'向上环绕',icon:'⤴'},{id:'rotateDown',label:'向下环绕',icon:'⤵'}] as const
+const directions=[{id:'forward',label:t('m0942'),icon:'↑'},{id:'back',label:t('m0943'),icon:'↓'},{id:'left',label:t('m0944'),icon:'←'},{id:'right',label:t('m0945'),icon:'→'},{id:'up',label:t('m0946'),icon:'＋'},{id:'down',label:t('m0947'),icon:'−'}] as const
+const rotations=[{id:'rotateLeft',label:t('m0948'),icon:'↶'},{id:'rotateRight',label:t('m0949'),icon:'↷'},{id:'rotateUp',label:t('m0950'),icon:'⤴'},{id:'rotateDown',label:t('m0951'),icon:'⤵'}] as const
 type MoveDirection=typeof directions[number]['id']|typeof rotations[number]['id']
 const moving=ref<MoveDirection|null>(null)
 let moveFrame=0,movePointer:number|null=null,moveButton:HTMLElement|null=null
@@ -122,7 +124,7 @@ const frames=ref<HistoryFrame[]>([]),historyMore=ref(false),historyError=ref('')
 const orderedFrames=computed(()=>[...frames.value].reverse()),frameIndex=computed(()=>orderedFrames.value.findIndex(f=>f.id===selectedHistory.value))
 let historyTimer:ReturnType<typeof setInterval>|undefined,playTimer:ReturnType<typeof setInterval>|undefined,displayedHistory='',pickSequence=0
 let pointerStart:{id:number;x:number;y:number;time:number}|null=null,selectionBox:THREE.Box3Helper|undefined
-const dateLabel=(time:string|null)=>time?new Date(time).toLocaleString():'时间未知'
+const dateLabel=(time:string|null)=>time?new Date(time).toLocaleString(formatLocale):t('m0952')
 const blockLabel=(name:string)=>gameName(name,'block')??name
 async function readHistory(older=false){
   if(historyBusy.value)return;historyBusy.value=true
@@ -131,7 +133,7 @@ async function readHistory(older=false){
     // Keep already loaded older frames while polling the newest page.
     if(!older)for(const f of frames.value)if(!merged.has(f.id))merged.set(f.id,f)
     frames.value=[...merged.values()].sort((a,b)=>b.savedAt.localeCompare(a.savedAt));if(older||frames.value.length<=100)historyMore.value=result.more;historyError.value=''
-  }catch(e){if(alive)historyError.value=e instanceof Error?e.message:'历史画面读取失败'}finally{historyBusy.value=false}
+  }catch(e){if(alive)historyError.value=e instanceof Error?e.message:t('m0953')}finally{historyBusy.value=false}
 }
 function clearSelection(){pickSequence++;selectedBlock.value=undefined;blockError.value='';blockBusy.value=false;if(selectionBox){scene.remove(selectionBox);selectionBox.geometry.dispose();(selectionBox.material as THREE.Material).dispose();selectionBox=undefined}render()}
 watch(selectedHistory,()=>{requestEpoch++;loadController?.abort();clearSelection();ready.value=false;void load()})
@@ -147,7 +149,7 @@ async function pointerUp(event:PointerEvent){
   const x=Math.floor(hit.x),y=Math.floor(hit.y),z=Math.floor(hit.z),build=displayed,sequence=pickSequence
   const box=new THREE.Box3(new THREE.Vector3(x,y,z).sub(object.center),new THREE.Vector3(x+1,y+1,z+1).sub(object.center));selectionBox=new THREE.Box3Helper(box,0xf3b52b);scene.add(selectionBox);render();blockBusy.value=true
   try{const result=await api<BlockInfo>(path()+`/${build}/block?x=${x}&y=${y}&z=${z}`,{signal:controller.signal});if(alive&&sequence===pickSequence&&build===displayed)selectedBlock.value=result}
-  catch(e){if(alive&&sequence===pickSequence)blockError.value=e instanceof Error?e.message:'方块记录读取失败'}finally{if(sequence===pickSequence)blockBusy.value=false}
+  catch(e){if(alive&&sequence===pickSequence)blockError.value=e instanceof Error?e.message:t('m0954')}finally{if(sequence===pickSequence)blockBusy.value=false}
 }
 function render(){if(alive&&renderer)renderer.render(scene,camera)}
 function resize(){if(!renderer||!host.value)return;const w=host.value.clientWidth,h=host.value.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/Math.max(h,1);camera.updateProjectionMatrix();render()}
@@ -165,38 +167,38 @@ function fit(){
 }
 function heights(){if(!renderer||!object)return;renderer.clippingPlanes=displayRange?projectHeightClipping(object.center.y,displayRange.minY,displayRange.maxY):[];render()}
 function reloadRange(){requestEpoch++;loadController?.abort();stopMove();clearSelection();void load()}
-function applyHeight(){if(!Number.isInteger(minY.value)||!Number.isInteger(maxY.value)||minY.value>maxY.value||minY.value < -2048||maxY.value>4095){error.value='请填写有效的最低和最高显示高度。';return}error.value='';manualHeight=true;chosenRange={minY:minY.value,maxY:maxY.value};saveRange();heightNotice.value='使用你保存的高度范围，下方未选中的模型不加载。';reloadRange()}
+function applyHeight(){if(!Number.isInteger(minY.value)||!Number.isInteger(maxY.value)||minY.value>maxY.value||minY.value < -2048||maxY.value>4095){error.value=t('m0955');return}error.value='';manualHeight=true;chosenRange={minY:minY.value,maxY:maxY.value};saveRange();heightNotice.value=t('m0956');reloadRange()}
 function allHeights(){if(!fullRange.value)return;minY.value=fullRange.value.minY;maxY.value=fullRange.value.maxY;applyHeight()}
 function constructionHeight(){manualHeight=false;chosenRange=undefined;saveHeight(props.id,null);fitAfterLoad=true;reloadRange()}
 function toggleMoving(){object?.setMovingEntities(showMoving.value);render()}
 function clear(){stopMove();if(object){scene.remove(object.group);object.dispose();object=undefined}ready.value=false;displayed=null;render()}
-function issueText(value:string){return value.replace(/^missing texture: /,'缺少贴图：').replace(/^unreadable texture: /,'贴图无法读取：').replace(/^missing block model: /,'缺少方块模型：').replace(/^missing entity(?: model)?: /,'缺少生物或实体模型：').replace(/^missing wearable(?: geometry)?: /,'缺少装备模型：').replace(/^empty geometry: /,'模型未生成几何体：')}
+function issueText(value:string){return value.replace(/^missing texture: /,t('m0957')).replace(/^unreadable texture: /,t('m0958')).replace(/^missing block model: /,t('m0959')).replace(/^missing entity(?: model)?: /,t('m0960')).replace(/^missing wearable(?: geometry)?: /,t('m0961')).replace(/^empty geometry: /,t('m0962'))}
 async function load(){
   if(busy.value||!alive)return;busy.value=true
   const requested=selectedHistory.value,epoch=requestEpoch;loadController=new AbortController();const signal=loadController.signal
   const current=()=>alive&&epoch===requestEpoch&&requested===selectedHistory.value
   try{
-    loadingStage.value='正在检查场景状态…'
+    loadingStage.value=t('m0941')
     const latest=await api<SceneStatus>(path()+(requested?`/history/${requested}`:'')+'/status',{signal});if(!current())return;status.value=latest
     if(latest.state!=='READY'||!latest.build)return
     const build=latest.build
     if(rangeBuild!==build){const range=await api<HeightRange>(path()+`/${build}/height-range`,{signal});if(!current())return;fullRange.value=range;rangeBuild=build}
-    if(!manualHeight&&fullRange.value){minY.value=fullRange.value.suggestedMinY;maxY.value=fullRange.value.maxY; heightNotice.value=fullRange.value.basis==='PLAYER_PLACEMENT'?'默认从工程内玩家放置方块的最低高度开始。':'暂无可用放置记录，暂按已采集地表估算起点；可手动调整。'}
-    else heightNotice.value='使用你保存的高度范围，下方未选中的模型不加载。'
+    if(!manualHeight&&fullRange.value){minY.value=fullRange.value.suggestedMinY;maxY.value=fullRange.value.maxY; heightNotice.value=fullRange.value.basis==='PLAYER_PLACEMENT'?t('m0963'):t('m0964')}
+    else heightNotice.value=t('m0956')
     const range=manualHeight&&chosenRange?{...chosenRange}:{minY:minY.value,maxY:maxY.value},rangeKey=`${range.minY}:${range.maxY}`
     if(latest.build===displayed&&rangeKey===displayedRange){ready.value=!!object?.triangles;if(fitAfterLoad){fitAfterLoad=false;fit()}return}
-    loadingStage.value='正在读取所选高度的模型…'
+    loadingStage.value=t('m0965')
     const data=await api<ProjectScene>(path()+`/${build}/scene.json?minY=${range.minY}&maxY=${range.maxY}`,{signal})
-    loadingStage.value='正在准备模型几何…'
-    const next=await createProjectScene(data,file=>'/api'+path()+`/${build}/${file}`,signal,range,(done,total)=>{if(current())loadingStage.value=done===total?'正在显示模型…':`正在读取贴图 ${done} / ${total}…`})
+    loadingStage.value=t('m0966')
+    const next=await createProjectScene(data,file=>'/api'+path()+`/${build}/${file}`,signal,range,(done,total)=>{if(current())loadingStage.value=done===total?t('m0967'):t('m0968', [done, total])})
     if(!current()){next.dispose();return}
     clearSelection();displayedHistory=requested
     const previous=object,initial=!previous;object=next;next.setMovingEntities(showMoving.value);scene.add(next.group)
     if(previous){const offset=previous.center.clone().sub(next.center);camera.position.add(offset);controls.target.add(offset);scene.remove(previous.group);previous.dispose()}
-    displayed=build;displayedRange=rangeKey;displayRange=range;triangles.value=next.triangles;issues.value=next.issues;observedAt.value=latest.observedAt;ready.value=next.triangles>0;error.value=ready.value?'':'这个高度范围内没有已采集的模型，请调整范围。'
+    displayed=build;displayedRange=rangeKey;displayRange=range;triangles.value=next.triangles;issues.value=next.issues;observedAt.value=latest.observedAt;ready.value=next.triangles>0;error.value=ready.value?'':t('m0969')
     const size=next.bounds.getSize(new THREE.Vector3());span=Math.max(12,size.x,size.y,size.z);radius=Math.max(3,size.length()/2);heights()
     if(initial||fitAfterLoad){fitAfterLoad=false;fit()}else{camera.far=Math.max(1000,span*12);camera.updateProjectionMatrix();controls.maxDistance=span*8;controls.update();render()}
-  }catch(e){if(!current()||signal.aborted)return;error.value=e instanceof Error?e.message:'场景读取失败';playing.value=false;if(e instanceof ApiError&&e.status===404){clear();if(!requested)clearInterval(timer)}}
+  }catch(e){if(!current()||signal.aborted)return;error.value=e instanceof Error?e.message:t('m0970');playing.value=false;if(e instanceof ApiError&&e.status===404){clear();if(!requested)clearInterval(timer)}}
   finally{busy.value=false;if(alive&&!current())void load()}
 }
 onMounted(()=>{
@@ -205,54 +207,54 @@ onMounted(()=>{
   document.addEventListener('fullscreenchange',fullscreenChanged);document.addEventListener('webkitfullscreenchange',fullscreenChanged)
   try{
     scene=new THREE.Scene();scene.background=new THREE.Color('#eef5f1');camera=new THREE.PerspectiveCamera(42,1,.05,1000)
-    renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.domElement.setAttribute('aria-label','可旋转的建筑场景');renderer.domElement.setAttribute('role','img');host.value!.appendChild(renderer.domElement)
+    renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.domElement.setAttribute('aria-label',t('m0971'));renderer.domElement.setAttribute('role','img');host.value!.appendChild(renderer.domElement)
     controls=new OrbitControls(camera,renderer.domElement);controls.addEventListener('change',render)
     renderer.domElement.addEventListener('pointerdown',pointerDown);renderer.domElement.addEventListener('pointermove',pointerMoved);renderer.domElement.addEventListener('pointerup',pointerUp);renderer.domElement.addEventListener('pointercancel',()=>{pointerStart=null})
     scene.add(new THREE.HemisphereLight(0xffffff,0x778878,2));const light=new THREE.DirectionalLight(0xffffff,2);light.position.set(30,60,20);scene.add(light)
     observer=new ResizeObserver(resize);observer.observe(host.value!);fit();resize()
-    renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();stopMove();ready.value=false;error.value='浏览器暂时无法显示三维图形，请重新打开预览。';controller.abort();loadController?.abort();clearInterval(timer);clearInterval(animationTimer)})
+    renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();stopMove();ready.value=false;error.value=t('m0972');controller.abort();loadController?.abort();clearInterval(timer);clearInterval(animationTimer)})
     animationTimer=setInterval(()=>{if(!document.hidden&&object?.update(performance.now()))render()},50)
     void load();timer=setInterval(()=>{if(!document.hidden)void load()},5000)
     void readHistory();historyTimer=setInterval(()=>{if(!document.hidden)void readHistory()},60000)
     playTimer=setInterval(()=>{if(!playing.value||busy.value||document.hidden||!ready.value||displayedHistory!==selectedHistory.value)return;const next=orderedFrames.value[frameIndex.value+1];if(next)selectedHistory.value=next.id;else playing.value=false},3000)
-  }catch{error.value='这台设备暂不支持三维预览，可以继续使用二维地图。'}
+  }catch{error.value=t('m0973')}
 })
 onBeforeUnmount(()=>{alive=false;clearInterval(historyTimer);clearInterval(playTimer);clearSelection();void exitFullscreen();document.removeEventListener('fullscreenchange',fullscreenChanged);document.removeEventListener('webkitfullscreenchange',fullscreenChanged);restorePage();stopMove();window.removeEventListener('blur',stopMove);document.removeEventListener('visibilitychange',visibilityChanged);window.removeEventListener('keydown',escapeView);controller.abort();loadController?.abort();clearInterval(timer);clearInterval(animationTimer);observer?.disconnect();controls?.dispose();clear();renderer?.dispose();renderer?.forceContextLoss()})
 </script>
 <template>
   <Teleport to="body" :disabled="!expanded">
-  <div ref="modelRoot" class="project-model" :class="{'model-expanded':expanded}" :role="expanded?'dialog':undefined" :aria-modal="expanded?true:undefined" :aria-label="expanded?'三维建筑全屏预览':undefined">
-    <button v-if="expanded" ref="exitButton" type="button" class="model-exit-fullscreen" @click="exitFullscreen">退出全屏</button>
+  <div ref="modelRoot" class="project-model" :class="{'model-expanded':expanded}" :role="expanded?'dialog':undefined" :aria-modal="expanded?true:undefined" :aria-label="expanded?t('m0974'):undefined">
+    <button v-if="expanded" ref="exitButton" type="button" class="model-exit-fullscreen" @click="exitFullscreen">{{ t('m0975') }}</button>
     <div class="model-toolbars">
-    <section class="model-history" aria-label="建筑施工时光机">
-      <div class="history-heading"><strong>建筑施工时光机</strong><span>{{ selectedHistory ? '正在查看历史画面' : '跟随最新采集' }}</span></div>
-      <div class="history-actions"><select v-model="selectedHistory" aria-label="选择历史画面" @change="playing=false"><option value="">最新画面</option><option v-for="frame in frames" :key="frame.id" :value="frame.id">{{ dateLabel(frame.savedAt) }}</option></select><button :disabled="frames.length<2" @click="playHistory">{{ playing?'暂停回放':'播放建设过程' }}</button><button v-if="selectedHistory" @click="playing=false;selectedHistory=''">回到最新</button><button v-if="historyMore" :disabled="historyBusy" @click="readHistory(true)">更早的画面</button></div>
-      <input v-if="frames.length>1" class="history-range" type="range" aria-label="施工时间轴" min="0" :max="frames.length-1" :value="frameIndex<0?frames.length-1:frameIndex" @input="selectFrame" />
-      <p>约每 5 分钟保存有变化的场景。各处分批采集，并非同一瞬间；启用前的过程无法补回。{{ frames.length===1?'已有一个历史画面，积累两次后即可播放。':frames.length?'':'还没有历史画面，收到模型后会自动开始保存。' }}</p><p v-if="historyError" role="alert">{{ historyError }}</p>
+    <section class="model-history" :aria-label="t('m0976')">
+      <div class="history-heading"><strong>{{ t('m0976') }}</strong><span>{{ selectedHistory ? t('m0977') : t('m0978') }}</span></div>
+      <div class="history-actions"><select v-model="selectedHistory" :aria-label="t('m0979')" @change="playing=false"><option value="">{{ t('m0980') }}</option><option v-for="frame in frames" :key="frame.id" :value="frame.id">{{ dateLabel(frame.savedAt) }}</option></select><button :disabled="frames.length<2" @click="playHistory">{{ playing?t('m0802'):t('m0981') }}</button><button v-if="selectedHistory" @click="playing=false;selectedHistory=''">{{ t('m0982') }}</button><button v-if="historyMore" :disabled="historyBusy" @click="readHistory(true)">{{ t('m0983') }}</button></div>
+      <input v-if="frames.length>1" class="history-range" type="range" :aria-label="t('m0984')" min="0" :max="frames.length-1" :value="frameIndex<0?frames.length-1:frameIndex" @input="selectFrame" />
+      <p>{{ t('m0987', [frames.length===1?t('m0985'):frames.length?'':t('m0986')]) }}</p><p v-if="historyError" role="alert">{{ historyError }}</p>
     </section>
-    <div class="model-controls"><label class="model-entity-toggle"><input v-model="showMoving" type="checkbox" @change="toggleMoving" />显示动物和怪物</label><label>最低显示高度 Y <input v-model.number="minY" type="number" min="-2048" max="4095" /></label><label>最高显示高度 Y <input v-model.number="maxY" type="number" min="-2048" max="4095" /></label><button :disabled="busy||!fullRange" @click="applyHeight">查看这一层</button><button :disabled="busy||!fullRange" @click="allHeights">全部高度</button><button :disabled="busy||!fullRange" @click="constructionHeight">施工起点</button><button @click="fit">回到全景</button><button :disabled="busy" @click="showAll">显示全部模型</button><button v-show="!expanded" @click="enterFullscreen">全屏查看</button><button :disabled="busy" @click="load">刷新状态</button></div>
-    <div class="model-navigation" role="group" aria-label="移动三维视角">
-      <span class="model-navigation-title">移动视角<small>点按微调 · 长按连续移动</small></span>
-      <div class="model-move-buttons"><button v-for="direction in directions" :key="direction.id" type="button" :disabled="!ready" :class="{'is-moving':moving===direction.id}" :aria-label="direction.label+'视角'" @pointerdown.prevent="startMove($event,direction.id)" @pointerup="stopMove" @pointercancel="stopMove" @lostpointercapture="stopMove" @contextmenu.prevent @click="clickMove($event,direction.id)"><span aria-hidden="true">{{ direction.icon }}</span>{{ direction.label }}</button></div>
+    <div class="model-controls"><label class="model-entity-toggle"><input v-model="showMoving" type="checkbox" @change="toggleMoving" />{{ t('m0988') }}</label><label>{{ t('m0989') }}<input v-model.number="minY" type="number" min="-2048" max="4095" /></label><label>{{ t('m0990') }}<input v-model.number="maxY" type="number" min="-2048" max="4095" /></label><button :disabled="busy||!fullRange" @click="applyHeight">{{ t('m0991') }}</button><button :disabled="busy||!fullRange" @click="allHeights">{{ t('m0992') }}</button><button :disabled="busy||!fullRange" @click="constructionHeight">{{ t('m0993') }}</button><button @click="fit">{{ t('m0994') }}</button><button :disabled="busy" @click="showAll">{{ t('m0995') }}</button><button v-show="!expanded" @click="enterFullscreen">{{ t('m0996') }}</button><button :disabled="busy" @click="load">{{ t('m0615') }}</button></div>
+    <div class="model-navigation" role="group" :aria-label="t('m0997')">
+      <span class="model-navigation-title">{{ t('m0998') }}<small>{{ t('m0999') }}</small></span>
+      <div class="model-move-buttons"><button v-for="direction in directions" :key="direction.id" type="button" :disabled="!ready" :class="{'is-moving':moving===direction.id}" :aria-label="direction.label+t('m1000')" @pointerdown.prevent="startMove($event,direction.id)" @pointerup="stopMove" @pointercancel="stopMove" @lostpointercapture="stopMove" @contextmenu.prevent @click="clickMove($event,direction.id)"><span aria-hidden="true">{{ direction.icon }}</span>{{ direction.label }}</button></div>
     </div>
-    <div class="model-navigation model-rotation" role="group" aria-label="旋转三维视角">
-      <span class="model-navigation-title">围绕模型旋转<small>围绕当前观察中心，保留缩放</small></span>
-      <div class="model-rotate-buttons"><button v-for="direction in rotations" :key="direction.id" type="button" :disabled="!ready" :class="{'is-moving':moving===direction.id}" :aria-label="direction.label" @pointerdown.prevent="startMove($event,direction.id)" @pointerup="stopMove" @pointercancel="stopMove" @lostpointercapture="stopMove" @contextmenu.prevent @click="clickMove($event,direction.id)"><span aria-hidden="true">{{ direction.icon }}</span>{{ direction.label }}</button><button type="button" :disabled="!ready" @click="centerOrbit">重新居中</button></div>
+    <div class="model-navigation model-rotation" role="group" :aria-label="t('m1001')">
+      <span class="model-navigation-title">{{ t('m1002') }}<small>{{ t('m1003') }}</small></span>
+      <div class="model-rotate-buttons"><button v-for="direction in rotations" :key="direction.id" type="button" :disabled="!ready" :class="{'is-moving':moving===direction.id}" :aria-label="direction.label" @pointerdown.prevent="startMove($event,direction.id)" @pointerup="stopMove" @pointercancel="stopMove" @lostpointercapture="stopMove" @contextmenu.prevent @click="clickMove($event,direction.id)"><span aria-hidden="true">{{ direction.icon }}</span>{{ direction.label }}</button><button type="button" :disabled="!ready" @click="centerOrbit">{{ t('m1004') }}</button></div>
     </div>
     </div>
     <p v-if="error" role="alert" class="project-error model-error">{{ error }}</p>
-    <p class="project-muted model-pick-hint">轻点模型中的方块，查看坐标、状态和已有施工记录。拖动仍用于旋转；手机请退出全屏后点选查询。</p>
-    <div ref="host" class="model-canvas"><div v-if="!ready&&!error" class="model-placeholder">{{ busy ? loadingStage : status?.message ?? '正在连接场景服务…' }}</div><span v-if="ready&&(busy||status?.state==='BUILDING'||status?.state==='QUEUED')" class="model-updating">{{ busy ? loadingStage : status?.message }}</span></div>
-    <section v-if="selectedBlock||blockBusy||blockError" class="model-block-info" aria-label="选中方块信息">
-      <button class="block-close" aria-label="关闭方块信息" @click="clearSelection">×</button>
-      <p v-if="blockBusy">正在查询这个方块…</p><p v-if="blockError" role="alert">{{ blockError }}</p>
-      <template v-if="selectedBlock"><h3>{{ selectedBlock.block?blockLabel(selectedBlock.block.name):'此处尚无方块记录' }}</h3><p>X {{ selectedBlock.x }} · Y {{ selectedBlock.y }} · Z {{ selectedBlock.z }}</p><p>此处采集时间：{{ dateLabel(selectedBlock.observedAt) }}</p><p v-if="selectedBlock.extra&&selectedBlock.extra.name!=='minecraft:air'">同位置附加层：{{ blockLabel(selectedBlock.extra.name) }}</p><details v-if="selectedBlock.block?.states"><summary>方块状态与朝向</summary><pre>{{ selectedBlock.block.states }}</pre></details>
-      <h4>这里的施工记录</h4><ul v-if="selectedBlock.events.length"><li v-for="(event,i) in selectedBlock.events" :key="i">{{ dateLabel(event.occurredAt) }} · {{ event.player }} {{ event.operation==='PLACE'?'放置':'拆除' }}了{{ blockLabel(event.block) }}</li></ul><p v-else>没有对应的施工记录，无法判断是谁放置的。</p><p v-if="selectedBlock.more">仅显示最近 50 条记录。</p><small>{{ selectedBlock.notice }}</small></template>
+    <p class="project-muted model-pick-hint">{{ t('m1005') }}</p>
+    <div ref="host" class="model-canvas"><div v-if="!ready&&!error" class="model-placeholder">{{ busy ? loadingStage : (status ? systemMessage(status.message) : undefined) ?? t('m1006') }}</div><span v-if="ready&&(busy||status?.state==='BUILDING'||status?.state==='QUEUED')" class="model-updating">{{ busy ? loadingStage : (status ? systemMessage(status.message) : undefined) }}</span></div>
+    <section v-if="selectedBlock||blockBusy||blockError" class="model-block-info" :aria-label="t('m1007')">
+      <button class="block-close" :aria-label="t('m1008')" @click="clearSelection">×</button>
+      <p v-if="blockBusy">{{ t('m1009') }}</p><p v-if="blockError" role="alert">{{ blockError }}</p>
+      <template v-if="selectedBlock"><h3>{{ selectedBlock.block?blockLabel(selectedBlock.block.name):t('m1010') }}</h3><p>X {{ selectedBlock.x }} · Y {{ selectedBlock.y }} · Z {{ selectedBlock.z }}</p><p>{{ t('m1011', [dateLabel(selectedBlock.observedAt)]) }}</p><p v-if="selectedBlock.extra&&selectedBlock.extra.name!=='minecraft:air'">{{ t('m1012', [blockLabel(selectedBlock.extra.name)]) }}</p><details v-if="selectedBlock.block?.states"><summary>{{ t('m1013') }}</summary><pre>{{ selectedBlock.block.states }}</pre></details>
+      <h4>{{ t('m1014') }}</h4><ul v-if="selectedBlock.events.length"><li v-for="(event,i) in selectedBlock.events" :key="i">{{ t('m1016', [dateLabel(event.occurredAt), event.player, event.operation==='PLACE'?t('m0685'):t('m1015'), blockLabel(event.block)]) }}</li></ul><p v-else>{{ t('m1017') }}</p><p v-if="selectedBlock.more">{{ t('m1018') }}</p><small>{{ systemMessage(selectedBlock.notice) }}</small></template>
     </section>
-    <p class="project-muted">{{ heightNotice }} 高度设置仅保存在当前浏览器，按工程分别记忆。调整到 −64 或点击“全部高度”时才加载下方内容。<br/>移动和旋转均可点按或长按；旋转保持你平移、缩放后的观察中心。“重新居中”保留缩放，“回到全景”显示整个模型。<br/>鼠标拖动旋转 · 滚轮缩放 · 右键平移；手机单指旋转、双指缩放和平移。<br/>{{ ready ? `已显示 ${triangles.toLocaleString()} 个模型面片` : status?.message }} · 当前画面采集时间：{{ observedAt ? new Date(observedAt).toLocaleString() : '尚未显示' }}</p>
-    <p v-if="ready&&status?.state==='FAILED'" class="project-error">更新未完成，当前保留上一次成功显示的场景。</p>
-    <details v-if="issues.length" class="project-error"><summary>有 {{ issues.length }} 项内容尚未完整显示</summary><ul><li v-for="(issue,index) in issues" :key="index">{{ issueText(issue) }}</li></ul></details>
-    <details class="project-muted"><summary>场景如何记录</summary><p>包含工程范围内已采集的原有方块、新建内容、盔甲架及建筑装饰。动物和怪物也会记录，可用开关显示或隐藏；掉落物不记录。游戏分批扫描已加载区域，因此各处的采集时间可能不同；尚未加载的区域不代表空气。显示高度只影响查看，不会删除记录。</p><p>完成工程后保留最后收到的场景，继续工程会开始新的记录阶段。</p></details>
+    <p class="project-muted">{{ t('m1019', [heightNotice]) }}<br/>{{ t('m1020') }}<br/>{{ t('m1021') }}<br/>{{ t('m1024', [ready ? t('m1022', [triangles.toLocaleString(formatLocale)]) : (status ? systemMessage(status.message) : undefined), observedAt ? new Date(observedAt).toLocaleString(formatLocale) : t('m1023')]) }}</p>
+    <p v-if="ready&&status?.state==='FAILED'" class="project-error">{{ t('m1025') }}</p>
+    <details v-if="issues.length" class="project-error"><summary>{{ t('m1026', [issues.length]) }}</summary><ul><li v-for="(issue,index) in issues" :key="index">{{ issueText(issue) }}</li></ul></details>
+    <details class="project-muted"><summary>{{ t('m1027') }}</summary><p>{{ t('m1028') }}</p><p>{{ t('m1029') }}</p></details>
   </div>
   </Teleport>
 </template>

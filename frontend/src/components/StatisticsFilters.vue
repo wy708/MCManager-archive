@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { computed, ref, watch } from 'vue'
 import { RefreshCw } from '@lucide/vue'
 import type { Filters } from '../statistics'
@@ -33,26 +35,26 @@ function reset() {
 <template>
   <form class="statistics-filters panel" @submit.prevent="apply">
     <label
-      >开始日期<input v-model="draft.fromDate" type="date" :max="draft.toDate || undefined"
+      >{{ t('m0466') }}<input v-model="draft.fromDate" type="date" :max="draft.toDate || undefined"
     /></label>
     <label
-      >结束日期<input v-model="draft.toDate" type="date" :min="draft.fromDate || undefined"
+      >{{ t('m0095') }}<input v-model="draft.toDate" type="date" :min="draft.fromDate || undefined"
     /></label>
     <label
-      >所在世界<input
+      >{{ t('m1435') }}<input
         v-model="dimensionName"
         list="known-dimensions"
-        placeholder="主世界、下界、末地…"
-        aria-label="维度筛选" /><datalist id="known-dimensions">
+        :placeholder="t('m1436')"
+        :aria-label="t('m1437')" /><datalist id="known-dimensions">
         <option v-for="(label, key) in knownDimensions" :key="key" :value="label" /></datalist
     ></label>
     <div class="filter-actions">
-      <button class="primary" :disabled="busy">应用筛选</button
-      ><button type="button" class="secondary" @click="reset">查看全部时间</button
+      <button class="primary" :disabled="busy">{{ t('m1438') }}</button
+      ><button type="button" class="secondary" @click="reset">{{ t('m1439') }}</button
       ><button
         type="button"
         class="icon-button"
-        aria-label="刷新统计"
+        :aria-label="t('m1440')"
         :disabled="busy"
         @click="emit('refresh')"
       >

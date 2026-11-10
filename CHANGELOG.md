@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Add a persistent Chinese/English language selector across the web workspace, login and public project pages.
+- Localize interface messages, charts, dates, number formatting and game names while preserving player-authored content.
+- Add bilingual standalone map navigation and browser-local language preferences, without collection or polling changes.
+- Include translation coverage tests and desktop/mobile screenshots with synthetic data.
+
 ## 0.7.0-preview.2 — 2026-11-10
 
 - 规范化 Windows 测试临时目录，兼容短路径和父级目录映射；保留备份路径安全校验。

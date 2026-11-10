@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { computed, nextTick, ref } from 'vue'
 import { Search, X, ArrowRight, Compass } from '@lucide/vue'
 import { visibleNavigation } from '../navigation'
@@ -39,10 +41,10 @@ defineExpose({ open })
   >
     <div class="dialog-heading">
       <div>
-        <p class="eyebrow">冒险指南</p>
-        <h2 id="finder-title"><Compass :size="22" />你想做什么？</h2>
+        <p class="eyebrow">{{ t('m0810') }}</p>
+        <h2 id="finder-title"><Compass :size="22" />{{ t('m0811') }}</h2>
       </div>
-      <button class="icon-button" aria-label="关闭功能查找" @click="dialog?.close()">
+      <button class="icon-button" :aria-label="t('m0812')" @click="dialog?.close()">
         <X :size="22" />
       </button>
     </div>
@@ -51,13 +53,13 @@ defineExpose({ open })
         ref="input"
         v-model="search"
         type="search"
-        placeholder="试试：导出模型、聊天、每天备份…"
-        aria-label="搜索功能"
+        :placeholder="t('m0813')"
+        :aria-label="t('m0814')"
         maxlength="80"
     /></label>
     <div class="finder-suggestions">
       <button
-        v-for="word in ['聊天', '导出模型', '备份', '卡顿']"
+        v-for="word in [t('m0599'), t('m0815'), t('m0816'), t('m0817')]"
         :key="word"
         @click="search = word"
       >
@@ -67,8 +69,8 @@ defineExpose({ open })
     <p class="finder-count" role="status">
       {{
         results.length
-          ? `找到 ${results.length} 个入口`
-          : '没有匹配的入口，试试“工程”“玩家”或“地图”。'
+          ? t('m0818', [results.length])
+          : t('m0819')
       }}
     </p>
     <div class="finder-results">

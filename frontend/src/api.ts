@@ -1,3 +1,4 @@
+import { systemMessage, t } from './i18n'
 export interface ServerArchive {
   id: string
   name: string
@@ -21,7 +22,7 @@ export class ApiError extends Error {
 
 export async function refreshCsrf() {
   const response = await fetch('/api/auth/csrf', { credentials: 'same-origin' })
-  if (!response.ok) throw new ApiError(response.status, '暂时无法连接服务器，请稍后重试')
+  if (!response.ok) throw new ApiError(response.status, t('m0001'))
   csrf = await response.json()
 }
 
@@ -36,14 +37,14 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
     headers.set('Content-Type', 'application/json')
   const response = await fetch(`/api${path}`, { ...options, headers, credentials: 'same-origin' })
   if (!response.ok) {
-    let message = response.status === 401 ? '登录已过期，请重新登录' : '操作失败，请重试'
+    let message = response.status === 401 ? t('m0002') : t('m0003')
     if (response.status === 403) {
       csrf = undefined
-      message = '会话校验已更新，请重试此操作'
+      message = t('m0004')
     }
     try {
       const body = await response.json()
-      message = body.message ?? message
+      message = body.message ? systemMessage(body.message) : message
     } catch {
       /* No JSON for security errors. */
     }
@@ -67,17 +68,17 @@ export async function uploadBackup(
     request.upload.onprogress = (event) => {
       if (event.lengthComputable) progress(event.loaded / event.total)
     }
-    request.onerror = () => reject(new ApiError(0, '上传连接已中断，请刷新列表查看结果后重试'))
+    request.onerror = () => reject(new ApiError(0, t('m0005')))
     request.onload = () => {
       if (request.status >= 200 && request.status < 300) resolve()
       else {
-        let message = request.status === 401 ? '登录已过期，请重新登录' : '上传未完成，请重试'
+        let message = request.status === 401 ? t('m0002') : t('m0006')
         if (request.status === 403) {
           csrf = undefined
-          message = '会话校验已更新，请重试上传'
+          message = t('m0007')
         }
         try {
-          message = JSON.parse(request.responseText).message ?? message
+          message = systemMessage(JSON.parse(request.responseText).message ?? message)
         } catch {
           /* proxy/security error */
         }

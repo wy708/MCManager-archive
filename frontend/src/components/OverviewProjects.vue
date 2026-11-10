@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { computed, ref } from 'vue'
 import { Box, ArrowRight, Map, Users } from '@lucide/vue'
 import { api, type ServerArchive } from '../api'
@@ -31,34 +33,33 @@ const projects = computed(() =>
 <template>
   <section class="panel overview-projects">
     <div class="panel-heading">
-      <h2><Box :size="20" />正在书写的建筑故事</h2>
+      <h2><Box :size="20" />{{ t('m0856') }}</h2>
       <select
         v-if="scope === 'all' && servers.length > 1"
         v-model="selected"
-        aria-label="首页工程服务器"
+        :aria-label="t('m0857')"
       >
         <option value="">{{ server?.name }}</option>
         <option v-for="s in servers" :key="s.id" :value="s.id">{{ s.name }}</option></select
-      ><button class="text-button" @click="emit('open')">全部工程<ArrowRight :size="16" /></button>
+      ><button class="text-button" @click="emit('open')">{{ t('m0858') }}<ArrowRight :size="16" /></button>
     </div>
-    <p v-if="busy" class="small-empty" role="status">正在翻开工程手记…</p>
-    <p v-else-if="error" class="small-empty">
-      工程暂时无法读取。<button class="text-button" @click="refresh">重试</button>
+    <p v-if="busy" class="small-empty" role="status">{{ t('m0859') }}</p>
+    <p v-else-if="error" class="small-empty">{{ t('m0860') }}<button class="text-button" @click="refresh">{{ t('m0337') }}</button>
     </p>
     <div v-else-if="projects.length" class="overview-project-grid">
       <article v-for="(p, i) in projects" :key="p.id" class="overview-project-card">
         <div class="project-story-art" :class="i ? 'story-sunset' : 'story-overworld'">
-          <span>世界插画</span>
+          <span>{{ t('m0861') }}</span>
         </div>
         <div class="project-story-copy">
           <span class="status" :class="p.status === 'ACTIVE' ? 'recording' : 'archived'"
-            >{{ statusName(p.status) }} · 第 {{ p.revision }} 阶段</span
+            >{{ t('m0862', [statusName(p.status), p.revision]) }}</span
           >
           <h3>{{ p.name }}</h3>
-          <p><Users :size="14" />{{ p.creator }} 创建</p>
+          <p><Users :size="14" />{{ t('m0863', [p.creator]) }}</p>
           <p><Map :size="14" />X {{ p.minX }}～{{ p.maxX }} · Z {{ p.minZ }}～{{ p.maxZ }}</p>
           <a class="text-button" :href="p.publicUrl + '#model'" target="_blank" rel="noopener"
-            >查看三维建筑<ArrowRight :size="15"
+            >{{ t('m0864') }}<ArrowRight :size="15"
           /></a>
         </div>
       </article>
@@ -66,10 +67,10 @@ const projects = computed(() =>
     <div v-else class="project-welcome">
       <Box :size="38" />
       <div>
-        <h3>下一座建筑，从这里开始</h3>
-        <p>记录施工范围、伙伴贡献和三维模型，完工后留下纪念。</p>
+        <h3>{{ t('m0865') }}</h3>
+        <p>{{ t('m0866') }}</p>
       </div>
-      <button class="secondary" @click="emit('open')">前往施工工程<ArrowRight :size="16" /></button>
+      <button class="secondary" @click="emit('open')">{{ t('m0867') }}<ArrowRight :size="16" /></button>
     </div>
   </section>
 </template>

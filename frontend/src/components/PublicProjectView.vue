@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import LanguageSwitcher from './LanguageSwitcher.vue'
+import { formatLocale, systemMessage, t } from '../i18n'
+
 import { ref, computed, onMounted, onBeforeUnmount, defineAsyncComponent } from 'vue'
 import { api, ApiError } from '../api'
 import { gameName } from '../gameNames'
@@ -18,7 +21,7 @@ async function load() {
   try {
     const result = await api<ProjectDetail>(`/public/projects/${props.id}${revision.value ? '?revision=' + revision.value : ''}`)
     if (alive) { detail.value = result; error.value = '' }
-  } catch (e) { if (alive) { error.value = e instanceof Error ? e.message : '工程读取失败'; if(e instanceof ApiError && e.status===404)detail.value=undefined } }
+  } catch (e) { if (alive) { error.value = e instanceof Error ? e.message : t('m1091'); if(e instanceof ApiError && e.status===404)detail.value=undefined } }
   finally { busy.value = false }
 }
 onMounted(() => { load(); timer = setInterval(() => { if (!document.hidden && !revision.value && detail.value?.project.status === 'ACTIVE') load() }, 15000) })
@@ -34,35 +37,36 @@ const people = computed(() => {
 })
 const chart = computed<EChartsOption>(() => ({ tooltip: { trigger: 'axis', renderMode: 'richText' }, legend: { top: 0 }, grid: { top: 40, left: 110, right: 25, bottom: 35 },
   xAxis: { type: 'value', minInterval: 1 }, yAxis: { type: 'category', inverse: true, data: people.value.slice(0,20).map(p => p.name), axisLabel: { width: 95, overflow: 'truncate' } },
-  series: [{ type: 'bar', name: '放置', stack: 'work', data: people.value.slice(0,20).map(p=>p.placed) }, { type: 'bar', name: '拆除', stack: 'work', data: people.value.slice(0,20).map(p=>p.removed) }] }))
+  series: [{ type: 'bar', name: t('m0685'), stack: 'work', data: people.value.slice(0,20).map(p=>p.placed) }, { type: 'bar', name: t('m1015'), stack: 'work', data: people.value.slice(0,20).map(p=>p.removed) }] }))
 function iconFailed(event: Event) { (event.target as HTMLImageElement).style.visibility = 'hidden' }
-const date = (value: string | null) => value ? new Date(value).toLocaleString() : '尚未保存'
+const date = (value: string | null) => value ? new Date(value).toLocaleString(formatLocale) : t('m1092')
 </script>
 <template>
   <main class="project-public">
-    <p v-if="error" role="alert" class="project-error">{{ error }} <button @click="load">重试</button></p>
+      <LanguageSwitcher />
+    <p v-if="error" role="alert" class="project-error">{{ error }} <button @click="load">{{ t('m0337') }}</button></p>
     <template v-if="detail">
-      <header class="project-banner"><div><small>{{ detail.project.serverName }} · 公开施工档案</small><h1>{{ detail.project.name }}</h1><p>{{ detail.project.creator }} 创建 · {{ statusName(detail.project.status) }} · 第 {{ detail.revision }} 阶段</p></div>
-        <label>查看阶段 <select v-model="revision" @change="load()"><option value="">最新阶段</option><option v-for="r in detail.revisions" :key="r" :value="String(r)">第 {{ r }} 阶段</option></select><button @click="load">刷新</button></label>
+      <header class="project-banner"><div><small>{{ t('m1093', [detail.project.serverName]) }}</small><h1>{{ detail.project.name }}</h1><p>{{ t('m1094', [detail.project.creator, statusName(detail.project.status), detail.revision]) }}</p></div>
+        <label>{{ t('m1095') }}<select v-model="revision" @change="load()"><option value="">{{ t('m1096') }}</option><option v-for="r in detail.revisions" :key="r" :value="String(r)">{{ t('m1076', [r]) }}</option></select><button @click="load">{{ t('m0331') }}</button></label>
       </header>
       <div class="project-layout">
         <section class="project-panel">
-          <div class="project-toolbar"><div><h2>施工范围</h2><p>{{ gameName(detail.project.dimension,'dimension') ?? detail.project.dimension }} · X {{ detail.project.minX }} ～ {{ detail.project.maxX }} / Z {{ detail.project.minZ }} ～ {{ detail.project.maxZ }} · 全部高度</p></div></div>
-          <div class="project-view-tabs"><button :aria-pressed="view==='map'" @click="view='map'">二维地图</button><button :aria-pressed="view==='model'" @click="view='model'">三维建筑</button></div>
+          <div class="project-toolbar"><div><h2>{{ t('m1097') }}</h2><p>{{ t('m1098', [gameName(detail.project.dimension,'dimension') ?? detail.project.dimension, detail.project.minX, detail.project.maxX, detail.project.minZ, detail.project.maxZ]) }}</p></div></div>
+          <div class="project-view-tabs"><button :aria-pressed="view==='map'" @click="view='map'">{{ t('m1099') }}</button><button :aria-pressed="view==='model'" @click="view='model'">{{ t('m1100') }}</button></div>
           <ProjectModelView v-if="view==='model'" :key="`${props.id}:${detail.revision}`" :id="props.id" :revision="detail.revision" />
           <ProjectMapView v-else-if="detail.mapAvailable" :key="`${props.id}:${detail.revision}:map`" :url="mapUrl" :min-x="detail.project.minX" :max-x="detail.project.maxX" :min-z="detail.project.minZ" :max-z="detail.project.maxZ" />
-          <div v-else class="project-map project-empty">{{ detail.project.status === 'COMPLETE' ? '封存时尚无地图采集结果，保留空白。' : '等待该区域的地图采集。玩家探索后，已有地图数据会逐步显示。' }}</div>
-          <p v-if="view==='map'" class="project-muted">地图保存：{{ date(detail.mapAt) }}<span v-if="detail.mapMetadata && !detail.mapMetadata.tileCoverageComplete"> · 部分区域未采集</span><span v-if="detail.mapMetadata?.truncated"> · 大范围仅显示部分采样</span></p>
-          <details class="project-muted"><summary>地图与贡献的记录规则</summary><p>{{ detail.notice }}</p></details>
+          <div v-else class="project-map project-empty">{{ detail.project.status === 'COMPLETE' ? t('m1101') : t('m1102') }}</div>
+          <p v-if="view==='map'" class="project-muted">{{ t('m1103', [date(detail.mapAt)]) }}<span v-if="detail.mapMetadata && !detail.mapMetadata.tileCoverageComplete">{{ t('m1104') }}</span><span v-if="detail.mapMetadata?.truncated">{{ t('m1105') }}</span></p>
+          <details class="project-muted"><summary>{{ t('m1106') }}</summary><p>{{ systemMessage(detail.notice) }}</p></details>
         </section>
-        <aside class="project-panel project-legend"><h2>方块图例</h2><p class="project-muted">累计成功放置 / 拆除次数，包含此前阶段</p><p v-if="!detail.statistics.materials.length" class="project-empty">还没有施工记录</p>
-          <ul><li v-for="item in detail.statistics.materials" :key="item.block+item.operation"><img :src="blockIcon(item.block)" alt="" @error="iconFailed"/><span :title="item.block">{{ gameName(item.block,'block') ?? item.block }}</span><small>{{ item.operation==='PLACE'?'放置':'拆除' }}</small><strong>{{ item.count }}</strong></li></ul>
+        <aside class="project-panel project-legend"><h2>{{ t('m1107') }}</h2><p class="project-muted">{{ t('m1108') }}</p><p v-if="!detail.statistics.materials.length" class="project-empty">{{ t('m1109') }}</p>
+          <ul><li v-for="item in detail.statistics.materials" :key="item.block+item.operation"><img :src="blockIcon(item.block)" alt="" @error="iconFailed"/><span :title="item.block">{{ gameName(item.block,'block') ?? item.block }}</span><small>{{ item.operation==='PLACE'?t('m0685'):t('m1015') }}</small><strong>{{ item.count }}</strong></li></ul>
         </aside>
       </div>
-      <section class="project-panel"><h2>一起建造的伙伴</h2><p class="project-muted">按记录到的放置与拆除次数统计，图表显示前 20 位；不代表作品价值。</p><DataChart v-if="people.length" :option="chart" label="施工玩家贡献" :height="Math.max(240,Math.min(20,people.length)*34+80)"/><p v-else class="project-empty">等待第一位建设者留下足迹</p>
-        <details v-if="people.length"><summary>查看全部贡献数值</summary><ul class="project-contributions"><li v-for="(p,i) in people" :key="i">{{ p.name }}：放置 {{ p.placed }} · 拆除 {{ p.removed }}</li></ul></details>
+      <section class="project-panel"><h2>{{ t('m1110') }}</h2><p class="project-muted">{{ t('m1111') }}</p><DataChart v-if="people.length" :option="chart" :label="t('m1112')" :height="Math.max(240,Math.min(20,people.length)*34+80)"/><p v-else class="project-empty">{{ t('m1113') }}</p>
+        <details v-if="people.length"><summary>{{ t('m1114') }}</summary><ul class="project-contributions"><li v-for="(p,i) in people" :key="i">{{ t('m1115', [p.name, p.placed, p.removed]) }}</li></ul></details>
       </section>
-    </template><p v-else-if="!error" class="project-empty">正在打开施工档案…</p>
+    </template><p v-else-if="!error" class="project-empty">{{ t('m1116') }}</p>
   </main>
 </template>
 <style>

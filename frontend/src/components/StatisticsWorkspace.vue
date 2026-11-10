@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { computed, nextTick, ref } from 'vue'
 import { ShieldCheck } from '@lucide/vue'
 import { api } from '../api'
@@ -106,9 +108,9 @@ function backToPlayers() {
       @refresh="refresh"
     />
     <p v-if="error" class="alert error" role="alert">
-      {{ error }}<button class="text-button" @click="refresh">重新加载统计</button>
+      {{ error }}<button class="text-button" @click="refresh">{{ t('m1441') }}</button>
     </p>
-    <p v-else-if="busy" class="small-empty" role="status">正在加载统计…</p>
+    <p v-else-if="busy" class="small-empty" role="status">{{ t('m1442') }}</p>
     <template v-if="view === 'overview'">
       <OverviewHighlights
         :summary="data?.summary ?? null"
@@ -136,7 +138,7 @@ function backToPlayers() {
           :open="statisticsExpanded"
           @toggle="statisticsExpanded = ($event.target as HTMLDetailsElement).open"
         >
-          <summary>更多统计 · 按日期查看</summary>
+          <summary>{{ t('m1443') }}</summary>
           <StatisticsFilters v-model="filters" :busy="busy" @refresh="refresh" /><MetricCards
             :summary="data.summary"
           />
@@ -170,35 +172,32 @@ function backToPlayers() {
         @error="emit('error', $event)"
       />
       <details class="panel coverage-panel">
-        <summary><ShieldCheck :size="17" />数据从哪里来？<span>记录范围与计算说明</span></summary>
+        <summary><ShieldCheck :size="17" />{{ t('m1444') }}<span>{{ t('m1445') }}</span></summary>
         <div class="coverage-content">
           <label class="compact-select"
-            >查看指标<select v-model="coverageMetric">
+            >{{ t('m0758') }}<select v-model="coverageMetric">
               <option v-for="metric in data.summary.metrics" :key="metric.key" :value="metric.key">
                 {{ metricLabel(metric) }}
               </option>
             </select></label
           >
-          <p class="data-note">
-            这里只统计游戏插件实际传回的记录。断线期间可能缺少数据；没有接入的项目显示为“未接入”，不代表玩家没有做过。停用插件后，已有记录仍会保留。
-          </p>
-          <div v-if="coverage.length" class="table-scroll" tabindex="0" aria-label="指标覆盖明细">
+          <p class="data-note">{{ t('m1446') }}</p>
+          <div v-if="coverage.length" class="table-scroll" tabindex="0" :aria-label="t('m1447')">
             <table>
               <thead>
                 <tr>
-                  <th>服务器</th>
-                  <th>当前能力</th>
-                  <th>历史质量 / 算法</th>
-                  <th>维度细分</th>
+                  <th>{{ t('m0727') }}</th>
+                  <th>{{ t('m1448') }}</th>
+                  <th>{{ t('m1449') }}</th>
+                  <th>{{ t('m0648') }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="row in coverage" :key="row.serverId">
                   <td>{{ row.serverName }}</td>
                   <td>
-                    {{ row.current ? stateNames[row.current.state] : '尚未声明' }}
-                    <small v-if="activityIdleDuration(row.current?.algorithmVersion)">
-                      挂机阈值 {{ activityIdleDuration(row.current?.algorithmVersion) }}
+                    {{ row.current ? stateNames[row.current.state] : t('m1450') }}
+                    <small v-if="activityIdleDuration(row.current?.algorithmVersion)">{{ t('m1451', [activityIdleDuration(row.current?.algorithmVersion)]) }}
                     </small>
                   </td>
                   <td>
@@ -210,14 +209,14 @@ function backToPlayers() {
                         >{{ qualityNames[history.quality] }} ·
                         {{ behaviorAlgorithmName(history.algorithmVersion) }}</small
                       ></template
-                    ><span v-else>无历史覆盖</span>
+                    ><span v-else>{{ t('m1452') }}</span>
                   </td>
-                  <td>{{ row.current?.dimensionAware ? '已声明' : '未声明支持' }}</td>
+                  <td>{{ row.current?.dimensionAware ? t('m0649') : t('m0650') }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <p v-else class="data-note">先添加服务器，连接采集器后查看覆盖。</p>
+          <p v-else class="data-note">{{ t('m1453') }}</p>
         </div>
       </details>
     </template>

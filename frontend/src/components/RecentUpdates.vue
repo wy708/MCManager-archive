@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { computed } from 'vue'
 import { ArrowRight, Archive, HardDrive, Server } from '@lucide/vue'
 import { api, type ServerArchive } from '../api'
@@ -21,14 +23,14 @@ const { data, busy, error, refresh } = useResource(
   (error) => emit('error', error),
 )
 const states: Record<string, string> = {
-  READY: '文件已校验',
-  AWAITING_UPLOAD: '等待上传',
-  RECEIVING: '上传中',
-  VERIFYING: '校验中',
-  FAILED: '未完成',
-  MISSING: '文件不可用',
-  DELETING: '删除未完成',
-  DELETED: '已删除',
+  READY: t('m1117'),
+  AWAITING_UPLOAD: t('m0424'),
+  RECEIVING: t('m0425'),
+  VERIFYING: t('m0426'),
+  FAILED: t('m0428'),
+  MISSING: t('m0429'),
+  DELETING: t('m0430'),
+  DELETED: t('m0431'),
 }
 const updates = computed(() => {
   const archives = props.servers
@@ -36,48 +38,48 @@ const updates = computed(() => {
     .map((server) => ({
       id: server.id,
       at: server.updatedAt,
-      title: '服务器档案更新',
+      title: t('m1118'),
       detail: server.name,
-      state: server.status === 'ARCHIVED' ? '已封存' : '记录中',
+      state: server.status === 'ARCHIVED' ? t('m0064') : t('m0063'),
       view: 'servers',
       icon: server.status === 'ARCHIVED' ? Archive : Server,
       color: server.status === 'ARCHIVED' ? 'violet' : 'blue',
-      timeLabel: '更新于',
+      timeLabel: t('m1119'),
     }))
   const backups = (data.value?.items ?? []).map((backup) => ({
     id: backup.id,
     at: backup.createdAt,
-    title: '完整备份记录',
-    detail: props.servers.find((server) => server.id === backup.serverId)?.name ?? '服务器档案',
-    state: states[backup.status] ?? '状态待确认',
+    title: t('m1120'),
+    detail: props.servers.find((server) => server.id === backup.serverId)?.name ?? t('m0044'),
+    state: states[backup.status] ?? t('m0837'),
     view: 'backups',
     icon: HardDrive,
     color: 'orange',
-    timeLabel: '创建于',
+    timeLabel: t('m1121'),
   }))
   return [...archives, ...backups].sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 4)
 })
 function age(at: string) {
   const minutes = Math.max(0, Math.floor((Date.now() - Date.parse(at)) / 60000))
-  if (minutes < 1) return '刚刚'
-  if (minutes < 60) return minutes + ' 分钟前'
-  if (minutes < 1440) return Math.floor(minutes / 60) + ' 小时前'
-  return Math.floor(minutes / 1440) + ' 天前'
+  if (minutes < 1) return t('m1122')
+  if (minutes < 60) return minutes + t('m1123')
+  if (minutes < 1440) return Math.floor(minutes / 60) + t('m1124')
+  return Math.floor(minutes / 1440) + t('m1125')
 }
 </script>
 <template>
-  <article class="panel updates-panel" aria-label="最近动态">
+  <article class="panel updates-panel" :aria-label="t('m1126')">
     <div class="panel-heading">
       <div>
-        <h2>最近动态</h2>
-        <p>档案更新与备份记录</p>
+        <h2>{{ t('m1126') }}</h2>
+        <p>{{ t('m1127') }}</p>
       </div>
-      <button class="text-button" @click="refresh" :disabled="busy">刷新</button>
+      <button class="text-button" @click="refresh" :disabled="busy">{{ t('m0331') }}</button>
     </div>
     <p v-if="error" class="updates-note" role="alert">
-      {{ error }}<button class="text-button" @click="refresh">重试</button>
+      {{ error }}<button class="text-button" @click="refresh">{{ t('m0337') }}</button>
     </p>
-    <p v-else-if="busy" class="updates-note" role="status">正在读取备份记录…</p>
+    <p v-else-if="busy" class="updates-note" role="status">{{ t('m1128') }}</p>
     <div v-if="updates.length" class="updates-list">
       <button
         v-for="item in updates"
@@ -96,9 +98,8 @@ function age(at: string) {
         }}</small>
       </button>
     </div>
-    <p v-else-if="!busy && !error" class="updates-note">还没有动态，从记录第一个世界开始。</p>
-    <button class="updates-footer text-button" @click="emit('open', 'backups')">
-      前往备份中心<ArrowRight :size="15" />
+    <p v-else-if="!busy && !error" class="updates-note">{{ t('m1129') }}</p>
+    <button class="updates-footer text-button" @click="emit('open', 'backups')">{{ t('m1130') }}<ArrowRight :size="15" />
     </button>
   </article>
 </template>

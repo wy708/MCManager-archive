@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t, formatLocale } from '../i18n'
+
 import { computed, nextTick, onScopeDispose, ref, watch } from 'vue'
 import { Play, Square, RotateCw, Terminal, Send, ScrollText } from '@lucide/vue'
 import { api, ApiError, type ServerArchive } from '../api'
@@ -50,27 +52,27 @@ let cursor = '0',
   disposed = false
 const target = computed(() => props.servers.find((s) => s.id === props.scope))
 const states: Record<string, string> = {
-  RUNNING: '游戏运行中',
-  STOPPED: '游戏已停止',
-  STARTING: '正在启动',
-  STOPPING: '正在保存并停服',
-  ERROR: '需要检查',
-  DISCONNECTED: '执行端已断开',
+  RUNNING: t('m1158'),
+  STOPPED: t('m1314'),
+  STARTING: t('m1159'),
+  STOPPING: t('m1315'),
+  ERROR: t('m1316'),
+  DISCONNECTED: t('m1317'),
 }
 const statuses: Record<string, string> = {
-  QUEUED: '等待领取',
-  DELIVERED: '处理中',
-  SUBMITTED: '已发送，请看日志',
-  SUCCEEDED: '已完成',
-  FAILED: '失败',
-  UNCERTAIN: '结果待核对',
-  EXPIRED: '已过期，未执行',
+  QUEUED: t('m1318'),
+  DELIVERED: t('m0462'),
+  SUBMITTED: t('m1319'),
+  SUCCEEDED: t('m1320'),
+  FAILED: t('m1321'),
+  UNCERTAIN: t('m1322'),
+  EXPIRED: t('m1323'),
 }
 const actions: Record<string, string> = {
-  START: '启动',
-  STOP: '正常停服',
-  RESTART: '重启',
-  COMMAND: '游戏命令',
+  START: t('m1324'),
+  STOP: t('m1325'),
+  RESTART: t('m1326'),
+  COMMAND: t('m1327'),
 }
 const available = computed(() =>
   Boolean(
@@ -83,7 +85,7 @@ const available = computed(() =>
 )
 const running = computed(() => snapshot.value?.console?.state === 'RUNNING')
 const canStart = computed(() => ['STOPPED', 'ERROR'].includes(snapshot.value?.console?.state ?? ''))
-const time = (value: string) => new Date(value).toLocaleTimeString('zh-CN', { hour12: false })
+const time = (value: string) => new Date(value).toLocaleTimeString(formatLocale, { hour12: false })
 async function refresh(epoch = generation) {
   if (disposed || epoch !== generation || !target.value) return
   const server = target.value.id
@@ -96,7 +98,7 @@ async function refresh(epoch = generation) {
     snapshot.value = result
     error.value = ''
     cursor = result.cursor
-    if (result.truncated) notice.value = '日志较多，已跳转到最近记录。平台保留最近 2000 行。'
+    if (result.truncated) notice.value = t('m1328')
     const seen = new Set(lines.value.map((l) => l.id))
     lines.value = [...lines.value, ...result.lines.filter((l) => !seen.has(l.id))].slice(-2000)
     if (following.value) {
@@ -105,7 +107,7 @@ async function refresh(epoch = generation) {
     }
   } catch (e) {
     if (epoch !== generation || controller.signal.aborted) return
-    error.value = e instanceof Error ? e.message : '控制台连接失败'
+    error.value = e instanceof Error ? e.message : t('m1329')
     if (e instanceof ApiError && e.status === 401) emit('error', e)
   } finally {
     if (!disposed && epoch === generation) timer = setTimeout(() => void refresh(epoch), 2000)
@@ -148,7 +150,7 @@ async function confirmControl() {
     pending.serverId !== props.scope ||
     pending.runId !== snapshot.value?.console?.runId
   ) {
-    notice.value = '服务器连接已改变，请重新确认操作。'
+    notice.value = t('m1330')
     return
   }
   await submit(pending.action, undefined, true)
@@ -185,12 +187,12 @@ async function submit(action: string, quick?: string, confirmed = false) {
     })
     if (epoch !== generation) return
     current.commands = [result, ...current.commands.filter((c) => c.id !== result.id)].slice(0, 30)
-    notice.value = '操作已排队，执行结果会显示在下方记录中。'
+    notice.value = t('m1331')
     if (action === 'COMMAND') input.value = ''
   } catch (e) {
     if (epoch !== generation) return
-    notice.value = e instanceof Error ? e.message : '发送结果未确认'
-    notice.value += '；请查看操作记录后再决定是否重试。'
+    notice.value = e instanceof Error ? e.message : t('m1332')
+    notice.value += t('m1333')
   } finally {
     sending.value = false
   }
@@ -205,38 +207,32 @@ async function submit(action: string, quick?: string, confirmed = false) {
       aria-labelledby="console-confirm-title"
       @cancel="pendingControl = null"
     >
-      <h2 id="console-confirm-title">确认{{ actions[pendingControl?.action ?? 'STOP'] }}</h2>
-      <p>
-        目标服务器：<strong>{{ pendingControl?.name }}</strong>
+      <h2 id="console-confirm-title">{{ t('m1334', [actions[pendingControl?.action ?? 'STOP']]) }}</h2>
+      <p>{{ t('m1335') }}<strong>{{ pendingControl?.name }}</strong>
       </p>
-      <p>
-        在线玩家会断开。执行端会先结束备份任务，再正常保存世界并停服。{{
-          pendingControl?.action === 'RESTART' ? '保存完成后会重新启动游戏。' : ''
-        }}
+      <p>{{ t('m1337', [pendingControl?.action === 'RESTART' ? t('m1336') : '']) }}
       </p>
       <div>
         <button
           class="secondary"
           autofocus
           @click="cancelControl"
-        >
-          取消</button
-        ><button class="primary" @click="confirmControl">
-          确认{{ actions[pendingControl?.action ?? 'STOP'] }}
+        >{{ t('m0102') }}</button
+        ><button class="primary" @click="confirmControl">{{ t('m1334', [actions[pendingControl?.action ?? 'STOP']]) }}
         </button>
       </div>
     </dialog>
     <div class="console-heading">
       <div>
-        <h2><Terminal :size="22" />{{ target?.name ?? '选择要管理的服务器' }}</h2>
-        <p>这里发送的是游戏命令。运行状态和日志来自这台服务器的执行端。</p>
+        <h2><Terminal :size="22" />{{ target?.name ?? t('m1338') }}</h2>
+        <p>{{ t('m1339') }}</p>
       </div>
       <select
         :value="target?.id ?? ''"
-        aria-label="控制台服务器"
+        :aria-label="t('m1340')"
         @change="emit('select', ($event.target as HTMLSelectElement).value)"
       >
-        <option disabled value="">请选择服务器</option>
+        <option disabled value="">{{ t('m1341') }}</option>
         <option v-for="server in servers" :key="server.id" :value="server.id">
           {{ server.name }}
         </option>
@@ -250,46 +246,39 @@ async function submit(action: string, quick?: string, confirmed = false) {
             snapshot?.online
               ? states[snapshot.console?.state ?? '']
               : snapshot
-                ? '执行端未连接'
-                : '正在连接…'
+                ? t('m1342')
+                : t('m1343')
           }}</span
         >
         <span v-if="snapshot?.console?.pid" class="console-muted"
-          >游戏进程 {{ snapshot.console.pid }}</span
+          >{{ t('m1344', [snapshot.console.pid]) }}</span
         >
         <div class="console-buttons">
           <button class="primary" :disabled="!available || !canStart" @click="submit('START')">
-            <Play :size="16" />启动
-          </button>
+            <Play :size="16" />{{ t('m1324') }}</button>
           <button class="secondary" :disabled="!available || !running" @click="submit('STOP')">
-            <Square :size="16" />正常停服
-          </button>
+            <Square :size="16" />{{ t('m1325') }}</button>
           <button class="secondary" :disabled="!available || !running" @click="submit('RESTART')">
-            <RotateCw :size="16" />重启
-          </button>
+            <RotateCw :size="16" />{{ t('m1326') }}</button>
         </div>
       </div>
-      <p v-if="target.status === 'ARCHIVED'" class="console-note">
-        这是已封存的档案，仅可查看历史日志。
-      </p>
+      <p v-if="target.status === 'ARCHIVED'" class="console-note">{{ t('m1345') }}</p>
       <div v-if="snapshot && !snapshot.console" class="console-connect">
-        <h3>先连接这台游戏服务器</h3>
-        <p>
-          在备份中心添加对应执行端，再使用带网页控制台的启动程序启动游戏。已有备份执行端可沿用凭据。
-        </p>
-        <p>正在其他窗口运行的游戏需要先正常停服，再交给控制台启动；接入后不需要新增公网端口。</p>
+        <h3>{{ t('m1346') }}</h3>
+        <p>{{ t('m1347') }}</p>
+        <p>{{ t('m1348') }}</p>
       </div>
       <div class="log-heading">
-        <span><ScrollText :size="16" />游戏日志</span
-        ><label><input v-model="following" type="checkbox" />跟随最新日志</label
-        ><button class="text-button" @click="lines = []">清空当前显示</button>
+        <span><ScrollText :size="16" />{{ t('m1349') }}</span
+        ><label><input v-model="following" type="checkbox" />{{ t('m1350') }}</label
+        ><button class="text-button" @click="lines = []">{{ t('m1351') }}</button>
       </div>
-      <div ref="logBox" class="console-log" role="region" aria-label="游戏控制台日志" tabindex="0">
+      <div ref="logBox" class="console-log" role="region" :aria-label="t('m1352')" tabindex="0">
         <p v-if="!lines.length" class="console-log-empty">
           {{
             snapshot?.online
-              ? '等待游戏输出…'
-              : '连接后将在这里显示日志。已有记录在执行端离线时仍可查看。'
+              ? t('m1353')
+              : t('m1354')
           }}
         </p>
         <div v-for="line in lines" :key="line.id" class="console-line">
@@ -298,52 +287,42 @@ async function submit(action: string, quick?: string, confirmed = false) {
         </div>
       </div>
       <form class="command-form" @submit.prevent="submit('COMMAND')">
-        <label for="game-command">游戏命令</label>
+        <label for="game-command">{{ t('m1327') }}</label>
         <div>
           <input
             id="game-command"
             v-model="input"
             autocomplete="off"
             maxlength="1000"
-            placeholder="例如 list，查看在线玩家"
+            :placeholder="t('m1355')"
             :disabled="!available || !running"
           /><button class="primary" :disabled="!available || !running || !input.trim()">
-            <Send :size="16" />发送
-          </button>
+            <Send :size="16" />{{ t('m1356') }}</button>
         </div>
       </form>
       <div class="console-shortcuts">
-        <span>常用查询</span
+        <span>{{ t('m1357') }}</span
         ><button
           class="secondary"
           :disabled="!available || !running"
           @click="submit('COMMAND', 'list')"
-        >
-          在线玩家</button
+        >{{ t('m1358') }}</button
         ><button
           class="secondary"
           :disabled="!available || !running"
           @click="submit('COMMAND', 'time query daytime')"
-        >
-          游戏时间
-        </button>
+        >{{ t('m1359') }}</button>
       </div>
       <p v-if="notice" class="console-note" role="status">{{ notice }}</p>
       <details class="console-help">
-        <summary>连接方式与日志说明</summary>
-        <p>
-          在游戏主机运行项目中的
-          console-host.mjs，使用原执行端配置。启动程序需要一直运行，游戏停止后网页才仍能再次启动它。
-        </p>
-        <code>node backup/src/console-host.mjs --config "你的执行端配置.json" --start</code>
-        <p>
-          页面每两秒更新；保留最近 2000 行日志与最近 500 次操作，下面显示最近 30
-          次。日志只从接入后开始记录。游戏命令显示“已发送”仅表示已写入控制台，是否生效请看游戏输出。断线期间不会积压新的控制命令，结果不明的操作不会自动重发。
-        </p>
+        <summary>{{ t('m1360') }}</summary>
+        <p>{{ t('m1361') }}</p>
+        <code>{{ t('m1362') }}</code>
+        <p>{{ t('m1363') }}</p>
       </details>
       <div class="console-history">
-        <h3>最近操作</h3>
-        <p v-if="!snapshot?.commands.length" class="console-muted">暂无操作记录</p>
+        <h3>{{ t('m1364') }}</h3>
+        <p v-if="!snapshot?.commands.length" class="console-muted">{{ t('m1365') }}</p>
         <article v-for="command in snapshot?.commands" :key="command.id">
           <div>
             <strong>{{ actions[command.action] }}</strong

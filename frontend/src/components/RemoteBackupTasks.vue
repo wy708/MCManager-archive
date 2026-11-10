@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { computed, nextTick, onMounted, onScopeDispose, ref, watch } from 'vue'
 import { Copy, Download, Monitor, Plus, RefreshCw, X } from '@lucide/vue'
 import { api, ApiError, type ServerArchive } from '../api'
@@ -102,63 +104,63 @@ const jobServers = computed(() =>
     : scopedServers.value,
 )
 const kindLabels: Record<string, string> = {
-  MANUAL: '手动备份',
-  AUTOMATIC: '自动备份',
-  FINAL: '最终封存',
+  MANUAL: t('m0432'),
+  AUTOMATIC: t('m0433'),
+  FINAL: t('m0434'),
 }
 const taskLabels: Record<string, string> = {
-  QUEUED: '等待执行',
-  CLAIMED: '已领取',
-  RUNNING: '正在制作',
-  UPLOADING: '正在上传校验',
-  SUCCEEDED: '归档已保存',
-  FAILED: '已失败',
-  UNCERTAIN: '结果待核实',
-  CANCELLED: '已取消',
+  QUEUED: t('m0231'),
+  CLAIMED: t('m0232'),
+  RUNNING: t('m1133'),
+  UPLOADING: t('m1134'),
+  SUCCEEDED: t('m1135'),
+  FAILED: t('m0235'),
+  UNCERTAIN: t('m0236'),
+  CANCELLED: t('m0237'),
 }
 const diagnostics: Record<string, string> = {
-  POLICY_CHANGED: '策略已关闭或重新安排，尚未开始的旧任务已取消。',
-  SERVER_ARCHIVED: '服务器已封存，自动任务已取消。',
-  CAPTURE_FAILED: '制作未完成，请检查游戏主机上的诊断。',
-  UPLOAD_FAILED: '上传未确认，原文件保留在游戏主机。',
-  EXECUTION_INTERRUPTED: '执行进程中断，需核对原任务。',
-  LOCAL_ARCHIVE_INVALID: '原归档校验未通过，文件仍保留在主机。',
-  EXECUTION_EXPIRED: '执行租约已过期，不能自动重做。',
-  RUNNER_CHANGED: '运行实例已改变，需核对原任务。',
-  CREDENTIAL_CHANGED: '凭据已轮换，需核对原任务。',
-  ACCESS_REVOKED: '执行端连接密钥已停用。',
-  CLAIM_EXPIRED: '尚未开始的领取已过期，任务重新等待。',
-  OPERATOR_RESOLVED: '已保存人工处理结果。',
-  OPERATOR_CANCELLED: '执行程序已确认取消。',
+  POLICY_CHANGED: t('m1136'),
+  SERVER_ARCHIVED: t('m1137'),
+  CAPTURE_FAILED: t('m1138'),
+  UPLOAD_FAILED: t('m1139'),
+  EXECUTION_INTERRUPTED: t('m1140'),
+  LOCAL_ARCHIVE_INVALID: t('m1141'),
+  EXECUTION_EXPIRED: t('m1142'),
+  RUNNER_CHANGED: t('m1143'),
+  CREDENTIAL_CHANGED: t('m1144'),
+  ACCESS_REVOKED: t('m1145'),
+  CLAIM_EXPIRED: t('m1146'),
+  OPERATOR_RESOLVED: t('m0249'),
+  OPERATOR_CANCELLED: t('m1147'),
 }
 const title = computed(() =>
   token.value
-    ? '保存游戏主机配置'
+    ? t('m1148')
     : {
-        host: '添加备份执行端',
-        rotate: '轮换备份程序连接密钥',
-        revoke: '停用备份程序',
-        job: '创建在线备份任务',
-        cancel: '取消备份任务',
-        resolve: '处理不确定任务',
+        host: t('m1149'),
+        rotate: t('m1150'),
+        revoke: t('m1151'),
+        job: t('m1152'),
+        cancel: t('m1153'),
+        resolve: t('m1154'),
       }[action.value],
 )
 function serverName(id: string) {
-  return props.servers.find((server) => server.id === id)?.name ?? '服务器档案'
+  return props.servers.find((server) => server.id === id)?.name ?? t('m0044')
 }
 function hostStatus(host: Host) {
-  if (host.revoked) return '连接密钥已停用'
-  if (!host.heartbeatAt) return '尚未连接'
+  if (host.revoked) return t('m0341')
+  if (!host.heartbeatAt) return t('m0268')
   if (host.runtimeState === 'STOPPED')
-    return host.online && host.restoreEnabled ? '恢复维护中' : '执行程序已停止'
-  if (!host.online) return '暂无近期心跳'
+    return host.online && host.restoreEnabled ? t('m1155') : t('m1156')
+  if (!host.online) return t('m1157')
   return (
     (
-      { RUNNING: '游戏运行中', STARTING: '正在启动', ERROR: '需要检查主机' } as Record<
+      { RUNNING: t('m1158'), STARTING: t('m1159'), ERROR: t('m1160') } as Record<
         string,
         string
       >
-    )[host.runtimeState ?? ''] ?? '已连接'
+    )[host.runtimeState ?? ''] ?? t('m1161')
   )
 }
 function storePending(value?: TaskDraft) {
@@ -361,7 +363,7 @@ async function perform() {
     if (action.value === 'job') {
       if (!taskDraft.value) {
         if (!targetHost.value || targetHost.value.revoked)
-          throw new Error('请先连接或重新启用该服务器的执行端。')
+          throw new Error(t('m1162'))
         taskDraft.value = {
           requestId: newRequestId(),
           serverId: serverId.value,
@@ -379,14 +381,14 @@ async function perform() {
         body: JSON.stringify(body),
       })
       storePending()
-      message.value = `任务已确认：${taskLabels[result.status] ?? '请查看任务列表'}。`
+      message.value = t('m1164', [taskLabels[result.status] ?? t('m1163')])
       emit('changed')
     } else if (action.value === 'revoke') {
       await api(`/backup-hosts/${selectedHost.value!.id}`, {
         method: 'DELETE',
         signal: abort.signal,
       })
-      message.value = '执行端连接密钥已停用，历史记录仍保留。'
+      message.value = t('m1165')
     } else if (action.value === 'cancel') {
       const result = await api<Job>(`/backup-jobs/${selectedJob.value!.id}/cancel`, {
         method: 'POST',
@@ -394,17 +396,17 @@ async function perform() {
       })
       message.value =
         result.status === 'CANCELLED'
-          ? '任务已取消。'
+          ? t('m1166')
           : result.cancelRequested
-            ? '已请求取消，等待执行程序确认。'
-            : '任务状态已更新，请查看结果。'
+            ? t('m1167')
+            : t('m1168')
     } else {
       await api(`/backup-jobs/${selectedJob.value!.id}/resolve`, {
         method: 'POST',
         signal: abort.signal,
         body: JSON.stringify({ outcome: outcome.value, note: note.value.trim() }),
       })
-      message.value = '处理结果已保存，原文件和诊断仍保留。'
+      message.value = t('m1169')
     }
     mutated = true
     modal.value?.close()
@@ -415,7 +417,7 @@ async function perform() {
       taskDraft.value &&
       (!(error instanceof ApiError) || [408, 429].includes(error.status) || error.status >= 500)
     ) {
-      formError.value = '提交结果尚未确认。重试会核实同一个任务，不会重复下发。'
+      formError.value = t('m1170')
     } else {
       formError.value = failure(error)
       if (
@@ -443,7 +445,7 @@ async function copyToken() {
   } catch {
     tokenField.value?.focus()
     tokenField.value?.select()
-    formError.value = '自动复制不可用，请选中凭据后手动复制。'
+    formError.value = t('m0610')
   }
 }
 const originState = computed(() => {
@@ -504,42 +506,40 @@ function downloadConfig() {
 </script>
 
 <template>
-  <section class="remote-backups" aria-label="游戏主机与备份任务">
+  <section class="remote-backups" :aria-label="t('m1171')">
     <article class="panel data-panel">
       <div class="data-panel-heading">
         <div>
-          <h2><Monitor :size="20" />游戏主机与备份任务</h2>
-          <p>在这里开始备份，查看游戏主机是否完成了任务</p>
+          <h2><Monitor :size="20" />{{ t('m1171') }}</h2>
+          <p>{{ t('m1172') }}</p>
         </div>
         <div class="remote-actions">
           <button class="secondary" :disabled="busy" @click="refresh">
-            <RefreshCw :size="16" />刷新任务</button
+            <RefreshCw :size="16" />{{ t('m1173') }}</button
           ><button
             class="secondary"
             data-create-backup-host
             :disabled="!ready || !unregistered.length"
             @click="open('host')"
           >
-            <Plus :size="16" />连接备份程序</button
+            <Plus :size="16" />{{ t('m1174') }}</button
           ><button
             class="primary"
             data-create-backup-task
             :disabled="!ready || !hosts.some((host) => !host.revoked)"
             @click="open('job')"
-          >
-            新建备份任务
-          </button>
+          >{{ t('m1175') }}</button>
         </div>
       </div>
       <p v-if="loadError" class="alert error" role="alert">
-        {{ loadError }}<button class="text-button" @click="refresh">重试任务列表</button>
+        {{ loadError }}<button class="text-button" @click="refresh">{{ t('m1176') }}</button>
       </p>
-      <p v-else-if="busy && !ready" class="small-empty" role="status">正在加载执行端与任务…</p>
+      <p v-else-if="busy && !ready" class="small-empty" role="status">{{ t('m1177') }}</p>
       <p v-else-if="!hosts.length" class="small-empty">
         {{
           !scopedServers.length
-            ? '先添加服务器档案，再连接游戏主机。'
-            : '当前范围尚未连接备份程序。安装宿主程序后即可接收任务。'
+            ? t('m1178')
+            : t('m1179')
         }}
       </p>
       <div v-for="host in hosts" :key="host.id" :data-backup-host="host.id" class="remote-host">
@@ -547,22 +547,18 @@ function downloadConfig() {
           <strong>{{ host.name }}</strong>
           <p>{{ serverName(host.serverId) }}</p>
           <span class="neutral-badge">{{ hostStatus(host) }}</span>
-          <p class="data-note">
-            最近联系：{{ host.heartbeatAt ? displayTime(host.heartbeatAt) : '尚未收到'
-            }}<span v-if="host.version"> · 程序 {{ host.version }}</span>
+          <p class="data-note">{{ t('m1181', [host.heartbeatAt ? displayTime(host.heartbeatAt) : t('m1180')]) }}<span v-if="host.version">{{ t('m1182', [host.version]) }}</span>
           </p>
         </div>
         <div class="remote-actions">
           <button class="secondary" :disabled="!ready" @click="open('rotate', host)">
-            {{ host.revoked ? '重新启用' : '更换连接密钥' }}</button
+            {{ host.revoked ? t('m0344') : t('m0345') }}</button
           ><button
             v-if="!host.revoked"
             class="text-button"
             :disabled="!ready"
             @click="open('revoke', host)"
-          >
-            停用备份程序
-          </button>
+          >{{ t('m1151') }}</button>
         </div>
       </div>
     </article>
@@ -577,50 +573,43 @@ function downloadConfig() {
       @changed="refresh"
     />
     <p v-if="message" class="alert success" role="status">{{ message }}</p>
-    <div v-if="pending" class="alert" role="status">
-      上次任务提交尚未确认。<button
+    <div v-if="pending" class="alert" role="status">{{ t('m1183') }}<button
         class="text-button"
         :disabled="!ready"
         @click="open('job', undefined, true)"
-      >
-        核实上次提交
-      </button>
+      >{{ t('m1184') }}</button>
     </div>
     <article v-for="job in jobs" :key="job.id" :data-backup-job="job.id" class="panel remote-job">
       <div class="remote-job-heading">
         <div>
           <h3>{{ serverName(job.serverId) }}</h3>
           <p>
-            {{ kindLabels[job.kind] ?? '备份任务' }}
+            {{ kindLabels[job.kind] ?? t('m0420') }}
             · {{ displayTime(job.createdAt) }}
           </p>
         </div>
         <span class="neutral-badge" :class="{ 'remote-attention': job.status === 'UNCERTAIN' }">{{
           job.cancelRequested && !['SUCCEEDED', 'FAILED', 'CANCELLED'].includes(job.status)
-            ? '正在请求取消'
+            ? t('m1185')
             : job.status === 'SUCCEEDED' && job.archiveStatus !== 'READY'
-              ? '已完成，归档已轮换或不可用'
-              : (taskLabels[job.status] ?? '等待状态更新')
+              ? t('m1186')
+              : (taskLabels[job.status] ?? t('m1187'))
         }}</span>
       </div>
       <p v-if="job.note" class="remote-note">{{ job.note }}</p>
-      <p v-if="job.status === 'QUEUED'" class="data-note">
-        游戏主机连接并运行后领取，离线期间任务会等待。
-      </p>
-      <p v-if="job.status === 'UNCERTAIN'" class="data-note">
-        先核对主机上的原归档。执行程序可续传已完成文件，没有完整文件时不会自动重做。
-      </p>
+      <p v-if="job.status === 'QUEUED'" class="data-note">{{ t('m1188') }}</p>
+      <p v-if="job.status === 'UNCERTAIN'" class="data-note">{{ t('m1189') }}</p>
       <p v-if="job.errorCode" class="data-note">
-        {{ diagnostics[job.errorCode] ?? '请检查执行程序上的原始诊断。' }}
+        {{ diagnostics[job.errorCode] ?? t('m1190') }}
       </p>
-      <p v-if="job.resolutionNote" class="data-note">处理说明：{{ job.resolutionNote }}</p>
+      <p v-if="job.resolutionNote" class="data-note">{{ t('m1191', [job.resolutionNote]) }}</p>
       <div class="remote-actions">
         <a
           v-if="job.status === 'SUCCEEDED' && job.backupId && job.archiveStatus === 'READY'"
           class="secondary"
           :href="`/api/backups/${job.backupId}/content`"
           download
-          ><Download :size="16" />下载任务归档</a
+          ><Download :size="16" />{{ t('m1192') }}</a
         >
         <button
           v-if="
@@ -631,32 +620,30 @@ function downloadConfig() {
           :disabled="!ready"
           @click="open('cancel', job)"
         >
-          {{ ['QUEUED', 'CLAIMED'].includes(job.status) ? '取消任务' : '请求取消' }}
+          {{ ['QUEUED', 'CLAIMED'].includes(job.status) ? t('m1193') : t('m1194') }}
         </button>
         <button
           v-if="job.status === 'UNCERTAIN'"
           class="secondary"
           :disabled="!ready"
           @click="open('resolve', job)"
-        >
-          处理结果
-        </button>
+        >{{ t('m1195') }}</button>
       </div>
       <details class="remote-details">
-        <summary>查看任务记录</summary>
+        <summary>{{ t('m1196') }}</summary>
         <dl>
-          <dt>任务编号</dt>
+          <dt>{{ t('m1197') }}</dt>
           <dd>
             <code>{{ job.id }}</code>
           </dd>
-          <dt>开始时间</dt>
-          <dd>{{ job.startedAt ? displayTime(job.startedAt) : '尚未开始' }}</dd>
-          <dt>完成时间</dt>
-          <dd>{{ job.completedAt ? displayTime(job.completedAt) : '尚未确认' }}</dd>
-          <dt>保留设置</dt>
-          <dd>{{ job.permanent ? '永久保留' : '按备份管理设置' }}</dd>
+          <dt>{{ t('m0595') }}</dt>
+          <dd>{{ job.startedAt ? displayTime(job.startedAt) : t('m1198') }}</dd>
+          <dt>{{ t('m1199') }}</dt>
+          <dd>{{ job.completedAt ? displayTime(job.completedAt) : t('m0057') }}</dd>
+          <dt>{{ t('m1200') }}</dt>
+          <dd>{{ job.permanent ? t('m0481') : t('m1201') }}</dd>
         </dl>
-        <p class="data-note">任务完成表示归档已校验，实际恢复游玩仍需单独验证。</p>
+        <p class="data-note">{{ t('m1202') }}</p>
       </details>
     </article>
     <PaginationControl
@@ -683,7 +670,7 @@ function downloadConfig() {
           <button
             type="button"
             class="icon-button"
-            aria-label="关闭执行端对话框"
+            :aria-label="t('m1203')"
             :disabled="working"
             @click="close"
           >
@@ -691,11 +678,9 @@ function downloadConfig() {
           </button>
         </div>
         <template v-if="token">
-          <p class="dialog-description">
-            凭据只显示这一次。保存到游戏目录之外，并仅交给这台游戏主机。
-          </p>
+          <p class="dialog-description">{{ t('m1204') }}</p>
           <label
-            >备份程序连接密钥<textarea
+            >{{ t('m1205') }}<textarea
               ref="tokenField"
               :value="token"
               readonly
@@ -703,67 +688,56 @@ function downloadConfig() {
               spellcheck="false"
             /></label
           ><button type="button" class="secondary" @click="copyToken">
-            <Copy :size="16" />{{ copied ? '已复制' : '复制连接密钥' }}
+            <Copy :size="16" />{{ copied ? t('m0353') : t('m0351') }}
           </button>
-          <p class="data-note">
-            已有配置时更新 token 后，在游戏主机终端输入 host restart；需要新配置时填写下方路径。
-          </p>
-          <label>中央服务地址<input v-model="apiOrigin" type="url" autocomplete="off" /></label
+          <p class="data-note">{{ t('m1206') }}</p>
+          <label>{{ t('m1207') }}<input v-model="apiOrigin" type="url" autocomplete="off" /></label
           ><label
-            >游戏目录<input
+            >{{ t('m1208') }}<input
               v-model="rootPath"
-              placeholder="D:\Minecraft\一期"
+              :placeholder="t('m1209')"
               autocomplete="off" /></label
           ><label
-            >备份保存目录<input
+            >{{ t('m1210') }}<input
               v-model="outputPath"
               placeholder="D:\ArchiveBackups"
               autocomplete="off"
           /></label>
           <label v-if="originState.privateHttp" class="remote-check"
-            ><input v-model="allowHttp" type="checkbox" />确认使用可信局域网 HTTP</label
+            ><input v-model="allowHttp" type="checkbox" />{{ t('m1211') }}</label
           >
           <label
-            >恢复父目录（可选）<input
+            >{{ t('m1212') }}<input
               v-model="restorePath"
               placeholder="D:\MinecraftRestores"
               autocomplete="off"
           /></label>
-          <p class="data-note">
-            启用恢复时，父目录须已创建，并与原游戏及宿主状态目录分开。先停服，再使用宿主 0.4.0
-            或更新版本加 --maintenance 启动维护，不自动启动恢复出的游戏。
-          </p>
-          <p v-if="!originState.valid" class="data-note">
-            填写不带路径、账号密码或查询参数的中央服务地址。
-          </p>
-          <p class="data-note">
-            将下载的 host.json 放在游戏目录之外，使用宿主工具 remote.mjs 启动。
-          </p>
+          <p class="data-note">{{ t('m1213') }}</p>
+          <p v-if="!originState.valid" class="data-note">{{ t('m1214') }}</p>
+          <p class="data-note">{{ t('m1215') }}</p>
         </template>
         <template v-else-if="action === 'host'">
           <label
-            >关联服务器<select ref="first" v-model="serverId" :disabled="working" required>
+            >{{ t('m1216') }}<select ref="first" v-model="serverId" :disabled="working" required>
               <option v-for="server in unregistered" :key="server.id" :value="server.id">
                 {{ server.name }}
               </option>
             </select></label
           >
           <label
-            >备份程序名称<input
+            >{{ t('m1217') }}<input
               v-model="name"
               required
               maxlength="64"
               :disabled="working"
-              placeholder="例如：一期生存服主机"
+              :placeholder="t('m1218')"
               autocomplete="off"
           /></label>
-          <p class="data-note">
-            每期服务器有一个独立执行端。添加后保存配置，安装并启动游戏主机上的宿主工具。
-          </p>
+          <p class="data-note">{{ t('m1219') }}</p>
         </template>
         <template v-else-if="action === 'job'">
           <label
-            >备份服务器<select
+            >{{ t('m1220') }}<select
               ref="first"
               v-model="serverId"
               :disabled="working || !!taskDraft"
@@ -778,17 +752,17 @@ function downloadConfig() {
             {{
               targetHost
                 ? `${targetHost.name} · ${hostStatus(targetHost)}`
-                : '此服务器尚未连接备份程序。'
+                : t('m1221')
             }}
           </p>
           <label
-            >备份用途<select v-model="kind" :disabled="working || !!taskDraft">
-              <option value="MANUAL">手动备份</option>
-              <option value="FINAL">最终封存备份</option>
+            >{{ t('m0521') }}<select v-model="kind" :disabled="working || !!taskDraft">
+              <option value="MANUAL">{{ t('m0432') }}</option>
+              <option value="FINAL">{{ t('m1222') }}</option>
             </select></label
           >
           <label
-            >任务备注<textarea
+            >{{ t('m1223') }}<textarea
               v-model="note"
               maxlength="1000"
               rows="3"
@@ -800,25 +774,20 @@ function downloadConfig() {
               v-model="permanent"
               type="checkbox"
               :disabled="working || !!taskDraft || kind === 'FINAL'"
-            />{{ kind === 'FINAL' ? '最终封存默认永久保留' : '永久保留这份备份' }}</label
+            />{{ kind === 'FINAL' ? t('m0526') : t('m1224') }}</label
           >
-          <p class="data-note">
-            离线任务会等待主机连接。最终封存是归档用途分类，不会自动停服或封存服务器档案。
-          </p>
+          <p class="data-note">{{ t('m1225') }}</p>
         </template>
         <template v-else-if="action === 'resolve' && selectedJob">
           <p class="dialog-description">
-            {{
-              serverName(selectedJob!.serverId)
-            }}：先核对主机上的原归档和运行状态。处理会结束旧尝试，原文件和诊断仍保留；重新制作须另建任务。
-          </p>
+            {{ t('m1226', [serverName(selectedJob!.serverId)]) }}</p>
           <label
-            >处理结果<select ref="first" v-model="outcome" :disabled="working">
-              <option value="FAILED">标记失败</option>
-              <option value="CANCELLED">标记取消</option>
+            >{{ t('m1195') }}<select ref="first" v-model="outcome" :disabled="working">
+              <option value="FAILED">{{ t('m1227') }}</option>
+              <option value="CANCELLED">{{ t('m1228') }}</option>
             </select></label
           ><label
-            >处理说明<input
+            >{{ t('m1229') }}<input
               v-model="note"
               required
               maxlength="1000"
@@ -833,10 +802,10 @@ function downloadConfig() {
               : serverName(selectedJob!.serverId)
           }}。{{
             action === 'rotate'
-              ? '旧凭据会立即失效，请更新游戏主机配置；已经开始的任务需要核对原结果。'
+              ? t('m1230')
               : action === 'revoke'
-                ? '执行端将失去任务访问权限。已开始的任务可能需要核对，历史记录仍保留。'
-                : '尚未开始的任务可直接取消；已经开始的任务会等待执行程序安全收尾。'
+                ? t('m1231')
+                : t('m1232')
           }}
         </p>
         <p v-if="formError" class="alert error" role="alert">{{ formError }}</p>
@@ -847,12 +816,11 @@ function downloadConfig() {
               class="secondary"
               :disabled="!configReady"
               @click="downloadConfig"
-            >
-              下载主机配置</button
-            ><button type="button" class="primary" @click="close">已保存，关闭</button></template
+            >{{ t('m1233') }}</button
+            ><button type="button" class="primary" @click="close">{{ t('m0362') }}</button></template
           >
           <template v-else
-            ><button type="button" class="secondary" :disabled="working" @click="close">返回</button
+            ><button type="button" class="secondary" :disabled="working" @click="close">{{ t('m0416') }}</button
             ><button
               class="primary"
               :disabled="
@@ -861,14 +829,14 @@ function downloadConfig() {
             >
               {{
                 working
-                  ? '正在处理…'
+                  ? t('m0303')
                   : {
-                      host: '连接备份程序',
-                      rotate: '生成新连接密钥',
-                      revoke: '停用备份程序',
-                      job: taskDraft ? '重试并核实任务' : '创建任务',
-                      cancel: '确认取消',
-                      resolve: '保存处理结果',
+                      host: t('m1174'),
+                      rotate: t('m0367'),
+                      revoke: t('m1151'),
+                      job: taskDraft ? t('m1234') : t('m1235'),
+                      cancel: t('m1236'),
+                      resolve: t('m1237'),
                     }[action]
               }}
             </button></template

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { computed } from 'vue'
 import type { EChartsOption } from 'echarts'
 import { formatValue } from '../statistics'
@@ -10,7 +12,7 @@ const props = defineProps<{
 }>()
 const divisor = computed(() => (props.unit === 'ms' ? 3600000 : props.unit === 'mm' ? 1000 : 1))
 const unitName = computed(() =>
-  props.unit === 'ms' ? '小时' : props.unit === 'mm' ? '米' : '数量',
+  props.unit === 'ms' ? t('m1131') : props.unit === 'mm' ? t('m0714') : t('m1132'),
 )
 const option = computed<EChartsOption>(() => ({
   grid: { left: 12, right: 30, top: 25, bottom: 20, containLabel: true },

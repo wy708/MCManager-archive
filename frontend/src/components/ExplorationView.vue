@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { weekdays, formatLocale, systemMessage, t } from '../i18n'
+
 import { ref, computed, watch, onBeforeUnmount, defineAsyncComponent } from 'vue'
 import type { EChartsOption } from 'echarts'
 import { api, type ServerArchive } from '../api'
@@ -9,42 +11,42 @@ import { compactChartNumber } from '../chartNumbers'
 import DataChart from './DataChart.vue'
 const MoreCharts = defineAsyncComponent(() => import('./ExplorationMoreCharts.vue'))
 const extraTabs = [
-  ['river', '活动河流'],
-  ['clock', '服务器时钟'],
-  ['bubble', '玩家气泡'],
-  ['sunburst', '施工旭日'],
-  ['box', '运行分布'],
-  ['timeline', '成长时间轴'],
-  ['radar', '玩家雷达'],
+  ['river', t('m0743')],
+  ['clock', t('m0744')],
+  ['bubble', t('m0745')],
+  ['sunburst', t('m0746')],
+  ['box', t('m0747')],
+  ['timeline', t('m0748')],
+  ['radar', t('m0749')],
 ] as const
 const HeatMap = defineAsyncComponent(() => import('./ConstructionHeatMap.vue'))
 const props = defineProps<{ scope: string; servers: ServerArchive[] }>()
 const tabs = [
-  ['hours', '服务器作息'],
-  ['network', '建筑协作'],
-  ['flow', '贡献流向'],
-  ['map', '建设热区'],
-  ['materials', '材料拼图'],
-  ['race', '建设榜回放'],
-  ['height', '地下施工'],
+  ['hours', t('m0767')],
+  ['network', t('m0768')],
+  ['flow', t('m0769')],
+  ['map', t('m0770')],
+  ['materials', t('m0771')],
+  ['race', t('m0772')],
+  ['height', t('m0773')],
   ...extraTabs,
 ] as const
 type Tab = (typeof tabs)[number][0]
 const chartGroups = [
   {
-    name: '伙伴与日常',
+    name: t('m0774'),
     keys: ['hours', 'river', 'clock', 'bubble', 'radar'],
-    help: '看大家什么时候上线、怎样度过冒险时光。',
+    help: t('m0775'),
   },
   {
-    name: '建造与协作',
+    name: t('m0776'),
     keys: ['network', 'flow', 'materials', 'sunburst', 'race', 'timeline'],
-    help: '看看谁一起建造、用了哪些材料，回放世界的成长。',
+    help: t('m0777'),
   },
   {
-    name: '探索与运行',
+    name: t('m0778'),
     keys: ['map', 'height', 'box'],
-    help: '寻找建设热区、地下施工与服务器运行的变化。',
+    help: t('m0779'),
   },
 ]
 const chartGroup = ref(0)
@@ -102,7 +104,7 @@ async function load() {
     data.value = result
     frame.value = days.value.length - 1
   } catch (e) {
-    if (!request.signal.aborted) error.value = e instanceof Error ? e.message : '统计读取失败'
+    if (!request.signal.aborted) error.value = e instanceof Error ? e.message : t('m0780')
   } finally {
     if (controller === request) busy.value = false
   }
@@ -180,11 +182,11 @@ const hourOption = computed<EChartsOption>(() => ({
   tooltip: {
     ...tip,
     formatter: (p: any) =>
-      `周${'一二三四五六日'[p.value[1]]} ${p.value[0]}:00\n估算在线 ${p.value[2].toFixed(2)} 人时`,
+      t('m0781', [weekdays[p.value[1]], p.value[0], p.value[2].toFixed(2)]),
   },
   grid: { left: 35, right: 20, top: 25, bottom: 75 },
-  xAxis: { type: 'category', data: Array.from({ length: 24 }, (_, i) => String(i)), name: '时' },
-  yAxis: { type: 'category', data: [...'一二三四五六日'], name: '星期' },
+  xAxis: { type: 'category', data: Array.from({ length: 24 }, (_, i) => String(i)), name: t('m0782') },
+  yAxis: { type: 'category', data: weekdays, name: t('m0783') },
   visualMap: {
     min: 0,
     max: Math.max(1, ...(data.value?.hours ?? []).map((r) => r.millis / 3600000)),
@@ -224,7 +226,7 @@ const networkOption = computed<EChartsOption>(() => {
       ...tip,
       formatter: (p: any) =>
         p.dataType === 'edge'
-          ? `${names.value.get(p.data.source)} → ${names.value.get(p.data.target)}\n${p.data.value.toLocaleString()} 次`
+          ? t('m0784', [names.value.get(p.data.source), names.value.get(p.data.target), p.data.value.toLocaleString(formatLocale)])
           : p.name,
     },
     series: [
@@ -284,8 +286,8 @@ const flowOption = computed<EChartsOption>(() => {
       ...tip,
       formatter: (p: any) =>
         p.dataType === 'edge'
-          ? `${names.value.get(p.data.source) ?? '其他材料'} → ${names.value.get(p.data.target) ?? '其他材料'}\n${p.data.value.toLocaleString()} 次`
-          : (names.value.get(p.name) ?? '其他材料'),
+          ? t('m0784', [names.value.get(p.data.source) ?? t('m0785'), names.value.get(p.data.target) ?? t('m0785'), p.data.value.toLocaleString(formatLocale)])
+          : (names.value.get(p.name) ?? t('m0785')),
     },
     series: [
       {
@@ -298,7 +300,7 @@ const flowOption = computed<EChartsOption>(() => {
         nodeGap: 12,
         emphasis: { focus: 'adjacency' },
         label: {
-          formatter: (p: any) => names.value.get(p.name) ?? '其他材料',
+          formatter: (p: any) => names.value.get(p.name) ?? t('m0785'),
           width: 80,
           overflow: 'truncate',
         },
@@ -317,9 +319,9 @@ const materialsOption = computed<EChartsOption>(() => {
       .slice(0, 80)
       .map(([block, value]) => ({ name: gameName(block, 'block') ?? block, value }))
   if (rows.length > 80)
-    first.push({ name: '其他材料', value: rows.slice(80).reduce((n, r) => n + r[1], 0) })
+    first.push({ name: t('m0785'), value: rows.slice(80).reduce((n, r) => n + r[1], 0) })
   return {
-    tooltip: { ...tip, valueFormatter: (v: any) => Number(v).toLocaleString() + ' 次' },
+    tooltip: { ...tip, valueFormatter: (v: any) => Number(v).toLocaleString(formatLocale) + t('m0764') },
     series: [
       {
         type: 'treemap',
@@ -347,7 +349,7 @@ const heightOption = computed<EChartsOption>(() => {
     tooltip: {
       ...tip,
       formatter: (p: any) =>
-        `${days.value[p.value[0]]}\nY ${levels[p.value[1]]}～${levels[p.value[1]]! + 7}\n${p.value[2].toLocaleString()} 次`,
+        t('m0786', [days.value[p.value[0]], levels[p.value[1]], levels[p.value[1]]! + 7, p.value[2].toLocaleString(formatLocale)]),
     },
     grid: { left: 60, right: 20, top: 20, bottom: 80 },
     xAxis: {
@@ -355,7 +357,7 @@ const heightOption = computed<EChartsOption>(() => {
       data: days.value.map((d) => d.slice(5)),
       axisLabel: { hideOverlap: true },
     },
-    yAxis: { type: 'category', data: levels.map(String), name: '高度 Y' },
+    yAxis: { type: 'category', data: levels.map(String), name: t('m0787') },
     visualMap: {
       min: 0,
       max: Math.max(1, ...rows.map((r) => Number(r.value))),
@@ -437,20 +439,20 @@ function play() {
   <section class="exploration">
     <div class="project-banner">
       <div>
-        <h2>世界故事馆</h2>
-        <p>看看大家何时相聚、一起建了什么，以及世界怎样慢慢变化。</p>
+        <h2>{{ t('m0193') }}</h2>
+        <p>{{ t('m0788') }}</p>
       </div>
-      <span>按需读取 · 两分钟共享缓存</span>
+      <span>{{ t('m0789') }}</span>
     </div>
     <form class="explore-filters" @submit.prevent="load">
       <label v-if="scope === 'all'"
-        >服务器<select v-model="selected">
+        >{{ t('m0727') }}<select v-model="selected">
           <option v-for="s in servers" :key="s.id" :value="s.id">{{ s.name }}</option>
         </select></label
-      ><label>开始日期<input v-model="from" type="date" /></label
-      ><label>结束日期<input v-model="to" type="date" /></label
-      ><button :disabled="busy">{{ busy ? '正在整理…' : '查看记录' }}</button
-      ><small>默认最近 7 天，每次最多 31 天。</small>
+      ><label>{{ t('m0466') }}<input v-model="from" type="date" /></label
+      ><label>{{ t('m0095') }}<input v-model="to" type="date" /></label
+      ><button :disabled="busy">{{ busy ? t('m0790') : t('m0791') }}</button
+      ><small>{{ t('m0792') }}</small>
     </form>
     <div class="story-categories">
       <button
@@ -463,7 +465,7 @@ function play() {
         ><small>{{ group.help }}</small>
       </button>
     </div>
-    <nav class="explore-tabs" aria-label="故事图表">
+    <nav class="explore-tabs" :aria-label="t('m0793')">
       <button
         v-for="[id, label] in visibleTabs"
         :key="id"
@@ -475,58 +477,51 @@ function play() {
       </button>
     </nav>
     <p v-if="error" role="alert" class="project-error">{{ error }}</p>
-    <p v-if="busy" role="status">正在汇总服务器已有记录…</p>
+    <p v-if="busy" role="status">{{ t('m0794') }}</p>
     <article v-if="data" class="project-panel explore-chart">
       <h2>{{ tabs.find((t) => t[0] === tab)?.[1] }}</h2>
       <p class="muted">
-        {{ data.from }} ～ {{ data.to }} ·
-        {{ ['Asia/Hong_Kong', 'Asia/Shanghai'].includes(data.zone) ? 'UTC+8' : data.zone }} · 整理于
-        {{ new Date(data.generatedAt).toLocaleTimeString() }}
+        {{ t('m0795', [data.from, data.to, ['Asia/Hong_Kong', 'Asia/Shanghai'].includes(data.zone) ? 'UTC+8' : data.zone, new Date(data.generatedAt).toLocaleTimeString(formatLocale)]) }}
       </p>
       <KeepAlive><MoreCharts v-if="isExtra" :tab="tab" :server="server" :base="data" /></KeepAlive>
       <template v-if="!isExtra">
         <div class="explore-controls">
           <label v-if="['network', 'flow', 'materials'].includes(tab)"
-            >工程<select v-model="project">
-              <option value="">所有工程</option>
+            >{{ t('m0088') }}<select v-model="project">
+              <option value="">{{ t('m0796') }}</option>
               <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.name }}</option>
             </select></label
           ><label v-if="!['hours', 'race'].includes(tab)"
-            >行为<select v-model="metric">
-              <option value="blocks.placed">放置方块</option>
-              <option value="blocks.mined">挖掘方块</option>
+            >{{ t('m0797') }}<select v-model="metric">
+              <option value="blocks.placed">{{ t('m0679') }}</option>
+              <option value="blocks.mined">{{ t('m0680') }}</option>
             </select></label
           ><label v-if="['map', 'height'].includes(tab)"
-            >维度<select v-model="dimension">
-              <option value="minecraft:overworld">主世界</option>
-              <option value="minecraft:nether">下界</option>
-              <option value="minecraft:the_end">末地</option>
+            >{{ t('m0586') }}<select v-model="dimension">
+              <option value="minecraft:overworld">{{ t('m0257') }}</option>
+              <option value="minecraft:nether">{{ t('m0258') }}</option>
+              <option value="minecraft:the_end">{{ t('m0259') }}</option>
             </select></label
           ><label v-if="tab === 'map'"
-            >日期<select v-model="day">
-              <option value="">整个日期范围</option>
+            >{{ t('m0798') }}<select v-model="day">
+              <option value="">{{ t('m0799') }}</option>
               <option v-for="d in days" :key="d">{{ d }}</option>
             </select></label
           >
         </div>
-        <p v-if="tab === 'network' || tab === 'flow'" class="muted">
-          连线表示有记录的施工贡献，不代表好友或物品交易。协作图展示前 80 条关系，流向图展示前 25
-          条关系，次要材料合并为“其他”。
-        </p>
-        <p v-if="tab === 'materials'" class="muted">
-          这是累计施工次数，不是建筑里现存方块数量；拆掉再放也会再次计数。
-        </p>
+        <p v-if="tab === 'network' || tab === 'flow'" class="muted">{{ t('m0800') }}</p>
+        <p v-if="tab === 'materials'" class="muted">{{ t('m0801') }}</p>
         <div v-if="tab === 'race'" class="race-controls">
-          <button @click="play">{{ playing ? '暂停回放' : '播放建设榜' }}</button
+          <button @click="play">{{ playing ? t('m0802') : t('m0803') }}</button
           ><strong>{{ days[frame] }}</strong
           ><input
             v-model.number="frame"
-            aria-label="回放日期"
+            :aria-label="t('m0804')"
             type="range"
             min="0"
             :max="Math.max(0, days.length - 1)"
             @input="playing = false"
-          /><span>所选日期范围内累计放置 · 前 10 名</span>
+          /><span>{{ t('m0805') }}</span>
         </div>
         <HeatMap
           v-if="tab === 'map'"
@@ -535,14 +530,12 @@ function play() {
           :dimension="dimension"
           :rows="hotRows"
         />
-        <p v-else-if="empty" class="explore-empty">
-          这段时间还没有对应记录，可以换个日期、工程或维度。
-        </p>
+        <p v-else-if="empty" class="explore-empty">{{ t('m0806') }}</p>
         <DataChart
           v-else
           :key="tab"
           :option="option"
-          :label="tabs.find((t) => t[0] === tab)?.[1] ?? '统计图表'"
+          :label="tabs.find((t) => t[0] === tab)?.[1] ?? t('m0807')"
           :height="460"
         />
         <ul v-if="tab === 'materials'" class="material-list">
@@ -553,20 +546,13 @@ function play() {
               loading="lazy"
               @error="($event.target as HTMLImageElement).style.visibility = 'hidden'"
             /><span>{{ gameName(block, 'block') ?? block }}</span
-            ><strong>{{ count.toLocaleString() }}</strong>
+            ><strong>{{ count.toLocaleString(formatLocale) }}</strong>
           </li>
         </ul>
-        <div v-if="['map', 'height'].includes(tab)" class="explore-coverage">
-          所选日期仍保留
-          {{ Number(data.coverage.recorded_blocks).toLocaleString() }} 次挖掘／放置，其中
-          {{
-            Number(data.coverage.positioned_blocks).toLocaleString()
-          }}
-          次带完整坐标。行为明细保留策略：{{ data.coverage.retention_days }} 天。
-        </div>
+        <div v-if="['map', 'height'].includes(tab)" class="explore-coverage">{{ t('m0808', [Number(data.coverage.recorded_blocks).toLocaleString(formatLocale), Number(data.coverage.positioned_blocks).toLocaleString(formatLocale), data.coverage.retention_days]) }}</div>
         <details class="explore-notes">
-          <summary>查看数据范围与统计说明</summary>
-          <p v-for="n in data.notices" :key="n">{{ n }}</p>
+          <summary>{{ t('m0809') }}</summary>
+          <p v-for="n in data.notices" :key="n">{{ systemMessage(n) }}</p>
         </details>
       </template>
     </article>

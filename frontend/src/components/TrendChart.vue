@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t, formatLocale } from '../i18n'
+
 import { computed, ref } from 'vue'
 import type { EChartsOption } from 'echarts'
 import DataChart from './DataChart.vue'
@@ -32,10 +34,10 @@ const chartOption = computed<EChartsOption>(() => {
       renderMode: 'richText',
       valueFormatter: (value) =>
         value == null
-          ? '暂无记录'
+          ? t('m1463')
           : mode.value === 'online.millis'
-            ? `${Number(value).toFixed(2)} 小时`
-            : `${Number(value).toLocaleString('zh-CN')} 方块`,
+            ? t('m1464', [Number(value).toFixed(2)])
+            : t('m1465', [Number(value).toLocaleString(formatLocale)]),
     },
     xAxis: {
       type: 'category',
@@ -47,7 +49,7 @@ const chartOption = computed<EChartsOption>(() => {
     },
     yAxis: {
       type: 'value',
-      name: mode.value === 'online.millis' ? '小时' : '方块',
+      name: mode.value === 'online.millis' ? t('m1131') : t('m1466'),
       axisLabel: { formatter: compactChartNumber, hideOverlap: true },
       splitNumber: 4,
       minInterval: mode.value === 'online.millis' ? undefined : 1,
@@ -67,7 +69,7 @@ const chartOption = computed<EChartsOption>(() => {
     series: [
       {
         type: 'line',
-        name: mode.value === 'online.millis' ? '在线时长' : '挖掘数量',
+        name: mode.value === 'online.millis' ? t('m1467') : t('m1468'),
         data: days.map((day) => {
           const row = byDay.get(day)
           return row ? row.value / (mode.value === 'online.millis' ? 3600000 : 1) : null
@@ -97,39 +99,34 @@ const chartOption = computed<EChartsOption>(() => {
   <article class="panel trend-panel">
     <div class="panel-heading">
       <div>
-        <h2>玩家活跃趋势</h2>
-        <p>看看大家最近有多活跃</p>
+        <h2>{{ t('m1469') }}</h2>
+        <p>{{ t('m1470') }}</p>
       </div>
       <div class="segmented">
-        <button :aria-pressed="mode === 'online.millis'" @click="mode = 'online.millis'">
-          在线时长</button
-        ><button :aria-pressed="mode === 'blocks.mined'" @click="mode = 'blocks.mined'">
-          挖掘数量
-        </button>
+        <button :aria-pressed="mode === 'online.millis'" @click="mode = 'online.millis'">{{ t('m1467') }}</button
+        ><button :aria-pressed="mode === 'blocks.mined'" @click="mode = 'blocks.mined'">{{ t('m1468') }}</button>
       </div>
     </div>
     <div v-if="!rows.length" class="chart-empty">
       <div class="chart-grid" aria-hidden="true"></div>
       <span class="empty-icon"><Activity :size="30" /></span>
-      <h3>还没有每日记录</h3>
-      <p>连接游戏插件后，就能看到每天的变化。</p>
+      <h3>{{ t('m1471') }}</h3>
+      <p>{{ t('m1472') }}</p>
     </div>
     <div v-else class="trend-body">
       <DataChart
         :option="chartOption"
-        :label="mode === 'online.millis' ? '每日在线时长趋势' : '每日挖掘数量趋势'"
+        :label="mode === 'online.millis' ? t('m1473') : t('m1474')"
       />
-      <p class="chart-caption">
-        拖动底部滑块可放大日期。空白表示没有记录，不代表零；最多显示 366 天。
-      </p>
+      <p class="chart-caption">{{ t('m1475') }}</p>
       <details class="trend-details">
-        <summary>查看每日数值</summary>
-        <div class="table-scroll" tabindex="0" aria-label="每日趋势数值">
+        <summary>{{ t('m1476') }}</summary>
+        <div class="table-scroll" tabindex="0" :aria-label="t('m1477')">
           <table>
             <thead>
               <tr>
-                <th>日期</th>
-                <th>{{ mode === 'online.millis' ? '在线时长' : '挖掘数量' }}</th>
+                <th>{{ t('m0798') }}</th>
+                <th>{{ mode === 'online.millis' ? t('m1467') : t('m1468') }}</th>
               </tr>
             </thead>
             <tbody>

@@ -1,0 +1,18 @@
+/* English labels need room to wrap without changing numeric tables or model controls. */
+html[lang='en'] .sidebar #navigation button { white-space: normal; text-align: left; line-height: 1.3; }
+html[lang='en'] .sidebar #navigation button svg { flex-shrink: 0; }
+html[lang='en'] .nav-group-label { letter-spacing: 0; }
+html[lang='en'] .page-heading h1 { overflow-wrap: anywhere; }
+html[lang='en'] .quick-destinations a,
+html[lang='en'] .metric-label,
+html[lang='en'] .project-toolbar button { white-space: normal; }
+html[lang='en'] .project-toolbar button { min-height: 42px; line-height: 1.3; }
+.login-card > .language-switcher { float: right; margin-bottom: 12px; }
+.project-public > .language-switcher { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+@media (max-width: 680px) {
+  .topbar-tools .feature-trigger span { display: none; }
+  .topbar-tools .language-switcher > span { display: none; }
+  .topbar-tools .language-switcher select { max-width: 100px; min-width: 78px; }
+  .topbar-tools .scope-label { min-width: 0; }
+  html[lang='en'] .mobile-quick-nav button { font-size: 11px; white-space: normal; }
+}

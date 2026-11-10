@@ -1,3 +1,4 @@
+import { t } from './i18n'
 import * as THREE from 'three'
 import { loadSceneAssets } from './sceneAssetPool'
 
@@ -9,11 +10,11 @@ export interface SceneObject { group:THREE.Group; bounds:THREE.Box3; center:THRE
 
 /** Uses baked resource-pack geometry; neither substitutes cubes nor drops models at a count threshold. */
 export async function createProjectScene(data:ProjectScene,textureUrl:(file:string)=>string,signal?:AbortSignal,range?:{minY:number;maxY:number},onTextures?:(loaded:number,total:number)=>void):Promise<SceneObject> {
-  if(data.format!==1 || !Array.isArray(data.models))throw new Error('不支持的场景格式')
+  if(data.format!==1 || !Array.isArray(data.models))throw new Error(t('m0221'))
   // Filter before bounds, material loading and vertex allocation. GPU clipping
   // remains only for the edges of models intersecting a selected boundary.
   if(range){
-    if(!Number.isInteger(range.minY)||!Number.isInteger(range.maxY)||range.minY < -2048||range.maxY>4095||range.minY>range.maxY)throw new Error('显示高度无效')
+    if(!Number.isInteger(range.minY)||!Number.isInteger(range.maxY)||range.minY < -2048||range.maxY>4095||range.minY>range.maxY)throw new Error(t('m0222'))
     data={...data,models:data.models.map(model=>{
       let bottom=Infinity,top=-Infinity
       const faces=model.faces.filter(face=>{
@@ -36,7 +37,7 @@ export async function createProjectScene(data:ProjectScene,textureUrl:(file:stri
     point.x+=model.x;point.y+=model.y;point.z+=model.z;return point
   }
   for(const model of data.models)for(const face of model.faces){
-    if(face.points.length!==12 || face.uvs.length!==8 || !face.points.every(Number.isFinite) || !face.uvs.every(Number.isFinite))throw new Error('场景几何数据损坏')
+    if(face.points.length!==12 || face.uvs.length!==8 || !face.points.every(Number.isFinite) || !face.uvs.every(Number.isFinite))throw new Error(t('m0223'))
     for(let n=0;n<12;n+=3)bounds.expandByPoint(transformed(model,face.points,n))
   }
   if(bounds.isEmpty())bounds.set(new THREE.Vector3(),new THREE.Vector3());bounds.getCenter(center)
@@ -48,7 +49,7 @@ export async function createProjectScene(data:ProjectScene,textureUrl:(file:stri
     for(let m=0;m<data.models.length;m++){
       signal?.throwIfAborted();const model=data.models[m]!
       for(const face of model.faces){
-        if(!/^[a-f0-9]{64}\.png$/.test(face.texture))throw new Error('场景材质地址无效')
+        if(!/^[a-f0-9]{64}\.png$/.test(face.texture))throw new Error(t('m0224'))
         const moving=model.moving??(model.entity&&!(["minecraft:armor_stand","minecraft:painting","minecraft:item_frame","minecraft:glow_item_frame"].includes(model.type??"")||(model as SceneModel&{equipment?:boolean}).equipment===true))
         const unlit=face.shadingMode==='unlit'||face.shadingMode==='fullbright',key=`${face.texture}:${face.doubleSided}:${unlit}:${moving}`
         let batch=batches.get(key);if(!batch){batch={file:face.texture,moving,doubleSided:face.doubleSided,unlit,positions:[],uvs:[],colors:[],owners:[]};batches.set(key,batch)}
@@ -67,7 +68,7 @@ export async function createProjectScene(data:ProjectScene,textureUrl:(file:stri
     let completed=0
     onTextures?.(0,files.length)
     await loadSceneAssets(files,async(file,textureSignal)=>{
-        const response=await fetch(textureUrl(file),{signal:textureSignal});if(!response.ok)throw new Error('场景贴图读取失败')
+        const response=await fetch(textureUrl(file),{signal:textureSignal});if(!response.ok)throw new Error(t('m0225'))
         const bitmap=await createImageBitmap(await response.blob(),{imageOrientation:'flipY'})
         let retained=false
         try {
@@ -76,7 +77,7 @@ export async function createProjectScene(data:ProjectScene,textureUrl:(file:stri
         let image:ImageBitmap|HTMLCanvasElement=bitmap
         if(animation){
           const frames=animation.frames,height=animation.height
-          if(!Number.isInteger(height)||height<1||height>bitmap.height||bitmap.height%height!==0||!Array.isArray(frames)||frames.length<2||frames.length%2!==0||frames.length>16384||frames.some((n,i)=>!Number.isInteger(n)||(i%2===0?(n<0||n>=bitmap.height/height):(n<1||n>12000)))){bitmap.close();throw new Error('动画贴图数据无效')}
+          if(!Number.isInteger(height)||height<1||height>bitmap.height||bitmap.height%height!==0||!Array.isArray(frames)||frames.length<2||frames.length%2!==0||frames.length>16384||frames.some((n,i)=>!Number.isInteger(n)||(i%2===0?(n<0||n>=bitmap.height/height):(n<1||n>12000)))){bitmap.close();throw new Error(t('m0226'))}
           const canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=height;const context=canvas.getContext('2d')!
           image=canvas;const total=frames.filter((_,i)=>i%2===1).reduce((a,b)=>a+b,0)*50
           let previous=-1;          updates.push(time=>{

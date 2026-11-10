@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t, formatLocale } from '../i18n'
+
 import { computed } from 'vue'
 import { Activity, ArrowRight, Server } from '@lucide/vue'
 import { api, type ServerArchive } from '../api'
@@ -35,46 +37,44 @@ const fresh = computed(
 )
 const state = computed(() =>
   busy.value
-    ? '正在读取'
+    ? t('m0829')
     : error.value
-      ? '暂时无法读取'
+      ? t('m0830')
       : ({
-          HEALTHY: '运行流畅',
-          SLOW: '流畅度下降',
-          TICK_STALLED: '游戏暂停推进',
-          STALE: '数据已中断',
-          STOPPED: '采集已停止',
-          NO_DATA: '等待首次采集',
-        }[data.value?.state ?? 'NO_DATA'] ?? '状态待确认'),
+          HEALTHY: t('m0831'),
+          SLOW: t('m0832'),
+          TICK_STALLED: t('m0833'),
+          STALE: t('m0834'),
+          STOPPED: t('m0835'),
+          NO_DATA: t('m0836'),
+        }[data.value?.state ?? 'NO_DATA'] ?? t('m0837')),
 )
 const bars = computed(() => {
   const last = data.value?.latest
   return [
-    { name: '主机 CPU', value: last?.hostCpuPercent },
+    { name: t('m0838'), value: last?.hostCpuPercent },
     {
-      name: '主机内存',
+      name: t('m0839'),
       value:
         last?.hostMemoryTotalBytes && last.hostMemoryAvailableBytes != null
           ? (1 - last.hostMemoryAvailableBytes / last.hostMemoryTotalBytes) * 100
           : null,
     },
-    { name: '游戏进程 CPU', value: last?.cpuPercent },
+    { name: t('m0731'), value: last?.cpuPercent },
   ]
 })
 </script>
 <template>
   <article class="panel dashboard-runtime">
     <div class="panel-heading">
-      <h2><Activity :size="20" />服务器运行状况</h2>
+      <h2><Activity :size="20" />{{ t('m0840') }}</h2>
       <span class="status" :class="fresh && data?.state === 'HEALTHY' ? 'recording' : 'archived'">{{
         state
       }}</span>
     </div>
     <div class="dashboard-runtime-body">
-      <p class="runtime-server-name"><Server :size="15" />{{ server?.name ?? '还没有服务器' }}</p>
-      <p v-if="scope === 'all' && servers.length > 1" class="data-note">
-        首页展示这台服务器，其余主机可进入运行状况查看。
-      </p>
+      <p class="runtime-server-name"><Server :size="15" />{{ server?.name ?? t('m0841') }}</p>
+      <p v-if="scope === 'all' && servers.length > 1" class="data-note">{{ t('m0842') }}</p>
       <div v-for="bar in bars" :key="bar.name" class="runtime-meter">
         <span>{{ bar.name }}</span>
         <div class="meter-track">
@@ -89,14 +89,13 @@ const bars = computed(() => {
       <p class="runtime-snapshot-note">
         {{
           data?.latest
-            ? '最近采样：' + new Date(data.latest.at).toLocaleString('zh-CN', { hour12: false })
-            : '连接游戏插件后，主机状态会显示在这里。'
+            ? t('m0843') + new Date(data.latest.at).toLocaleString(formatLocale, { hour12: false })
+            : t('m0844')
         }}
       </p>
       <div class="runtime-card-actions">
-        <button class="text-button" :disabled="busy || !server" @click="refresh">刷新快照</button
-        ><button class="text-button" :disabled="!server" @click="emit('open', server!.id)">
-          查看运行详情<ArrowRight :size="15" />
+        <button class="text-button" :disabled="busy || !server" @click="refresh">{{ t('m0845') }}</button
+        ><button class="text-button" :disabled="!server" @click="emit('open', server!.id)">{{ t('m0846') }}<ArrowRight :size="15" />
         </button>
       </div>
     </div>

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import LanguageSwitcher from './components/LanguageSwitcher.vue'
+import { t, formatLocale } from './i18n'
+
 import { computed, nextTick, onMounted, onScopeDispose, ref, defineAsyncComponent } from 'vue'
 import {
   Activity,
@@ -113,7 +116,7 @@ const menuGroups = computed(() =>
     }))
     .filter((group) => group.items.length),
 )
-const dateLabel = new Intl.DateTimeFormat('zh-CN', {
+const dateLabel = new Intl.DateTimeFormat(formatLocale, {
   month: 'long',
   day: 'numeric',
   weekday: 'long',
@@ -144,13 +147,16 @@ const serverScene = (id: string) =>
     ) % 3
   ]
 const dialogTitle = computed(
-  () => ({ create: '添加服务器', edit: '编辑服务器档案', archive: '封存服务器' })[dialogMode.value],
+  () => ({ create: t('m0008'), edit: t('m0009'), archive: t('m0010') })[dialogMode.value],
 )
 
 function updateRoute(next: WorkspaceRoute, replace = false) {
   if (authenticated.value && !isAdmin.value && restrictedSections.has(next.section))
     next = { ...next, section: 'overview' }
-  const href = workspaceHref(next)
+  const target = new URL(workspaceHref(next), window.location.origin)
+  const language = new URL(window.location.href).searchParams.get('lang')
+  if (language === 'en' || language === 'zh-CN') target.searchParams.set('lang', language)
+  const href = target.pathname + target.search + target.hash
   if (href !== window.location.pathname + window.location.search) {
     if (replace) window.history.replaceState(null, '', href)
     else window.history.pushState(null, '', href)
@@ -194,7 +200,7 @@ function navigate(key: WorkspaceSection, nextScope = scope.value) {
 }
 function findFeature(section: WorkspaceSection, query: string) {
   navigate(section)
-  if (section === 'activity' && /聊天|会话/.test(query))
+  if (section === 'activity' && /聊天|会话|chat|session/i.test(query))
     updateRoute({ ...route.value, behavior: { ...defaultBehavior, mode: 'sessions' } })
 }
 function showMobileMenu() {
@@ -233,9 +239,9 @@ function readableError(ex: unknown) {
   }
   return ex instanceof Error
     ? ex instanceof TypeError
-      ? '无法连接服务器，请检查服务后重试'
+      ? t('m0011')
       : ex.message
-    : '操作失败，请重试'
+    : t('m0003')
 }
 async function loadServers() {
   loading.value = true
@@ -276,11 +282,11 @@ async function login() {
     await loadServers()
   } catch (ex) {
     if (ex instanceof ApiError && ex.status === 429) {
-      loginError.value = '登录尝试过于频繁，请稍后重试。'
+      loginError.value = t('m0012')
     } else {
       loginError.value =
         ex instanceof ApiError && ex.status === 401
-          ? '用户名或密码不正确，请重试'
+          ? t('m0013')
           : readableError(ex)
     }
   } finally {
@@ -307,11 +313,11 @@ async function passwordChanged() {
   servers.value = []
   collectors.value = []
   loginError.value = ''
-  loginNotice.value = '密码已修改，请使用新密码重新登录。'
+  loginNotice.value = t('m0014')
   try {
     await refreshCsrf()
   } catch {
-    loginError.value = '暂时无法连接，请稍后使用新密码登录。'
+    loginError.value = t('m0015')
   }
 }
 async function openDialog(mode: 'create' | 'edit' | 'archive', server?: ServerArchive) {
@@ -367,8 +373,8 @@ async function save() {
     dialog.value?.close()
     notice.value =
       mode === 'archive'
-        ? `「${result.name}」已封存，档案将长期保留`
-        : `「${result.name}」${mode === 'create' ? '已添加' : '已保存'}`
+        ? t('m0016', [result.name])
+        : `「${result.name}」${mode === 'create' ? t('m0017') : t('m0018')}`
     if (mode === 'create') {
       statusFilter.value = 'all'
       query.value = ''
@@ -417,55 +423,56 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
   <div v-if="!authenticated" class="login-page">
     <div class="login-art" aria-hidden="true">
       <div class="world-mark"><Box :size="88" :stroke-width="1" /></div>
-      <p>每一段冒险，都值得珍藏。</p>
-      <span>MCManager · 服务器纪念档案</span>
+      <p>{{ t('m0019') }}</p>
+      <span>{{ t('m0020') }}</span>
     </div>
     <main class="login-card">
+      <LanguageSwitcher />
       <div class="brand">
         <span class="brand-mark"><Box :size="27" /></span>
-        <div><strong>MCManager</strong><small>服务器纪念档案</small></div>
+        <div><strong>MCManager</strong><small>{{ t('m0021') }}</small></div>
       </div>
       <p class="eyebrow">WELCOME BACK</p>
-      <h1>欢迎回来</h1>
-      <p class="muted">登录工作台，回看每一期服务器的故事。</p>
+      <h1>{{ t('m0022') }}</h1>
+      <p class="muted">{{ t('m0023') }}</p>
       <form @submit.prevent="login">
         <label
-          >用户名<input v-model="username" autocomplete="username" required maxlength="80"
+          >{{ t('m0024') }}<input v-model="username" autocomplete="username" required maxlength="80"
         /></label>
         <label
-          >密码<input v-model="password" type="password" autocomplete="current-password" required
+          >{{ t('m0025') }}<input v-model="password" type="password" autocomplete="current-password" required
         /></label>
         <p v-if="loginError" class="alert error" role="alert">{{ loginError }}</p>
         <p v-if="loginNotice" class="alert success" role="status">{{ loginNotice }}</p>
         <button class="primary full" :disabled="loginBusy || loading">
-          {{ loginBusy ? '正在登录…' : loading ? '连接中…' : '进入工作台'
+          {{ loginBusy ? t('m0026') : loading ? t('m0027') : t('m0028')
           }}<ArrowRight :size="18" />
         </button>
       </form>
-      <p class="login-note"><ShieldCheck :size="15" />账号由管理员创建，请联系服主开通</p>
+      <p class="login-note"><ShieldCheck :size="15" />{{ t('m0029') }}</p>
     </main>
   </div>
 
   <div v-else class="app-shell">
-    <a href="#main-content" class="skip-link">跳到主要内容</a>
+    <a href="#main-content" class="skip-link">{{ t('m0030') }}</a>
     <aside class="sidebar" :class="{ expanded: mobileMenu }">
       <a
         class="brand"
         :href="workspaceHref({ ...route, section: 'overview', player: null })"
         @click.prevent="navigate('overview')"
         ><span class="brand-mark reference-brand"><GameIcon kind="grass" /></span>
-        <div><strong>MCManager</strong><small>服务器纪念档案</small></div></a
+        <div><strong>MCManager</strong><small>{{ t('m0021') }}</small></div></a
       >
       <button
         class="mobile-toggle icon-button"
         :aria-expanded="mobileMenu"
         aria-controls="navigation"
-        aria-label="切换导航"
+        :aria-label="t('m0031')"
         @click="mobileMenu = !mobileMenu"
       >
         <X v-if="mobileMenu" :size="22" /><Menu v-else :size="22" />
       </button>
-      <nav id="navigation" aria-label="主导航" @keydown.esc="mobileMenu = false">
+      <nav id="navigation" :aria-label="t('m0032')" @keydown.esc="mobileMenu = false">
         <div v-for="group in menuGroups" :key="group.label" class="nav-group">
           <p class="nav-group-label">{{ group.label }}</p>
           <button
@@ -480,7 +487,7 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
         </div>
       </nav>
       <div class="sidebar-landscape" aria-hidden="true"></div>
-      <p class="sidebar-signoff">每一个世界，都有故事 <Leaf :size="13" /></p>
+      <p class="sidebar-signoff">{{ t('m0033') }}<Leaf :size="13" /></p>
     </aside>
     <div class="workspace">
       <WorkspaceHeader
@@ -512,9 +519,9 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
             /></span>
             <div>
               <p class="eyebrow">
-                {{ page.group }} <span v-if="view === 'overview'">· 数据总览</span>
+                {{ page.group }} <span v-if="view === 'overview'">{{ t('m0034') }}</span>
               </p>
-              <h1>{{ view === 'overview' ? '今天的方块世界' : pageTitle }}</h1>
+              <h1>{{ view === 'overview' ? t('m0035') : pageTitle }}</h1>
               <p class="muted">{{ page.description }}</p>
             </div>
           </div>
@@ -526,8 +533,7 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
             class="primary"
             @click="openDialog('create')"
           >
-            <Plus :size="19" />添加服务器
-          </button>
+            <Plus :size="19" />{{ t('m0008') }}</button>
         </div>
         <section
           v-if="view === 'overview'"
@@ -535,13 +541,13 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
           aria-labelledby="adventure-title"
         >
           <div class="hero-copy">
-            <span class="hero-label">和伙伴们，一起创造</span>
-            <h2 id="adventure-title">每一段冒险，都值得珍藏</h2>
+            <span class="hero-label">{{ t('m0036') }}</span>
+            <h2 id="adventure-title">{{ t('m0037') }}</h2>
             <div class="hero-actions">
               <button class="primary" @click="navigate('map')">
-                <MapIcon :size="20" />打开世界地图<ArrowRight :size="17" /></button
+                <MapIcon :size="20" />{{ t('m0038') }}<ArrowRight :size="17" /></button
               ><button class="secondary" @click="navigate('projects')">
-                <Box :size="20" />查看施工工程<ArrowRight :size="17" />
+                <Box :size="20" />{{ t('m0039') }}<ArrowRight :size="17" />
               </button>
             </div>
           </div>
@@ -549,15 +555,14 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
         <div v-if="view !== 'overview'" class="page-context">
           <span
             ><Server :size="15" />{{
-              scope === 'all' ? '当前查看所有服务器' : servers.find((s) => s.id === scope)?.name
+              scope === 'all' ? t('m0040') : servers.find((s) => s.id === scope)?.name
             }}</span
           ><button class="text-button" @click="featureFinder?.open()">
-            <Search :size="16" />找不到功能？查找入口
-          </button>
+            <Search :size="16" />{{ t('m0041') }}</button>
         </div>
         <p v-if="notice" class="alert success" role="status"><Check :size="18" />{{ notice }}</p>
         <div v-if="error" class="alert error" role="alert">
-          {{ error }}<button class="text-button" @click="loadServers">重新加载</button>
+          {{ error }}<button class="text-button" @click="loadServers">{{ t('m0042') }}</button>
         </div>
 
         <StatisticsWorkspace
@@ -586,7 +591,7 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
               :revision="revision"
               @open="navigate('projects')"
             />
-            <section class="quick-destinations" aria-label="常用入口">
+            <section class="quick-destinations" :aria-label="t('m0043')">
               <button v-for="item in quickLinks" :key="item.key" @click="navigate(item.key)">
                 <component :is="item.icon" :size="22" /><span
                   ><strong>{{ item.label }}</strong
@@ -598,20 +603,19 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
               <article class="panel">
                 <div class="panel-heading">
                   <div>
-                    <h2>服务器档案</h2>
-                    <p>珍藏每一期的故事</p>
+                    <h2>{{ t('m0044') }}</h2>
+                    <p>{{ t('m0045') }}</p>
                   </div>
                   <button
                     v-if="isAdmin"
                     class="icon-button"
-                    aria-label="添加服务器"
-                    title="添加服务器"
+                    :aria-label="t('m0008')"
+                    :title="t('m0008')"
                     @click="openDialog('create')"
                   >
                     <Plus :size="17" />
                   </button>
-                  <button class="text-button" @click="navigate('servers')">
-                    查看全部<ArrowRight :size="15" />
+                  <button class="text-button" @click="navigate('servers')">{{ t('m0046') }}<ArrowRight :size="15" />
                   </button>
                 </div>
                 <div v-if="!scoped.length" class="small-empty">
@@ -619,15 +623,15 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
                   <h3>
                     {{
                       loading
-                        ? '正在加载档案…'
+                        ? t('m0047')
                         : error
-                          ? '档案暂时无法加载'
-                          : '从你的第一个世界开始'
+                          ? t('m0048')
+                          : t('m0049')
                     }}
                   </h3>
                   <p>
                     {{
-                      error ? '恢复连接后，请重新加载。' : '添加一期服务器，为它建立专属纪念档案。'
+                      error ? t('m0050') : t('m0051')
                     }}
                   </p>
                   <button
@@ -635,8 +639,7 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
                     class="secondary"
                     @click="openDialog('create')"
                   >
-                    <Plus :size="16" />添加服务器
-                  </button>
+                    <Plus :size="16" />{{ t('m0008') }}</button>
                 </div>
                 <div v-else class="world-preview-grid">
                   <WorldPreviewCard
@@ -659,18 +662,16 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
                 @error="childFailure"
               />
               <article v-else class="panel">
-                <div class="panel-heading"><h2>只读查看</h2></div>
-                <p class="muted">
-                  你可以查看全部服务器的统计、聊天记录、地图、工程、日报与运行状况。需要修改数据时，请联系管理员。
-                </p>
+                <div class="panel-heading"><h2>{{ t('m0052') }}</h2></div>
+                <p class="muted">{{ t('m0053') }}</p>
               </article>
             </section>
             <div class="overview-status-strip">
               <span
                 ><i :class="{ unavailable: error }"></i
-                >{{ error ? '档案服务暂不可读' : '档案服务已连接'
-                }}<small>{{ scoped.length }} 个档案 · {{ recording }} 个记录中</small></span
-              ><span>最近读取：{{ archivesReadAt || '尚未确认' }}</span>
+                >{{ error ? t('m0054') : t('m0055')
+                }}<small>{{ t('m0056', [scoped.length, recording]) }}</small></span
+              ><span>{{ t('m0058', [archivesReadAt || t('m0057')]) }}</span>
             </div>
           </template>
         </StatisticsWorkspace>
@@ -682,35 +683,35 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
                 <Search :size="18" /><input
                   v-model="query"
                   type="search"
-                  aria-label="搜索服务器"
-                  placeholder="搜索名称或介绍…"
+                  :aria-label="t('m0059')"
+                  :placeholder="t('m0060')"
                 />
               </div>
-              <select v-model="statusFilter" aria-label="档案状态">
-                <option value="all">全部状态</option>
-                <option value="RECORDING">记录中</option>
-                <option value="ARCHIVED">已封存</option></select
-              ><span class="result-count">{{ filtered.length }} 份档案</span>
+              <select v-model="statusFilter" :aria-label="t('m0061')">
+                <option value="all">{{ t('m0062') }}</option>
+                <option value="RECORDING">{{ t('m0063') }}</option>
+                <option value="ARCHIVED">{{ t('m0064') }}</option></select
+              ><span class="result-count">{{ t('m0065', [filtered.length]) }}</span>
             </div>
-            <div v-if="loading" class="small-empty" role="status">正在加载档案…</div>
+            <div v-if="loading" class="small-empty" role="status">{{ t('m0047') }}</div>
             <div v-else-if="!filtered.length" class="small-empty">
               <span class="empty-icon"><Archive :size="32" /></span>
               <h3>
                 {{
                   error
-                    ? '档案暂时无法加载'
+                    ? t('m0048')
                     : servers.length
-                      ? '没有符合条件的档案'
-                      : '还没有服务器档案'
+                      ? t('m0066')
+                      : t('m0067')
                 }}
               </h3>
               <p>
                 {{
                   error
-                    ? '恢复连接后，请重新加载。'
+                    ? t('m0050')
                     : servers.length
-                      ? '试试调整搜索、范围或状态。'
-                      : '添加第一期服务器，开始记录你的世界。'
+                      ? t('m0068')
+                      : t('m0069')
                 }}
               </p>
               <button
@@ -718,8 +719,7 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
                 class="secondary"
                 @click="openDialog('create')"
               >
-                <Plus :size="16" />添加服务器
-              </button>
+                <Plus :size="16" />{{ t('m0008') }}</button>
             </div>
             <div v-else class="server-grid">
               <article v-for="server in filtered" :key="server.id" class="server-card">
@@ -731,19 +731,19 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
                 <div class="server-card-top">
                   <span class="server-icon"><Box :size="28" /></span
                   ><span class="status" :class="server.status.toLowerCase()">{{
-                    server.status === 'RECORDING' ? '记录中' : '已封存'
+                    server.status === 'RECORDING' ? t('m0063') : t('m0064')
                   }}</span>
                 </div>
                 <h2>{{ server.name }}</h2>
                 <p class="server-description">
-                  {{ server.description || '尚未添加介绍，为这个世界留下几句话吧。' }}
+                  {{ server.description || t('m0070') }}
                 </p>
                 <p class="date-line">
-                  <CalendarDays :size="15" />{{ server.startDate }} — {{ server.endDate ?? '至今' }}
+                  <CalendarDays :size="15" />{{ server.startDate }} — {{ server.endDate ?? t('m0071') }}
                 </p>
                 <dl class="server-details">
                   <div>
-                    <dt>采集器</dt>
+                    <dt>{{ t('m0072') }}</dt>
                     <dd>
                       {{
                         connectionNames[
@@ -753,14 +753,14 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
                     </dd>
                   </div>
                   <div>
-                    <dt>玩家统计</dt>
+                    <dt>{{ t('m0073') }}</dt>
                     <dd>
-                      <button class="text-button" @click="inspectPlayers(server)">查看玩家</button>
+                      <button class="text-button" @click="inspectPlayers(server)">{{ t('m0074') }}</button>
                     </dd>
                   </div>
                 </dl>
                 <details>
-                  <summary>档案标识</summary>
+                  <summary>{{ t('m0075') }}</summary>
                   <code>{{ server.id }}</code>
                 </details>
                 <div v-if="isAdmin" class="server-actions">
@@ -768,18 +768,17 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
                     class="secondary"
                     @click="updateRoute({ ...route, section: 'console', scope: server.id })"
                   >
-                    <Terminal :size="16" />控制台
-                  </button>
-                  <button class="text-button" @click="configureCollector(server)">配置采集</button>
-                  <button class="secondary" @click="openDialog('edit', server)">编辑档案</button
+                    <Terminal :size="16" />{{ t('m0076') }}</button>
+                  <button class="text-button" @click="configureCollector(server)">{{ t('m0077') }}</button>
+                  <button class="secondary" @click="openDialog('edit', server)">{{ t('m0078') }}</button
                   ><button
                     v-if="server.status === 'RECORDING'"
                     class="text-button"
-                    :aria-label="`封存 ${server.name}`"
+                    :aria-label="t('m0079', [server.name])"
                     @click="openDialog('archive', server)"
                   >
-                    <Archive :size="16" />封存</button
-                  ><span v-else class="preserved"><ShieldCheck :size="15" />历史长期保留</span>
+                    <Archive :size="16" />{{ t('m0080') }}</button
+                  ><span v-else class="preserved"><ShieldCheck :size="15" />{{ t('m0081') }}</span>
                 </div>
               </article>
             </div>
@@ -787,8 +786,7 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
           <p class="section-footnote">
             <ShieldCheck
               :size="15"
-            />每份档案对应独立的一期服务器。封存不会移除历史，也不会生成游戏文件备份。
-          </p>
+            />{{ t('m0082') }}</p>
         </template>
 
         <ProjectsView
@@ -851,31 +849,30 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
         />
         <footer>
           <span
-            >{{ scoped.length }} 个服务器档案 · {{ recording }} 个记录中 ·
-            {{ archived }} 个已封存</span
-          ><span><Leaf :size="13" />每一个世界，都有故事</span>
+            >{{ t('m0083', [scoped.length, recording, archived]) }}</span
+          ><span><Leaf :size="13" />{{ t('m0033') }}</span>
         </footer>
       </main>
     </div>
 
-    <nav class="mobile-dock" aria-label="手机快捷导航">
+    <nav class="mobile-dock" :aria-label="t('m0084')">
       <button
         v-for="item in sections.filter((s) =>
           ['overview', 'map', 'projects', 'players'].includes(s.key),
         )"
         :key="item.key"
         :class="{ active: view === item.key }"
-        :aria-label="'打开' + item.label"
+        :aria-label="t('m0085') + item.label"
         :aria-current="view === item.key ? 'page' : undefined"
         @click="navigate(item.key)"
       >
         <component :is="item.icon" :size="20" /><span>{{
-          { overview: '总览', map: '地图', projects: '工程', players: '玩家' }[
+          { overview: t('m0086'), map: t('m0087'), projects: t('m0088'), players: t('m0089') }[
             item.key as 'overview'
           ]
         }}</span></button
-      ><button aria-label="打开全部功能" @click="showMobileMenu">
-        <Menu :size="20" /><span>全部</span>
+      ><button :aria-label="t('m0090')" @click="showMobileMenu">
+        <Menu :size="20" /><span>{{ t('m0091') }}</span>
       </button>
     </nav>
     <FeatureFinder ref="featureFinder" :admin="isAdmin" @select="findFeature" />
@@ -895,7 +892,7 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
           <button
             type="button"
             class="icon-button"
-            aria-label="关闭对话框"
+            :aria-label="t('m0092')"
             :disabled="saving"
             @click="closeDialog"
           >
@@ -903,14 +900,10 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
           </button>
         </div>
         <template v-if="dialogMode === 'archive'"
-          ><p class="dialog-description">
-            结束「{{
-              selected?.name
-            }}」这一期的记录。封存后，档案和历史统计仍会保留在所有服务器范围中。
-          </p>
-          <p class="alert info">此操作只封存平台档案，不会停止游戏服务器或创建最终备份。</p>
+          ><p class="dialog-description">{{ t('m0093', [selected?.name]) }}</p>
+          <p class="alert info">{{ t('m0094') }}</p>
           <label
-            >结束日期<input
+            >{{ t('m0095') }}<input
               ref="dateInput"
               v-model="form.endDate"
               type="date"
@@ -919,49 +912,46 @@ onScopeDispose(() => window.removeEventListener('popstate', restoreRoute))
         ></template>
         <template v-else
           ><label
-            >服务器名称 <span class="required">*</span
+            >{{ t('m0096') }}<span class="required">*</span
             ><input
               ref="nameInput"
               v-model="form.name"
               required
               maxlength="80"
-              placeholder="例如：秋日生存服 · 第一周目" /></label
+              :placeholder="t('m0097')" /></label
           ><label
-            >开服日期 <span class="required">*</span
+            >{{ t('m0098') }}<span class="required">*</span
             ><input
               v-model="form.startDate"
               type="date"
               required
               :max="selected?.endDate ?? undefined" /></label
           ><label
-            >服务器介绍<textarea
+            >{{ t('m0099') }}<textarea
               v-model="form.description"
               maxlength="2000"
               rows="4"
-              placeholder="记录这一期的玩法、伙伴，或一段值得珍藏的回忆。"
+              :placeholder="t('m0100')"
             ></textarea
             ><span class="field-hint">{{ form.description.length }} / 2000</span></label
           >
-          <p v-if="dialogMode === 'create'" class="field-note">
-            保存后会生成独立档案标识，后续可连接对应的采集插件。
-          </p></template
+          <p v-if="dialogMode === 'create'" class="field-note">{{ t('m0101') }}</p></template
         >
         <p v-if="formError" class="alert error" role="alert">{{ formError }}</p>
         <div class="dialog-actions">
-          <button type="button" class="secondary" :disabled="saving" @click="closeDialog">
-            取消</button
+          <button type="button" class="secondary" :disabled="saving" @click="closeDialog">{{ t('m0102') }}</button
           ><button
             class="primary"
             :disabled="saving || (dialogMode !== 'archive' && !form.name.trim())"
           >
             {{
               saving
-                ? '保存中…'
+                ? t('m0103')
                 : dialogMode === 'archive'
-                  ? '确认封存'
+                  ? t('m0104')
                   : dialogMode === 'create'
-                    ? '创建档案'
-                    : '保存修改'
+                    ? t('m0105')
+                    : t('m0106')
             }}
           </button>
         </div>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t, formatLocale } from '../i18n'
+
 import { computed, nextTick, onMounted, onScopeDispose, ref } from 'vue'
 import { CalendarClock, RefreshCw, Settings, X } from '@lucide/vue'
 import { api, type ServerArchive } from '../api'
@@ -90,14 +92,14 @@ let opener: HTMLElement | null = null,
   disposed = false,
   previewController: AbortController | undefined
 const outcomes: Record<string, string> = {
-  QUEUED: '已下发本期任务',
-  QUEUED_OFFLINE: '已排队，等待游戏主机运行',
-  WAITING_TASK: '等待当前任务结束，不重复排队',
-  HOST_REVOKED: '执行端连接密钥已停用，暂停下发',
-  SERVER_ARCHIVED: '服务器已封存，自动制作与新增轮换均已停止',
+  QUEUED: t('m0368'),
+  QUEUED_OFFLINE: t('m0369'),
+  WAITING_TASK: t('m0370'),
+  HOST_REVOKED: t('m0371'),
+  SERVER_ARCHIVED: t('m0372'),
 }
 function name(id: string) {
-  return props.servers.find((server) => server.id === id)?.name ?? '服务器档案'
+  return props.servers.find((server) => server.id === id)?.name ?? t('m0044')
 }
 function scheduleTime(policy: Policy) {
   if (policy.dailyTime) return policy.dailyTime
@@ -106,7 +108,7 @@ function scheduleTime(policy: Policy) {
     : '03:00'
 }
 function localTime(value: string) {
-  return new Intl.DateTimeFormat('zh-CN', {
+  return new Intl.DateTimeFormat(formatLocale, {
     timeZone: 'Asia/Shanghai',
     year: 'numeric',
     month: '2-digit',
@@ -122,7 +124,7 @@ function storageSize(bytes: string) {
     ? `${(size / 1024 ** 3).toFixed(2)} GiB`
     : size >= 1024 ** 2
       ? `${(size / 1024 ** 2).toFixed(1)} MiB`
-      : `${size.toLocaleString('zh-CN')} B`
+      : `${size.toLocaleString(formatLocale)} B`
 }
 function loadFields() {
   resetPreview()
@@ -168,8 +170,8 @@ function retentionValues() {
     (count !== null && (!Number.isInteger(count) || count < 1 || count > 1000)) ||
     (age !== null && (!Number.isInteger(age) || age < 1 || age > 3650))
   )
-    throw new Error('保留数量须为 1 至 1000，天数须为 1 至 3650。')
-  if (retention.value && count === null && age === null) throw new Error('请填写至少一项保留规则。')
+    throw new Error(t('m0373'))
+  if (retention.value && count === null && age === null) throw new Error(t('m0374'))
   return { count, age }
 }
 async function inspectRetention() {
@@ -211,7 +213,7 @@ async function save() {
   try {
     const { count, age } = retentionValues()
     if (!/^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/.test(dailyTime.value))
-      throw new Error('请选择每日备份时间。')
+      throw new Error(t('m0375'))
     await api(`/servers/${serverId.value}/backup-policy`, {
       method: 'PUT',
       signal: controller.signal,
@@ -227,7 +229,7 @@ async function save() {
         maxAgeDays: age,
       }),
     })
-    message.value = '策略已保存，系统会按这台服务器的设置执行。'
+    message.value = t('m0376')
     modal.value?.close()
     emit('changed')
     await refresh()
@@ -263,31 +265,28 @@ onScopeDispose(() => {
 </script>
 
 <template>
-  <section class="panel policy-panel" aria-label="自动备份与清理">
+  <section class="panel policy-panel" :aria-label="t('m0377')">
     <div class="data-panel-heading">
       <div>
-        <h2><CalendarClock :size="20" />自动备份与清理</h2>
-        <p>每期服务器独立设置，默认关闭；中央服务持续运行时生效</p>
+        <h2><CalendarClock :size="20" />{{ t('m0377') }}</h2>
+        <p>{{ t('m0378') }}</p>
       </div>
       <div class="policy-actions">
         <button class="secondary" :disabled="busy" @click="refresh">
-          <RefreshCw :size="16" />刷新策略</button
+          <RefreshCw :size="16" />{{ t('m0379') }}</button
         ><button
           class="secondary"
           :disabled="!ready || busy || !!error || !available.length"
           @click="open"
         >
-          <Settings :size="16" />配置自动备份
-        </button>
+          <Settings :size="16" />{{ t('m0380') }}</button>
       </div>
     </div>
     <p v-if="error" class="alert error" role="alert">
-      {{ error }}<button class="text-button" @click="refresh">重试策略列表</button>
+      {{ error }}<button class="text-button" @click="refresh">{{ t('m0381') }}</button>
     </p>
-    <p v-else-if="busy && !data" class="small-empty" role="status">正在读取自动备份策略…</p>
-    <p v-else-if="!data?.length" class="small-empty">
-      尚未配置自动备份。先添加游戏主机，再设置每天的备份时间和保留规则。
-    </p>
+    <p v-else-if="busy && !data" class="small-empty" role="status">{{ t('m0382') }}</p>
+    <p v-else-if="!data?.length" class="small-empty">{{ t('m0383') }}</p>
     <article
       v-for="policy in data ?? []"
       :key="policy.serverId"
@@ -297,29 +296,23 @@ onScopeDispose(() => {
       <div class="policy-status">
         <strong>{{ name(policy.serverId) }}</strong
         ><span class="neutral-badge">{{
-          policy.enabled ? `每天 ${scheduleTime(policy)}（UTC+8）` : '自动备份已关闭'
+          policy.enabled ? t('m0384', [scheduleTime(policy)]) : t('m0385')
         }}</span>
       </div>
-      <p>下次计划：{{ policy.nextRunAt ? localTime(policy.nextRunAt) : '未开启' }}</p>
+      <p>{{ t('m0387', [policy.nextRunAt ? localTime(policy.nextRunAt) : t('m0386')]) }}</p>
       <p v-if="policy.lastOutcome">
-        {{ outcomes[policy.lastOutcome] ?? '请查看备份任务结果'
+        {{ outcomes[policy.lastOutcome] ?? t('m0388')
         }}<span v-if="policy.lastCheckedAt"> · {{ displayTime(policy.lastCheckedAt) }}</span>
       </p>
       <p>
-        {{
-          policy.retentionEnabled
-            ? `普通自动备份保留${policy.keepCount ? ` ${policy.keepCount} 份` : ''}${policy.maxAgeDays ? ` / ${policy.maxAgeDays} 天` : ''}，超出任一规则会轮换`
-            : '自动清理旧备份已关闭'
-        }}。永久保留、手动和最终封存备份不参与。
-      </p>
-      <p v-if="policy.prunedCount">
-        已轮换 {{ policy.prunedCount }} 份<span v-if="policy.lastPrunedAt">
+        {{ t('m0393', [policy.retentionEnabled
+            ? t('m0391', [policy.keepCount ? t('m0389', [policy.keepCount]) : '', policy.maxAgeDays ? t('m0390', [policy.maxAgeDays]) : ''])
+            : t('m0392')]) }}</p>
+      <p v-if="policy.prunedCount">{{ t('m0394', [policy.prunedCount]) }}<span v-if="policy.lastPrunedAt">
           · {{ displayTime(policy.lastPrunedAt) }}</span
         >
       </p>
-      <p v-if="policy.cleanupError" class="policy-attention">
-        文件清理尚未完成，原记录保留，后端会继续尝试；请检查存储权限和空间。
-      </p>
+      <p v-if="policy.cleanupError" class="policy-attention">{{ t('m0395') }}</p>
     </article>
     <p v-if="message" class="alert success" role="status">{{ message }}</p>
     <dialog
@@ -333,12 +326,12 @@ onScopeDispose(() => {
         <div class="dialog-heading">
           <div>
             <p class="eyebrow">BACKUP POLICY</p>
-            <h2 id="policy-dialog-title">自动备份策略</h2>
+            <h2 id="policy-dialog-title">{{ t('m0396') }}</h2>
           </div>
           <button
             type="button"
             class="icon-button"
-            aria-label="关闭策略设置"
+            :aria-label="t('m0397')"
             :disabled="working"
             @click="close"
           >
@@ -346,7 +339,7 @@ onScopeDispose(() => {
           </button>
         </div>
         <label
-          >策略所属服务器<select
+          >{{ t('m0398') }}<select
             ref="first"
             v-model="serverId"
             :disabled="working"
@@ -362,37 +355,30 @@ onScopeDispose(() => {
             v-model="enabled"
             type="checkbox"
             :disabled="working || (!canEnable && !enabled)"
-          />启用每日自动备份</label
+          />{{ t('m0399') }}</label
         >
-        <p v-if="!canEnable" class="data-note">
-          当前执行端连接密钥已停用或服务器已封存，可关闭制作；恢复条件后才能开启。
-        </p>
+        <p v-if="!canEnable" class="data-note">{{ t('m0400') }}</p>
         <label
-          >每天备份时间（UTC+8）<input
+          >{{ t('m0401') }}<input
             v-model="dailyTime"
             type="time"
             step="60"
             required
             :disabled="working"
         /></label>
-        <p class="data-note">
-          每天在选定的时间发起备份，与浏览器或游戏电脑的时区无关。今天的时间已过时，从明天开始；任务通常会在到点后
-          15 秒左右排队。
-        </p>
-        <p class="data-note">
-          离线时等待主机上线，错过多天只补一份，不会连续制作多份。修改时间会取消尚未开始的旧计划任务，正在执行的任务继续完成。
-        </p>
+        <p class="data-note">{{ t('m0402') }}</p>
+        <p class="data-note">{{ t('m0403') }}</p>
         <label class="policy-check"
           ><input
             v-model="retention"
             type="checkbox"
             :disabled="working"
             @change="resetPreview"
-          />启用自动清理旧备份，删除超出规则的普通自动备份</label
+          />{{ t('m0404') }}</label
         >
         <div class="policy-retention">
           <label
-            >保留普通自动备份数量<input
+            >{{ t('m0405') }}<input
               v-model="keepCount"
               type="number"
               min="1"
@@ -401,7 +387,7 @@ onScopeDispose(() => {
               :disabled="working || !retention"
               @input="resetPreview" /></label
           ><label
-            >保留天数<input
+            >{{ t('m0406') }}<input
               v-model="days"
               type="number"
               min="1"
@@ -411,46 +397,38 @@ onScopeDispose(() => {
               @input="resetPreview"
           /></label>
         </div>
-        <p class="data-note">
-          数量和天数可只填一项；同时填写时，超出任一规则即轮换。至少保留最新的一份普通自动备份，永久保留的备份额外保存。只清理中央游戏归档，玩家统计和游戏主机本地文件继续保留。
-        </p>
-        <p class="data-note">
-          关闭定期制作与关闭轮换是两个独立设置。已经进入文件删除流程的记录会继续收尾；封存服务器不会新建制作或轮换操作。
-        </p>
+        <p class="data-note">{{ t('m0407') }}</p>
+        <p class="data-note">{{ t('m0408') }}</p>
         <button
           type="button"
           class="secondary"
           :disabled="working || previewing || !retention"
           @click="inspectRetention"
         >
-          {{ previewing ? '正在核对…' : '查看将清理哪些备份' }}
+          {{ previewing ? t('m0409') : t('m0410') }}
         </button>
         <div v-if="showPreview" class="policy-preview" role="status">
-          <p>
-            当前符合规则：{{ preview?.total ?? 0 }} 份<span v-if="preview"
+          <p>{{ t('m0411', [preview?.total ?? 0]) }}<span v-if="preview"
               >（{{ storageSize(preview.bytes) }}）</span
-            >。保存后系统会按规则清理，执行前再次核对保护设置。下方最多展示 5 份。
-          </p>
+            >{{ t('m0412') }}</p>
           <ul>
             <li v-for="item in preview?.items.slice(0, 5)" :key="item.id">
               <code>{{ item.id }}</code
               ><span
                 >{{ displayTime(item.createdAt) }} ·
-                {{ item.reason === 'AGE' ? '超出天数' : '超出数量' }}</span
+                {{ item.reason === 'AGE' ? t('m0413') : t('m0414') }}</span
               >
             </li>
           </ul>
         </div>
         <p v-if="formError" class="alert error" role="alert">
           {{ formError
-          }}<button type="button" class="text-button" :disabled="working" @click="reloadSettings">
-            重新加载已保存设置
-          </button>
+          }}<button type="button" class="text-button" :disabled="working" @click="reloadSettings">{{ t('m0415') }}</button>
         </p>
         <div class="dialog-actions">
-          <button type="button" class="secondary" :disabled="working" @click="close">返回</button
+          <button type="button" class="secondary" :disabled="working" @click="close">{{ t('m0416') }}</button
           ><button class="primary" :disabled="working || !selectedHost">
-            {{ working ? '正在保存…' : '保存备份策略' }}
+            {{ working ? t('m0417') : t('m0418') }}
           </button>
         </div>
       </form>

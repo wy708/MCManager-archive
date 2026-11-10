@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t, formatLocale } from '../i18n'
+
 import {computed,onBeforeUnmount,ref,watch} from 'vue'
 import {api,type ServerArchive} from '../api'
 import DataChart from './DataChart.vue'
@@ -17,19 +19,19 @@ async function load(reset=false){
  if(props.scope==='all'){loading.value=false;return}
  controller=new AbortController();loading.value=true
  try{const result=await api<Report>(`/servers/${props.scope}/runtime?hours=${hours.value}`,{signal:controller.signal});if(seq===request){data.value=result;error.value=''}}
- catch(e){if(seq===request&&!controller.signal.aborted)error.value=e instanceof Error?e.message:'运行状况读取失败'}
+ catch(e){if(seq===request&&!controller.signal.aborted)error.value=e instanceof Error?e.message:t('m1366')}
  finally{if(seq===request&&!disposed){loading.value=false;schedule()}}
 }
 function schedule(){clearTimeout(timer);timer=setTimeout(()=>{if(document.hidden)schedule();else void load()},15000)}
 watch(()=>[props.scope,hours.value],()=>void load(true),{immediate:true})
 onBeforeUnmount(()=>{disposed=true;++request;controller?.abort();clearTimeout(timer)})
-const labels:Record<string,string>={NO_DATA:'等待首次采集',HEALTHY:'运行流畅',SLOW:'流畅度下降',STALE:'运行数据中断',TICK_STALLED:'游戏长时间未推进',STOPPED:'采集已停止'}
+const labels:Record<string,string>={NO_DATA:t('m0836'),HEALTHY:t('m0831'),SLOW:t('m0832'),STALE:t('m1367'),TICK_STALLED:t('m1368'),STOPPED:t('m0835')}
 const fresh=computed(()=>!!data.value&&['HEALTHY','SLOW','TICK_STALLED'].includes(data.value.state)&&!error.value)
 const latest=computed(()=>data.value?.latest)
 const number=(v:number|null|undefined,d=1)=>v==null?'—':v.toFixed(d)
 const memory=(v:number|null|undefined)=>v==null?'—':(v/1073741824).toFixed(2)+' GB'
-const duration=(ms:number|undefined)=>ms==null?'—':`${Math.floor(ms/3600000)} 小时 ${Math.floor(ms/60000)%60} 分`
-const time=(v:string)=>new Date(v).toLocaleString('zh-CN',{hour12:false})
+const duration=(ms:number|undefined)=>ms==null?'—':t('m0273', [Math.floor(ms/3600000), Math.floor(ms/60000)%60])
+const time=(v:string)=>new Date(v).toLocaleString(formatLocale,{hour12:false})
 function chart(key:RuntimeMetric,name:string,max?:number):EChartsOption{
  const values=data.value?runtimeSeries(data.value,key):[]
  return {tooltip:{trigger:'axis',renderMode:'richText'},grid:{left:58,right:20,top:25,bottom:40},xAxis:{type:'time'},yAxis:{type:'value',min:0,max,name,axisLabel:{formatter:compactChartNumber,hideOverlap:true}},series:[{name,type:'line',data:values,connectNulls:false,showSymbol:true,symbolSize:5,smooth:false,lineStyle:{width:2},areaStyle:{opacity:.08}}]}
@@ -37,50 +39,50 @@ function chart(key:RuntimeMetric,name:string,max?:number):EChartsOption{
 const hostMemoryPercent=computed(()=>latest.value?.hostMemoryTotalBytes&&latest.value.hostMemoryAvailableBytes!=null?(1-latest.value.hostMemoryAvailableBytes/latest.value.hostMemoryTotalBytes)*100:null)
 const speed=(v:number|null|undefined)=>v==null?'—':v>=1048576?(v/1048576).toFixed(2)+' MiB/s':(v/1024).toFixed(1)+' KiB/s'
 const hostCharts=computed(()=>[
- {title:'整机 CPU',help:'游戏进程与其他程序合计占用。',option:chart('hostCpuPercent','%',100)},
- {title:'整机内存使用率',help:'物理内存已用占比，与进程内存口径不同。',option:chart('hostMemoryUsedPercent','%',100)},
- {title:'主机网络接收',help:'已启用物理网卡合计，单位字节/秒。',option:chart('hostNetworkReceiveBps','B/s')},
- {title:'主机网络发送',help:'不重复累计虚拟或 VPN 网卡。',option:chart('hostNetworkSendBps','B/s')},
+ {title:t('m0728'),help:t('m1369'),option:chart('hostCpuPercent','%',100)},
+ {title:t('m1370'),help:t('m1371'),option:chart('hostMemoryUsedPercent','%',100)},
+ {title:t('m1372'),help:t('m1373'),option:chart('hostNetworkReceiveBps','B/s')},
+ {title:t('m1374'),help:t('m1375'),option:chart('hostNetworkSendBps','B/s')},
 ])
 const charts=computed(()=>[
- {title:'游戏流畅度',help:'越接近 20 越流畅；低于 18 时提醒。',option:chart('tps','TPS',20)},
- {title:'游戏进程 CPU',help:'占这台游戏机器全部逻辑核心的比例。',option:chart('cpuPercent','%',100)},
- {title:'游戏进程内存',help:'实际驻留在物理内存中的大小。',option:chart('memoryMiB','MiB')},
- {title:'在线人数',help:'每个汇总时间段内观察到的最高人数。',option:chart('players','人')},
- {title:'最长游戏帧间隔',help:'正常节奏约 50 毫秒；这不是单帧执行耗时。',option:chart('maxTickIntervalMillis','毫秒')},
+ {title:t('m0730'),help:t('m1376'),option:chart('tps','TPS',20)},
+ {title:t('m0731'),help:t('m1377'),option:chart('cpuPercent','%',100)},
+ {title:t('m0732'),help:t('m1378'),option:chart('memoryMiB','MiB')},
+ {title:t('m1379'),help:t('m1380'),option:chart('players',t('m1381'))},
+ {title:t('m1382'),help:t('m1383'),option:chart('maxTickIntervalMillis',t('m0734'))},
 ])
 </script>
 <template>
  <div class="runtime-view">
-  <section v-if="scope==='all'" class="project-panel"><h2>选择要查看的服务器</h2><p class="project-muted">每台游戏服分别记录运行状态。</p><div class="runtime-servers"><button v-for="s in servers" :key="s.id" @click="emit('select',s.id)">{{s.name}}</button><p v-if="!servers.length">创建服务器档案并安装采集插件后，这里会开始记录。</p></div></section>
+  <section v-if="scope==='all'" class="project-panel"><h2>{{ t('m1384') }}</h2><p class="project-muted">{{ t('m1385') }}</p><div class="runtime-servers"><button v-for="s in servers" :key="s.id" @click="emit('select',s.id)">{{s.name}}</button><p v-if="!servers.length">{{ t('m1386') }}</p></div></section>
   <template v-else>
-   <section class="project-panel runtime-heading"><div><h2>{{data?.serverName??'服务器运行状况'}}</h2><p>先看整台游戏主机，再看游戏进程，比较资源占用与流畅度。</p></div><div class="runtime-actions"><label>查看范围<select v-model.number="hours"><option :value="1">最近 1 小时</option><option :value="6">最近 6 小时</option><option :value="24">最近 24 小时</option><option :value="168">最近 7 天</option></select></label><button :disabled="loading" @click="load()">{{loading?'正在读取…':'刷新状态'}}</button></div></section>
-   <p v-if="error" role="alert" class="project-error">{{error}} · 页面保留的是上次读取结果。</p>
+   <section class="project-panel runtime-heading"><div><h2>{{data?.serverName??t('m0840')}}</h2><p>{{ t('m1387') }}</p></div><div class="runtime-actions"><label>{{ t('m1388') }}<select v-model.number="hours"><option :value="1">{{ t('m1389') }}</option><option :value="6">{{ t('m1390') }}</option><option :value="24">{{ t('m1391') }}</option><option :value="168">{{ t('m1392') }}</option></select></label><button :disabled="loading" @click="load()">{{loading?t('m1393'):t('m0615')}}</button></div></section>
+   <p v-if="error" role="alert" class="project-error">{{ t('m1394', [error]) }}</p>
    <template v-if="data">
-    <section class="runtime-status" :class="{warning:!fresh||data.state!=='HEALTHY'}"><strong>{{error?'暂时无法读取':labels[data.state]??data.state}}</strong><span v-if="latest">最近采样：{{time(latest.at)}} · 约每 15 秒刷新页面</span><span v-else>游戏服升级采集插件至 0.37.0 后，运行几分钟即可看到曲线。</span><p v-if="data.state==='STALE'">暂时收不到新数据，可能是停服、网络中断或插件异常，不能据此认定服务器崩溃。</p><p v-if="data.state==='TICK_STALLED'">采集通道仍有响应，但游戏已至少 5 秒没有新的 tick；在线人数是最后一次观察值。</p></section>
-    <section class="project-panel"><h2>整台游戏主机</h2><p class="project-muted">这里统计运行游戏的 Windows 电脑，不是 NAS。采集插件运行期间约每 10 秒采样；停服后不继续监控。</p>
-     <p v-if="latest?.hostLogicalProcessors==null" class="project-muted">整机 CPU、磁盘与网络需要采集器 0.37.0。已有主机内存可直接查看，缺少的数据不补零。</p>
+    <section class="runtime-status" :class="{warning:!fresh||data.state!=='HEALTHY'}"><strong>{{error?t('m0830'):labels[data.state]??data.state}}</strong><span v-if="latest">{{ t('m1395', [time(latest.at)]) }}</span><span v-else>{{ t('m1396') }}</span><p v-if="data.state==='STALE'">{{ t('m1397') }}</p><p v-if="data.state==='TICK_STALLED'">{{ t('m1398') }}</p></section>
+    <section class="project-panel"><h2>{{ t('m1399') }}</h2><p class="project-muted">{{ t('m1400') }}</p>
+     <p v-if="latest?.hostLogicalProcessors==null" class="project-muted">{{ t('m1401') }}</p>
      <div class="runtime-cards">
-      <article><span>整机 CPU</span><strong>{{fresh?number(latest?.hostCpuPercent):'—'}} <small>%</small></strong><p>{{latest?.hostLogicalProcessors??'—'}} 个逻辑核心 · 所有程序合计</p></article>
-      <article><span>整机内存使用</span><strong>{{fresh?number(hostMemoryPercent):'—'}} <small>%</small></strong><p>总计 {{memory(latest?.hostMemoryTotalBytes)}} · 可用 {{fresh?memory(latest?.hostMemoryAvailableBytes):'—'}}</p></article>
-      <article><span>网络接收</span><strong>{{fresh?speed(latest?.hostNetworkReceiveBps):'—'}}</strong><p>启用的物理网卡合计</p></article>
-      <article><span>网络发送</span><strong>{{fresh?speed(latest?.hostNetworkSendBps):'—'}}</strong><p>虚拟网卡不重复相加</p></article>
+      <article><span>{{ t('m0728') }}</span><strong>{{fresh?number(latest?.hostCpuPercent):'—'}} <small>%</small></strong><p>{{ t('m1402', [latest?.hostLogicalProcessors??'—']) }}</p></article>
+      <article><span>{{ t('m0729') }}</span><strong>{{fresh?number(hostMemoryPercent):'—'}} <small>%</small></strong><p>{{ t('m1403', [memory(latest?.hostMemoryTotalBytes), fresh?memory(latest?.hostMemoryAvailableBytes):'—']) }}</p></article>
+      <article><span>{{ t('m1404') }}</span><strong>{{fresh?speed(latest?.hostNetworkReceiveBps):'—'}}</strong><p>{{ t('m1405') }}</p></article>
+      <article><span>{{ t('m1406') }}</span><strong>{{fresh?speed(latest?.hostNetworkSendBps):'—'}}</strong><p>{{ t('m1407') }}</p></article>
      </div>
-     <div class="disk-list"><article v-for="disk in latest?.hostDisks??[]" :key="disk.drive"><strong>{{disk.drive}} 固定磁盘</strong><p>总计 {{memory(disk.totalBytes)}} · {{fresh?'可用':'上次可用'}} {{memory(disk.availableBytes)}}</p><progress max="100" :value="(1-disk.availableBytes/disk.totalBytes)*100" :aria-label="disk.drive+'磁盘已用比例'"/></article></div>
-     <div v-if="data.points.length" class="runtime-charts"><section v-for="c in hostCharts" :key="c.title"><h3>{{c.title}}</h3><p class="project-muted">{{c.help}}</p><DataChart :option="c.option" :label="c.title+'历史曲线'"/></section></div>
+     <div class="disk-list"><article v-for="disk in latest?.hostDisks??[]" :key="disk.drive"><strong>{{ t('m1408', [disk.drive]) }}</strong><p>{{ t('m1411', [memory(disk.totalBytes), fresh?t('m1409'):t('m1410'), memory(disk.availableBytes)]) }}</p><progress max="100" :value="(1-disk.availableBytes/disk.totalBytes)*100" :aria-label="disk.drive+t('m1412')"/></article></div>
+     <div v-if="data.points.length" class="runtime-charts"><section v-for="c in hostCharts" :key="c.title"><h3>{{c.title}}</h3><p class="project-muted">{{c.help}}</p><DataChart :option="c.option" :label="c.title+t('m1413')"/></section></div>
     </section>
-    <h2>游戏服务器进程</h2>
+    <h2>{{ t('m1414') }}</h2>
     <div class="runtime-cards">
-     <article><span>游戏流畅度</span><strong>{{fresh?number(latest?.tps):'—'}} <small>TPS</small></strong><p>满速约 20</p></article>
-     <article><span>游戏进程 CPU</span><strong>{{fresh?number(latest?.cpuPercent):'—'}} <small>%</small></strong><p>不代表整机总占用</p></article>
-     <article><span>游戏进程内存</span><strong>{{fresh?memory(latest?.workingSetBytes):'—'}}</strong><p>主机剩余：{{fresh?memory(latest?.hostMemoryAvailableBytes):'—'}}</p></article>
-     <article><span>在线人数</span><strong>{{fresh&&data.state!=='TICK_STALLED'?latest?.players:'—'}} <small>人</small></strong><p>以游戏服观察为准</p></article>
+     <article><span>{{ t('m0730') }}</span><strong>{{fresh?number(latest?.tps):'—'}} <small>TPS</small></strong><p>{{ t('m1415') }}</p></article>
+     <article><span>{{ t('m0731') }}</span><strong>{{fresh?number(latest?.cpuPercent):'—'}} <small>%</small></strong><p>{{ t('m1416') }}</p></article>
+     <article><span>{{ t('m0732') }}</span><strong>{{fresh?memory(latest?.workingSetBytes):'—'}}</strong><p>{{ t('m1417', [fresh?memory(latest?.hostMemoryAvailableBytes):'—']) }}</p></article>
+     <article><span>{{ t('m1379') }}</span><strong>{{fresh&&data.state!=='TICK_STALLED'?latest?.players:'—'}} <small>{{ t('m1381') }}</small></strong><p>{{ t('m1418') }}</p></article>
     </div>
-    <p class="project-muted">{{fresh?'本次采集已运行：'+duration(latest?.uptimeMillis):'数据中断时不把旧数值当作当前状态。'}} · 图表从已有采样附近开始显示，中断时留空。</p>
-    <details class="project-muted"><summary>这些数值怎么看？</summary><p>{{data.notice}}</p></details>
-    <div v-if="data.points.length" class="runtime-charts"><section v-for="c in charts" :key="c.title" class="project-panel"><h3>{{c.title}}</h3><p class="project-muted">{{c.help}}</p><DataChart :option="c.option" :label="c.title+'历史曲线'"/></section></div>
-    <p v-else class="project-panel">这个时间范围内还没有运行采样。不会用示例数据填充图表。</p>
-    <section class="project-panel"><h3>值得留意的时间点</h3><p class="project-muted">长帧、低流畅度、数据中断和采集重新启动。它们只是排查线索，不是故障原因结论。</p><ol v-if="data.events.length" class="runtime-events"><li v-for="(event,i) in data.events" :key="i"><time>{{time(event.at)}}</time><span>{{event.message}}</span></li></ol><p v-else>当前范围内没有记录到这些情况。</p><p v-if="data.eventsTruncated">仅显示最近 100 个时间点，可缩小时间范围查看。</p></section>
+    <p class="project-muted">{{ t('m1421', [fresh?t('m1419')+duration(latest?.uptimeMillis):t('m1420')]) }}</p>
+    <details class="project-muted"><summary>{{ t('m1422') }}</summary><p>{{data.notice}}</p></details>
+    <div v-if="data.points.length" class="runtime-charts"><section v-for="c in charts" :key="c.title" class="project-panel"><h3>{{c.title}}</h3><p class="project-muted">{{c.help}}</p><DataChart :option="c.option" :label="c.title+t('m1413')"/></section></div>
+    <p v-else class="project-panel">{{ t('m1423') }}</p>
+    <section class="project-panel"><h3>{{ t('m1424') }}</h3><p class="project-muted">{{ t('m1425') }}</p><ol v-if="data.events.length" class="runtime-events"><li v-for="(event,i) in data.events" :key="i"><time>{{time(event.at)}}</time><span>{{event.message}}</span></li></ol><p v-else>{{ t('m1426') }}</p><p v-if="data.eventsTruncated">{{ t('m1427') }}</p></section>
    </template>
   </template>
  </div>

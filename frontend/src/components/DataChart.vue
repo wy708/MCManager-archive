@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t, locale } from '../i18n'
+
 import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import type { EChartsOption, ECharts } from 'echarts'
 const props = withDefaults(
@@ -33,7 +35,7 @@ async function initialize() {
     const resize = () => {
       if (!element.value?.clientWidth || !element.value?.clientHeight) return
       if (!chart) {
-        chart = init(element.value, undefined, { renderer: 'svg' })
+        chart = init(element.value, undefined, { renderer: 'svg', locale: locale === 'en' ? 'EN' : 'ZH' })
         render()
       } else chart.resize()
     }
@@ -74,6 +76,6 @@ onBeforeUnmount(() => {
     :aria-label="label"
     :style="{ height: `${height}px` }"
   >
-    <p v-if="failed" class="small-empty">图表暂时无法加载，请查看下方数值。</p>
+    <p v-if="failed" class="small-empty">{{ t('m0707') }}</p>
   </div>
 </template>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { computed } from 'vue'
 import { Layers, Users, Clock3, HardDrive } from '@lucide/vue'
 import { api, type ServerArchive } from '../api'
@@ -24,48 +26,48 @@ const online = computed(() =>
 const cards = computed(() => [
   {
     key: 'servers',
-    label: '记录中的服务器',
+    label: t('m0847'),
     icon: 'grass' as const,
     ghost: Layers,
     value: formatInteger(props.servers.filter((server) => server.status === 'RECORDING').length),
-    note: '所选范围内正在记录的档案',
+    note: t('m0848'),
   },
   {
     key: 'players',
-    label: '累计玩家',
+    label: t('m0849'),
     icon: 'player' as const,
     ghost: Users,
     value: !props.summary
-      ? '加载中…'
+      ? t('m0827')
       : covered.value
         ? formatInteger(props.summary.playerCount)
-        : '未接入',
-    note: '同一位玩家只计算一次',
+        : t('m0272'),
+    note: t('m0850'),
   },
   {
     key: 'online',
-    label: '累计在线',
+    label: t('m0677'),
     icon: 'crystal' as const,
     ghost: Clock3,
-    value: !props.summary ? '加载中…' : formatValue(online.value?.value, online.value?.unit),
-    note: '所有玩家的总时长，包含挂机',
+    value: !props.summary ? t('m0827') : formatValue(online.value?.value, online.value?.unit),
+    note: t('m0851'),
   },
   {
     key: 'backups',
-    label: '完整备份',
+    label: t('m0852'),
     icon: 'chest' as const,
     ghost: HardDrive,
     value: busy.value
-      ? '加载中…'
+      ? t('m0827')
       : error.value
-        ? '暂不可读'
+        ? t('m0853')
         : formatInteger(data.value?.readyCount),
-    note: error.value || '已保存并通过文件检查',
+    note: error.value || t('m0854'),
   },
 ])
 </script>
 <template>
-  <section class="metric-grid overview-highlights" aria-label="世界概况">
+  <section class="metric-grid overview-highlights" :aria-label="t('m0855')">
     <article
       v-for="card in cards"
       :key="card.key"

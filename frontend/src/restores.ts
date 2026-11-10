@@ -1,3 +1,4 @@
+import { t, formatLocale } from './i18n'
 export interface RestoreSource {
   id: string
   serverId: string
@@ -33,10 +34,10 @@ export function supportsWorldBackup(version: string | null | undefined) {
   return major! > 0 || minor! >= 7
 }
 export function formatRestoreBytes(value: string | null | undefined) {
-  if (!value) return '未确认'
+  if (!value) return t('m0227')
   const amount = Number(value)
-  if (!Number.isFinite(amount) || amount < 0) return '未确认'
-  if (amount < 1024) return amount.toLocaleString('zh-CN') + ' B'
+  if (!Number.isFinite(amount) || amount < 0) return t('m0227')
+  if (amount < 1024) return amount.toLocaleString(formatLocale) + ' B'
   const units = ['KiB', 'MiB', 'GiB', 'TiB']
   let size = amount / 1024,
     unit = 0
@@ -44,7 +45,7 @@ export function formatRestoreBytes(value: string | null | undefined) {
     size /= 1024
     unit++
   }
-  return size.toLocaleString('zh-CN', { maximumFractionDigits: 1 }) + ' ' + units[unit]
+  return size.toLocaleString(formatLocale, { maximumFractionDigits: 1 }) + ' ' + units[unit]
 }
 export interface RestoreJob {
   id: string
@@ -78,33 +79,33 @@ export interface RestoreDraft {
   forkStartDate: string | null
 }
 export const restoreModes = {
-  DISABLED: '独立检查，关闭采集',
-  CONTINUE: '继续原一期',
-  FORK: '创建新一期',
+  DISABLED: t('m0228'),
+  CONTINUE: t('m0229'),
+  FORK: t('m0230'),
 }
 export const restoreStates: Record<string, string> = {
-  QUEUED: '等待执行',
-  CLAIMED: '已领取',
-  RUNNING: '正在准备文件',
-  READY: '文件准备完成',
-  FAILED: '已失败',
-  UNCERTAIN: '结果待核实',
-  CANCELLED: '已取消',
+  QUEUED: t('m0231'),
+  CLAIMED: t('m0232'),
+  RUNNING: t('m0233'),
+  READY: t('m0234'),
+  FAILED: t('m0235'),
+  UNCERTAIN: t('m0236'),
+  CANCELLED: t('m0237'),
 }
 export const restoreDiagnostics: Record<string, string> = {
-  DOWNLOAD_FAILED: '下载未完成，请检查执行端连接。',
-  ARCHIVE_INVALID: '归档校验失败，不能作为完成结果。',
-  DESTINATION_EXISTS: '目标目录已经存在，原目录没有被覆盖。',
-  RESTORE_FAILED: '文件准备未完成，请检查执行端诊断。',
-  EXECUTION_INTERRUPTED: '执行中断，现场保留，不会自动再次解包。',
-  EXECUTION_EXPIRED: '执行租约过期，请核对原目录。',
-  CREDENTIAL_CHANGED: '执行端凭据已轮换，请核对原结果。',
-  ACCESS_REVOKED: '执行端已撤销，请核对原结果。',
-  RUNNER_CHANGED: '运行实例已改变，请检查原尝试。',
-  COLLECTOR_REJECTED: '目标采集凭据未通过确认。',
-  OPERATOR_CANCELLED: '执行端已确认取消。',
-  OPERATOR_RESOLVED: '已保存人工处理结果。',
-  CLAIM_EXPIRED: '尚未开始的领取已过期，等待重新领取。',
+  DOWNLOAD_FAILED: t('m0238'),
+  ARCHIVE_INVALID: t('m0239'),
+  DESTINATION_EXISTS: t('m0240'),
+  RESTORE_FAILED: t('m0241'),
+  EXECUTION_INTERRUPTED: t('m0242'),
+  EXECUTION_EXPIRED: t('m0243'),
+  CREDENTIAL_CHANGED: t('m0244'),
+  ACCESS_REVOKED: t('m0245'),
+  RUNNER_CHANGED: t('m0246'),
+  COLLECTOR_REJECTED: t('m0247'),
+  OPERATOR_CANCELLED: t('m0248'),
+  OPERATOR_RESOLVED: t('m0249'),
+  CLAIM_EXPIRED: t('m0250'),
 }
 export const validRestoreFolder = (name: string) =>
   name.length <= 64 &&

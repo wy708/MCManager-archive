@@ -2,14 +2,17 @@
     const panel = document.createElement('div');
     panel.id = 'coordinateJump';
     panel.setAttribute('role', 'form');
-    panel.setAttribute('aria-label', '地图坐标跳转');
-    panel.innerHTML = `<div class="jump-title">跳转到坐标</div>
+    panel.setAttribute('aria-label', mcmanagerMapText('地图坐标跳转', 'Jump to map coordinates'));
+    panel.innerHTML = `<div class="jump-title">${mcmanagerMapText('跳转到坐标', 'Jump to coordinates')}</div>
       <div class="jump-fields">
-        <label>X <input name="x" aria-label="目标 X 坐标" type="text" maxlength="16" autocomplete="off" spellcheck="false" placeholder="例如 -600" required></label>
-        <label>Z <input name="z" aria-label="目标 Z 坐标" type="text" maxlength="16" autocomplete="off" spellcheck="false" placeholder="例如 40" required></label>
-        <button type="button">跳转</button>
+        <label>X <input name="x" aria-label="${mcmanagerMapText('目标 X 坐标','Target X coordinate')}" type="text" maxlength="16" autocomplete="off" spellcheck="false" placeholder="${mcmanagerMapText('例如 -600','e.g. -600')}" required></label>
+        <label>Z <input name="z" aria-label="${mcmanagerMapText('目标 Z 坐标','Target Z coordinate')}" type="text" maxlength="16" autocomplete="off" spellcheck="false" placeholder="${mcmanagerMapText('例如 40','e.g. 40')}" required></label>
+        <button type="button">${mcmanagerMapText('跳转','Go')}</button>
       </div>
-      <div class="jump-status" role="status" aria-live="polite">在当前维度定位；未绘制的区域会显示空白。</div>`;
+      <div class="jump-status" role="status" aria-live="polite">${mcmanagerMapText('在当前维度定位；未绘制的区域会显示空白。','Uses the current dimension. Unmapped areas appear blank.')}</div>`;
+    const title = panel.querySelector('.jump-title');
+    title.style.cssText = 'display:flex;align-items:center;gap:8px';
+    mcmanagerMapLanguageControl(title);
     document.body.append(panel);
     const xInput = panel.querySelector('input[name="x"]');
     const zInput = panel.querySelector('input[name="z"]');
@@ -28,7 +31,7 @@
         const value = Number(text);
         if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(text) || !Number.isFinite(value) || Math.abs(value) > 30000000) {
           input.setAttribute('aria-invalid', 'true');
-          status.textContent = `请输入有效的 ${name} 坐标（-30000000 到 30000000，可填负数）。`;
+          status.textContent = mcmanagerMapText(`请输入有效的 ${name} 坐标（-30000000 到 30000000，可填负数）。`, `Enter a valid ${name} coordinate from -30000000 to 30000000.`);
           input.focus();
           return;
         }
@@ -46,7 +49,7 @@
       }).addTo(this.map);
       this.coordinateTarget.bindTooltip(`X: ${x}, Z: ${z}`, { direction: 'top' });
       this.elements.coords.textContent = `x: ${x}, z: ${z}`;
-      status.textContent = `已定位 X: ${x}，Z: ${z}；空白表示该处尚未绘制。`;
+      status.textContent = mcmanagerMapText(`已定位 X: ${x}，Z: ${z}；空白表示该处尚未绘制。`, `Centered on X: ${x}, Z: ${z}. Blank areas have not been mapped.`);
       document.activeElement?.blur();
     };
     // The public map is sandboxed without allow-forms. Handle navigation

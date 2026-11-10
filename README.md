@@ -8,7 +8,7 @@
 
 看见玩家的足迹，记录一起建造的世界，让 AI 理解服务器里发生的故事。
 
-[快速开始](docs/getting-started.md) · [功能一览](docs/features.md) · [部署指南](docs/deployment.md) · [MCP 接入](mcp/README.md) · [English](README.en.md)
+[快速开始](docs/getting-started.md) · [功能一览](docs/features.md) · [部署指南](docs/deployment.md) · [MCP 接入](mcp/README.md) · [English](README.en.md) · [中英文界面](docs/localization.md)
 
 [![CI](https://github.com/wy708/MCManager-archive/actions/workflows/ci.yml/badge.svg)](https://github.com/wy708/MCManager-archive/actions/workflows/ci.yml)
 

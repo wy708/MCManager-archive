@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { ArrowRight, Clock3, Users } from '@lucide/vue'
 import { api, type ServerArchive } from '../api'
 import { formatInteger, formatValue, type Summary } from '../statistics'
@@ -17,19 +19,19 @@ const { data, error, busy } = useResource(
     <span class="world-preview-body">
       <strong>{{ server.name }}</strong
       ><span class="status" :class="server.status.toLowerCase()">{{
-        server.status === 'RECORDING' ? '记录中' : '已封存'
+        server.status === 'RECORDING' ? t('m0063') : t('m0064')
       }}</span>
       <span class="world-description">{{
-        server.description || '每一个世界，都有值得珍藏的故事。'
+        server.description || t('m1540')
       }}</span>
-      <span v-if="busy" class="world-preview-metrics">正在读取统计…</span
-      ><span v-else-if="error" class="world-preview-metrics">统计暂时不可读</span>
+      <span v-if="busy" class="world-preview-metrics">{{ t('m1541') }}</span
+      ><span v-else-if="error" class="world-preview-metrics">{{ t('m1542') }}</span>
       <span v-else class="world-preview-metrics"
         ><span
           ><Users :size="14" />{{
             data?.metrics.some((metric) => metric.coveredServers > 0)
-              ? formatInteger(data.playerCount) + ' 名玩家'
-              : '未接入'
+              ? formatInteger(data.playerCount) + t('m1543')
+              : t('m0272')
           }}</span
         ><span
           ><Clock3 :size="14" />{{
@@ -37,7 +39,7 @@ const { data, error, busy } = useResource(
           }}</span
         ></span
       >
-      <span class="world-preview-link">查看档案<ArrowRight :size="14" /></span>
+      <span class="world-preview-link">{{ t('m0933') }}<ArrowRight :size="14" /></span>
     </span>
   </button>
 </template>

@@ -4,7 +4,7 @@
 
 [中文](README.md) · [Getting started](docs/getting-started.md) · [Architecture](docs/architecture.md) · [Contributing](CONTRIBUTING.md)
 
-![Dashboard using synthetic demonstration data](docs/images/dashboard-desktop.png)
+![Dashboard using synthetic demonstration data](docs/images/dashboard-en-desktop.png)
 
 Track player activity, preserve construction history, explore your world and give an AI agent permission-scoped access to recorded facts.
 
@@ -16,6 +16,7 @@ Track player activity, preserve construction history, explore your world and giv
 - A stdio MCP server for statistics, world observations, containers and seed predictions.
 - An optional `/ai` bridge to an existing DSH / QQ group session.
 - Responsive navigation, feature search and deferred chart/model loading.
+- [Chinese and English interfaces](docs/localization.md), including charts, game names and public project pages.
 
 ## Run the platform
 

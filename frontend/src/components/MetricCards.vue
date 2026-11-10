@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { computed } from 'vue'
 import { Clock3, Box, Sparkles, Users } from '@lucide/vue'
 import type { Summary } from '../statistics'
@@ -9,16 +11,16 @@ const hasCoverage = computed(() => props.summary?.metrics.some((m) => m.coveredS
 const cards = computed(() => [
   {
     key: 'players',
-    label: '已记录玩家',
+    label: t('m0820'),
     icon: Users,
-    value: props.summary && hasCoverage.value ? formatInteger(props.summary.playerCount) : '未接入',
-    note: '按稳定身份跨服务器去重',
+    value: props.summary && hasCoverage.value ? formatInteger(props.summary.playerCount) : t('m0272'),
+    note: t('m0821'),
     metric: undefined,
   },
   ...[
-    { key: 'online.millis', label: '累计在线', icon: Clock3, note: '已确认时长，包含挂机' },
-    { key: 'blocks.mined', label: '挖掘方块', icon: Box, note: '伐木和采矿已包含其中' },
-    { key: 'experience.gained', label: '累计获得经验', icon: Sparkles, note: '消耗或损失不倒扣' },
+    { key: 'online.millis', label: t('m0677'), icon: Clock3, note: t('m0822') },
+    { key: 'blocks.mined', label: t('m0680'), icon: Box, note: t('m0823') },
+    { key: 'experience.gained', label: t('m0824'), icon: Sparkles, note: t('m0825') },
   ].map((card) => ({
     ...card,
     value: formatValue(metric(card.key)?.value, metric(card.key)?.unit),
@@ -27,12 +29,12 @@ const cards = computed(() => [
 ])
 </script>
 <template>
-  <section class="metric-grid" aria-label="统计概况">
+  <section class="metric-grid" :aria-label="t('m0826')">
     <article
       v-for="card in cards"
       :key="card.key"
       class="metric-card"
-      :class="{ 'muted-metric': card.value === '未接入' }"
+      :class="{ 'muted-metric': card.value === t('m0272') }"
       :data-metric="card.key"
     >
       <span class="metric-icon"><component :is="card.icon" :size="25" /></span>
@@ -40,14 +42,14 @@ const cards = computed(() => [
         <span>{{ card.label }}</span
         ><strong
           :class="{
-            unavailable: card.value === '未接入',
+            unavailable: card.value === t('m0272'),
             'duration-value': card.key === 'online.millis',
           }"
-          >{{ loading ? '加载中…' : card.value }}</strong
+          >{{ loading ? t('m0827') : card.value }}</strong
         >
         <p>{{ card.note }}</p>
         <small v-if="card.metric && card.metric.value !== null" class="coverage-label"
-          >曾启用 {{ card.metric.coveredServers }}/{{ card.metric.selectedServers }} 服</small
+          >{{ t('m0828', [card.metric.coveredServers, card.metric.selectedServers]) }}</small
         >
       </div>
     </article>

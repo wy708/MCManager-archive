@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import LanguageSwitcher from './LanguageSwitcher.vue'
+import { t } from '../i18n'
+
 import { computed, onMounted, onScopeDispose, ref, watch } from 'vue'
 import {
   Home,
@@ -117,49 +120,50 @@ onScopeDispose(() => {
 <template>
   <header ref="root" class="topbar reference-topbar" @keydown.esc="close">
     <div class="breadcrumb">
-      <Home :size="21" /><span class="breadcrumb-root">工作台</span><span>/</span
+      <Home :size="21" /><span class="breadcrumb-root">{{ t('m1478') }}</span><span>/</span
       ><strong>{{ title }}</strong>
     </div>
     <div class="topbar-tools">
-      <button class="feature-trigger secondary" aria-label="找功能" @click="emit('find')">
-        <Compass :size="18" /><span>找功能</span>
+      <LanguageSwitcher />
+      <button class="feature-trigger secondary" :aria-label="t('m1479')" @click="emit('find')">
+        <Compass :size="18" /><span>{{ t('m1479') }}</span>
       </button>
       <label class="scope-label"
         ><div class="select-wrap">
           <Layers :size="16" class="scope-icon" /><select
             :value="scope"
-            aria-label="统计范围"
+            :aria-label="t('m1480')"
             @change="emit('update:scope', ($event.target as HTMLSelectElement).value)"
           >
-            <option value="all">所有服务器</option>
+            <option value="all">{{ t('m1481') }}</option>
             <option v-for="server in servers" :key="server.id" :value="server.id">
-              {{ server.name }}{{ server.status === 'ARCHIVED' ? '（已封存）' : '' }}
+              {{ server.name }}{{ server.status === 'ARCHIVED' ? t('m1482') : '' }}
             </option></select
           ><ChevronDown :size="15" /></div
       ></label>
       <div class="global-search">
         <form role="search" @submit.prevent="search">
-          <button aria-label="搜索工作台" type="submit"><Search :size="19" /></button
+          <button :aria-label="t('m1483')" type="submit"><Search :size="19" /></button
           ><input
             v-model="draft"
-            aria-label="搜索玩家或服务器"
-            placeholder="搜索玩家、服务器…"
+            :aria-label="t('m1484')"
+            :placeholder="t('m1485')"
             maxlength="80"
             type="search"
             @input="expanded = false"
           />
         </form>
-        <div v-if="expanded" class="search-results" aria-label="工作台搜索结果">
-          <p class="search-caption">当前统计范围 · {{ searched }}</p>
+        <div v-if="expanded" class="search-results" :aria-label="t('m1486')">
+          <p class="search-caption">{{ t('m1487', [searched]) }}</p>
           <button
             v-for="server in matches"
             :key="server.id"
             class="search-result"
             @click="chooseServer(server.id)"
           >
-            <Server :size="17" /><span>{{ server.name }}<small>服务器档案</small></span>
+            <Server :size="17" /><span>{{ server.name }}<small>{{ t('m0044') }}</small></span>
           </button>
-          <p v-if="busy" class="search-caption" role="status">正在查找玩家…</p>
+          <p v-if="busy" class="search-caption" role="status">{{ t('m1488') }}</p>
           <p v-if="error" class="search-caption" role="alert">{{ error }}</p>
           <button
             v-for="player in players"
@@ -168,26 +172,23 @@ onScopeDispose(() => {
             @click="choosePlayer(player.key)"
           >
             <Users :size="17" /><span
-              >{{ player.name }}<small>玩家档案 · {{ player.key }}</small></span
+              >{{ player.name }}<small>{{ t('m1489', [player.key]) }}</small></span
             >
           </button>
-          <p v-if="!busy && !error && !matches.length && !players.length" class="search-caption">
-            没有匹配的玩家或服务器。
-          </p>
+          <p v-if="!busy && !error && !matches.length && !players.length" class="search-caption">{{ t('m1490') }}</p>
         </div>
       </div>
       <details ref="account" class="account-menu">
-        <summary :aria-label="role === 'VIEWER' ? '账号菜单' : '管理员菜单'">
+        <summary :aria-label="role === 'VIEWER' ? t('m1491') : t('m1492')">
           <span class="reference-avatar" aria-hidden="true"><GameIcon kind="player" /></span
-          ><span class="account-label">{{ role === 'VIEWER' ? '只读账号' : '管理员' }}</span
+          ><span class="account-label">{{ role === 'VIEWER' ? t('m0296') : t('m0297') }}</span
           ><ChevronDown :size="14" />
         </summary>
         <div class="account-dropdown">
-          <p>{{ username }} · {{ role === 'VIEWER' ? '只读账号' : '管理员' }}</p>
+          <p>{{ username }} · {{ role === 'VIEWER' ? t('m0296') : t('m0297') }}</p>
           <button @click="changePassword">
-            <KeyRound :size="16" />修改密码
-          </button>
-          <button @click="emit('logout')"><LogOut :size="16" />退出登录</button>
+            <KeyRound :size="16" />{{ t('m0873') }}</button>
+          <button @click="emit('logout')"><LogOut :size="16" />{{ t('m1493') }}</button>
         </div>
       </details>
     </div>

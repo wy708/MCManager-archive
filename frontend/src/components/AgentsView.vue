@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { computed, nextTick, ref } from 'vue'
 import { Bot, Copy, Plus, RefreshCw, ShieldCheck, X } from '@lucide/vue'
 import { api, type ServerArchive } from '../api'
@@ -36,12 +38,12 @@ const visible = computed(
     ) ?? [],
 )
 const scopeLabels: Record<Scope, string> = {
-  STATS_READ: '读取统计',
-  CHAT_READ: '读取聊天',
-  CHAT_SEND: '发送回复',
-  QQ_BIND: '管理 QQ 绑定',
-  WORLD_READ: '查询世界状态',
-  PROJECT_WRITE: '管理绑定玩家的施工工程',
+  STATS_READ: t('m0308'),
+  CHAT_READ: t('m0309'),
+  CHAT_SEND: t('m0310'),
+  QQ_BIND: t('m0311'),
+  WORLD_READ: t('m0312'),
+  PROJECT_WRITE: t('m0313'),
 }
 const backendOrigin = window.location.origin
 const scopes = Object.keys(scopeLabels) as Scope[]
@@ -59,12 +61,12 @@ const name = ref(''),
   copied = ref(false)
 const title = computed(() =>
   token.value
-    ? '保存 助手连接密钥'
+    ? t('m0314')
     : {
-        create: '添加助手',
-        edit: '编辑服务器授权',
-        rotate: '轮换 助手连接密钥',
-        revoke: '停用助手',
+        create: t('m0315'),
+        edit: t('m0316'),
+        rotate: t('m0317'),
+        revoke: t('m0318'),
       }[action.value],
 )
 const validGrants = computed(() =>
@@ -78,7 +80,7 @@ const mcpConfig = computed(() =>
       mcpServers: {
         'mcmanager-archive': {
           command: 'node',
-          args: ['请替换为本机 mcp/src/server.mjs 的绝对路径'],
+          args: [t('m0319')],
           env: {
             MCM_MCP_API_URL: window.location.origin,
             MCM_AGENT_TOKEN: token.value,
@@ -161,7 +163,7 @@ async function perform() {
         ...(editing ? { body: JSON.stringify({ grants: validGrants.value }) } : {}),
       })
       mutated = true
-      message.value = editing ? 'Agent 授权已更新' : '助手连接密钥已撤销'
+      message.value = editing ? t('m0320') : t('m0321')
       modal.value?.close()
     }
   } catch (ex) {
@@ -178,7 +180,7 @@ async function copy(config = false) {
   } catch {
     tokenField.value?.focus()
     tokenField.value?.select()
-    formError.value = '自动复制不可用，请选中内容后手动复制。'
+    formError.value = t('m0322')
   }
 }
 function serverName(id: string) {
@@ -188,64 +190,53 @@ function serverName(id: string) {
 
 <template>
   <section class="agents-workspace">
-    <ol class="connection-steps" aria-label="AI 接入步骤">
+    <ol class="connection-steps" :aria-label="t('m0323')">
       <li>
-        <b>1</b><span><strong>添加助手</strong><small>给小伙伴起个名字</small></span>
+        <b>1</b><span><strong>{{ t('m0315') }}</strong><small>{{ t('m0324') }}</small></span>
       </li>
       <li>
-        <b>2</b><span><strong>选择能力</strong><small>授权服务器和操作</small></span>
+        <b>2</b><span><strong>{{ t('m0325') }}</strong><small>{{ t('m0326') }}</small></span>
       </li>
       <li>
-        <b>3</b><span><strong>连接 AI 软件</strong><small>复制生成的 MCP 配置</small></span>
+        <b>3</b><span><strong>{{ t('m0327') }}</strong><small>{{ t('m0328') }}</small></span>
       </li>
     </ol>
     <article class="panel data-panel">
       <div class="data-panel-heading">
         <div>
-          <h2>连接 AI 助手</h2>
-          <p>先添加助手，再选择它能查看的服务器和能做的事情。</p>
+          <h2>{{ t('m0329') }}</h2>
+          <p>{{ t('m0330') }}</p>
         </div>
         <div class="agent-actions">
           <button class="secondary" :disabled="busy" @click="refresh">
-            <RefreshCw :size="16" />刷新</button
+            <RefreshCw :size="16" />{{ t('m0331') }}</button
           ><button
             class="primary"
             data-create-agent
             :disabled="!servers.length || busy"
             @click="open('create')"
           >
-            <Plus :size="16" />添加助手
-          </button>
+            <Plus :size="16" />{{ t('m0315') }}</button>
         </div>
       </div>
       <p class="data-note">
         <ShieldCheck
           :size="16"
-        />只监控时授权读取统计和聊天；需要自动回复时再启用发送。玩家聊天不会授予额外权限。
-      </p>
-      <p class="data-note">
-        助手通过 MCP 连接本平台，由你使用的 AI
-        软件负责思考和自动回复。游戏内回复需要插件在线，排队中的消息不代表已经送达。
-      </p>
+        />{{ t('m0332') }}</p>
+      <p class="data-note">{{ t('m0333') }}</p>
       <details class="agent-help">
-        <summary>如何连接 AI 软件？（MCP 配置）</summary>
-        <p>
-          在项目 mcp 目录执行 npm ci --ignore-scripts，再把本机 server.mjs
-          绝对路径和独立凭据填入主机的 mcpServers 配置。创建或轮换后可复制配置。
-        </p>
-        <p>
-          主机负责自动回复规则、模型调用、保存游标和 requestId。默认不把 Agent
-          回复作为玩家输入，避免循环。
-        </p>
+        <summary>{{ t('m0334') }}</summary>
+        <p>{{ t('m0335') }}</p>
+        <p>{{ t('m0336') }}</p>
       </details>
     </article>
     <p v-if="message" class="alert success" role="status">{{ message }}</p>
     <p v-if="error" class="alert error" role="alert">
-      {{ error }}<button class="text-button" @click="refresh">重试</button>
+      {{ error }}<button class="text-button" @click="refresh">{{ t('m0337') }}</button>
     </p>
-    <p v-else-if="busy" class="small-empty" role="status">正在加载 Agent…</p>
+    <p v-else-if="busy" class="small-empty" role="status">{{ t('m0338') }}</p>
     <p v-else-if="!visible.length" class="small-empty">
-      {{ !servers.length ? '先添加服务器档案，再添加助手。' : '当前范围还没有 Agent 授权。' }}
+      {{ !servers.length ? t('m0339') : t('m0340') }}
     </p>
     <article
       v-for="agent in visible"
@@ -256,15 +247,13 @@ function serverName(id: string) {
       <div class="data-panel-heading">
         <div>
           <h2><Bot :size="20" />{{ agent.name }}</h2>
-          <p>{{ agent.revoked ? '连接密钥已停用' : '连接密钥已启用' }}</p>
+          <p>{{ agent.revoked ? t('m0341') : t('m0342') }}</p>
         </div>
         <div class="agent-actions">
-          <button class="secondary" @click="open('edit', agent)">编辑授权</button
+          <button class="secondary" @click="open('edit', agent)">{{ t('m0343') }}</button
           ><button class="secondary" @click="open('rotate', agent)">
-            {{ agent.revoked ? '重新启用' : '更换连接密钥' }}</button
-          ><button v-if="!agent.revoked" class="text-button" @click="open('revoke', agent)">
-            停用助手
-          </button>
+            {{ agent.revoked ? t('m0344') : t('m0345') }}</button
+          ><button v-if="!agent.revoked" class="text-button" @click="open('revoke', agent)">{{ t('m0318') }}</button>
         </div>
       </div>
       <ul class="agent-grants">
@@ -278,9 +267,9 @@ function serverName(id: string) {
           >
         </li>
       </ul>
-      <p v-if="!agent.grants.length" class="data-note">未授权任何服务器。</p>
+      <p v-if="!agent.grants.length" class="data-note">{{ t('m0346') }}</p>
       <details class="plain-details">
-        <summary>查看助手编号</summary>
+        <summary>{{ t('m0347') }}</summary>
         <code>{{ agent.id }}</code>
       </details>
     </article>
@@ -300,7 +289,7 @@ function serverName(id: string) {
           <button
             type="button"
             class="icon-button"
-            aria-label="关闭 Agent 对话框"
+            :aria-label="t('m0348')"
             :disabled="working"
             @click="close"
           >
@@ -308,9 +297,9 @@ function serverName(id: string) {
           </button>
         </div>
         <template v-if="token"
-          ><p class="alert info">凭据只显示一次。关闭后无法读取；请保存到可信的 MCP 主机配置。</p>
+          ><p class="alert info">{{ t('m0349') }}</p>
           <label
-            >助手连接密钥<textarea
+            >{{ t('m0350') }}<textarea
               ref="tokenField"
               :value="token"
               readonly
@@ -320,22 +309,22 @@ function serverName(id: string) {
           </label>
           <div class="agent-actions">
             <button type="button" class="secondary" @click="copy()">
-              <Copy :size="16" />复制连接密钥</button
+              <Copy :size="16" />{{ t('m0351') }}</button
             ><button type="button" class="secondary" @click="copy(true)">
-              <Copy :size="16" />复制 MCP 配置</button
-            ><span v-if="copied" role="status">已复制</span>
+              <Copy :size="16" />{{ t('m0352') }}</button
+            ><span v-if="copied" role="status">{{ t('m0353') }}</span>
           </div>
           <details>
-            <summary>查看 MCP 配置</summary>
+            <summary>{{ t('m0354') }}</summary>
             <label
-              >MCP 配置<textarea :value="mcpConfig" readonly rows="9" spellcheck="false" />
+              >{{ t('m0355') }}<textarea :value="mcpConfig" readonly rows="9" spellcheck="false" />
             </label>
-            <p class="data-note">替换 server.mjs 绝对路径。当前服务地址：{{ backendOrigin }}</p>
+            <p class="data-note">{{ t('m0356', [backendOrigin]) }}</p>
           </details></template
         >
         <template v-else-if="action === 'create' || action === 'edit'"
           ><label v-if="action === 'create'"
-            >助手名称<input
+            >{{ t('m0357') }}<input
               ref="nameField"
               v-model="name"
               required
@@ -354,26 +343,24 @@ function serverName(id: string) {
               />{{ scopeLabels[right] }}</label
             >
           </fieldset>
-          <p class="data-note">
-            取消发言授权会取消尚未执行的回复；执行中的回复保留为结果未知，等待真实回执。
-          </p></template
+          <p class="data-note">{{ t('m0358') }}</p></template
         >
         <template v-else
           ><p class="dialog-description">{{ selected?.name }}</p>
           <p class="alert info">
             {{
               action === 'revoke'
-                ? '撤销后该 Agent 立即失去访问权限，尚未执行的回复会取消。历史统计和消息保留。'
+                ? t('m0359')
                 : selected?.revoked
-                  ? '生成新连接密钥后重新启用现有服务器授权。旧凭据仍然无效。'
-                  : '新凭据立即替换旧凭据。请同步更新 MCP 主机配置。'
+                  ? t('m0360')
+                  : t('m0361')
             }}
           </p></template
         >
         <p v-if="formError" class="alert error" role="alert">{{ formError }}</p>
         <div class="dialog-actions">
           <button type="button" class="secondary" :disabled="working" @click="close">
-            {{ token ? '已保存，关闭' : '取消' }}</button
+            {{ token ? t('m0362') : t('m0102') }}</button
           ><button
             v-if="!token"
             class="primary"
@@ -381,14 +368,14 @@ function serverName(id: string) {
           >
             {{
               working
-                ? '处理中…'
+                ? t('m0363')
                 : action === 'create'
-                  ? '生成助手连接密钥'
+                  ? t('m0364')
                   : action === 'edit'
-                    ? '保存授权'
+                    ? t('m0365')
                     : action === 'revoke'
-                      ? '确认撤销'
-                      : '生成新连接密钥'
+                      ? t('m0366')
+                      : t('m0367')
             }}
           </button>
         </div>

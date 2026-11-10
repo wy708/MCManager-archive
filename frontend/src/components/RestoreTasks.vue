@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { computed, nextTick, onMounted, onScopeDispose, ref, watch } from 'vue'
 import { FolderOpen, RefreshCw, ShieldCheck, X } from '@lucide/vue'
 import { api, ApiError, type ServerArchive } from '../api'
@@ -98,11 +100,11 @@ const valid = computed(
 const title = computed(() =>
   action.value === 'create'
     ? step.value === 1
-      ? '恢复到新目录'
-      : '核对恢复方案'
+      ? t('m0515')
+      : t('m1238')
     : action.value === 'cancel'
-      ? '取消恢复任务'
-      : '核实恢复结果',
+      ? t('m1239')
+      : t('m1240'),
 )
 function serverName(id: string) {
   return props.servers.find((server) => server.id === id)?.name ?? id
@@ -115,7 +117,7 @@ function keep(value?: RestoreDraft) {
     try {
       sessionStorage.setItem(storageKey, JSON.stringify(value))
     } catch {
-      const error = new Error('浏览器无法保存原请求，尚未提交。请允许本页面使用会话存储后重试。')
+      const error = new Error(t('m1241'))
       error.name = 'RestoreStorageError'
       throw error
     }
@@ -277,7 +279,7 @@ async function perform() {
         body: JSON.stringify(body),
       })
       keep()
-      message.value = '恢复任务已确认：' + (restoreStates[result.status] ?? '等待状态更新') + '。'
+      message.value = t('m1242') + (restoreStates[result.status] ?? t('m1187')) + '。'
       if (saved.mode === 'FORK') emit('archivesChanged')
     } else if (action.value === 'cancel') {
       const result = await api<RestoreJob>('/restores/' + selectedJob.value!.id + '/cancel', {
@@ -286,17 +288,17 @@ async function perform() {
       })
       message.value =
         result.status === 'CANCELLED'
-          ? '任务已取消，原目录与文件仍保留。'
+          ? t('m1243')
           : result.cancelRequested
-            ? '已请求取消，等待执行端确认；不会删除现场。'
-            : '任务状态已更新，请查看结果。'
+            ? t('m1244')
+            : t('m1168')
     } else {
       await api('/restores/' + selectedJob.value!.id + '/resolve', {
         method: 'POST',
         signal: abort.signal,
         body: JSON.stringify({ outcome: outcome.value, note: note.value.trim() }),
       })
-      message.value = '核实结果已保存，原目录和诊断仍保留。'
+      message.value = t('m1245')
     }
     refreshAfterMutation = refresh()
     modal.value?.close()
@@ -310,7 +312,7 @@ async function perform() {
       proposal.value &&
       (!(ex instanceof ApiError) || [401, 403, 408, 429].includes(ex.status) || ex.status >= 500)
     )
-      formError.value = '提交结果尚未确认。请核实同一个请求，避免重复恢复或创建新一期。'
+      formError.value = t('m1246')
     else {
       formError.value = failure(ex)
       if (
@@ -350,33 +352,28 @@ onScopeDispose(() => {
 defineExpose({ open })
 </script>
 <template>
-  <section class="restore-workspace" aria-label="新目录恢复任务">
+  <section class="restore-workspace" :aria-label="t('m1247')">
     <article class="panel data-panel">
       <div class="data-panel-heading">
         <div>
-          <h2>恢复任务</h2>
-          <p>把备份解压到新的目录，原世界不覆盖</p>
+          <h2>{{ t('m1248') }}</h2>
+          <p>{{ t('m1249') }}</p>
         </div>
         <button data-refresh-restores class="secondary" :disabled="busy" @click="refresh">
-          <RefreshCw :size="16" />刷新恢复任务
-        </button>
+          <RefreshCw :size="16" />{{ t('m1250') }}</button>
       </div>
       <p class="data-note">
         <ShieldCheck
           :size="16"
-        />从下方已校验的归档选择“恢复到新目录”。文件准备完成后仍需实际启动并检查游戏。
-      </p>
+        />{{ t('m1251') }}</p>
     </article>
-    <p v-if="pending" class="alert info">
-      上次提交尚未核实，先确认原请求，避免再次创建任务。<button class="text-button" @click="open()">
-        核实上次提交
-      </button>
+    <p v-if="pending" class="alert info">{{ t('m1252') }}<button class="text-button" @click="open()">{{ t('m1184') }}</button>
     </p>
     <p v-if="message" class="alert info" role="status">{{ message }}</p>
     <p v-if="error" class="alert error" role="alert">
-      {{ error }}<button class="text-button" @click="refresh">重试恢复列表</button>
+      {{ error }}<button class="text-button" @click="refresh">{{ t('m1253') }}</button>
     </p>
-    <p v-else-if="busy" class="data-note" role="status">正在读取恢复任务…</p>
+    <p v-else-if="busy" class="data-note" role="status">{{ t('m1254') }}</p>
     <article
       v-for="job in data?.items ?? []"
       :key="job.id"
@@ -393,27 +390,21 @@ defineExpose({ open })
         </div>
         <span class="neutral-badge">{{
           job.cancelRequested && ['RUNNING', 'UNCERTAIN'].includes(job.status)
-            ? '已请求取消，等待核实'
-            : (restoreStates[job.status] ?? '状态待确认')
+            ? t('m1255')
+            : (restoreStates[job.status] ?? t('m0837'))
         }}</span>
       </div>
       <p class="data-note">
-        <FolderOpen :size="16" />{{ hostName(job.hostId) }} · 新目录 {{ job.destinationName }}
+        <FolderOpen :size="16" />{{ t('m1256', [hostName(job.hostId), job.destinationName]) }}
       </p>
       <p v-if="job.note" class="restore-note">{{ job.note }}</p>
-      <p v-if="job.status === 'READY'" class="alert info">
-        文件准备完成，尚未确认实际游玩。结束恢复维护后，按目标档案配置执行端，再启动并检查世界和背包。
-      </p>
-      <p v-else-if="job.status === 'UNCERTAIN'" class="alert info">
-        先核对原目录和执行进程。完整且未修改的文件可由执行端补交原回执；不完整的现场不会自动再次解包。
-      </p>
-      <p v-else-if="job.status === 'QUEUED'" class="data-note">
-        等待已启用恢复的执行端领取。继续原一期时，原游戏必须停止并进入维护模式。
-      </p>
+      <p v-if="job.status === 'READY'" class="alert info">{{ t('m1257') }}</p>
+      <p v-else-if="job.status === 'UNCERTAIN'" class="alert info">{{ t('m1258') }}</p>
+      <p v-else-if="job.status === 'QUEUED'" class="data-note">{{ t('m1259') }}</p>
       <p v-if="job.errorCode" class="data-note">
-        {{ restoreDiagnostics[job.errorCode] ?? '请检查执行端的原始诊断。' }}
+        {{ restoreDiagnostics[job.errorCode] ?? t('m1260') }}
       </p>
-      <p v-if="job.resolutionNote" class="data-note">核实说明：{{ job.resolutionNote }}</p>
+      <p v-if="job.resolutionNote" class="data-note">{{ t('m1261', [job.resolutionNote]) }}</p>
       <div class="restore-actions">
         <button
           v-if="['QUEUED', 'CLAIMED', 'RUNNING'].includes(job.status) && !job.cancelRequested"
@@ -421,43 +412,41 @@ defineExpose({ open })
           :disabled="busy || !!error"
           @click="manage('cancel', job)"
         >
-          {{ job.status === 'RUNNING' ? '请求取消恢复' : '取消恢复任务' }}</button
+          {{ job.status === 'RUNNING' ? t('m1262') : t('m1239') }}</button
         ><button
           v-if="job.status === 'UNCERTAIN'"
           class="secondary"
           :disabled="busy || !!error"
           @click="manage('resolve', job)"
-        >
-          核实处理结果
-        </button>
+        >{{ t('m1263') }}</button>
       </div>
       <details class="restore-proof">
-        <summary>查看身份与文件校验</summary>
+        <summary>{{ t('m1264') }}</summary>
         <dl>
-          <dt>任务编号</dt>
+          <dt>{{ t('m1197') }}</dt>
           <dd>
             <code>{{ job.id }}</code>
           </dd>
-          <dt>原始备份身份</dt>
+          <dt>{{ t('m1265') }}</dt>
           <dd>
             <code>{{ job.sourceBackupId }}</code>
           </dd>
-          <dt>目标档案身份</dt>
+          <dt>{{ t('m1266') }}</dt>
           <dd>
             <code>{{ job.targetServerId }}</code>
           </dd>
-          <dt>原归档 SHA-256</dt>
+          <dt>{{ t('m1267') }}</dt>
           <dd>
             <code>{{ job.archiveSha256 }}</code>
           </dd>
-          <dt>文件数 / 归档大小</dt>
+          <dt>{{ t('m1268') }}</dt>
           <dd>{{ job.fileCount }} / {{ formatRestoreBytes(job.archiveBytes) }}</dd>
-          <dt>恢复身份</dt>
+          <dt>{{ t('m1269') }}</dt>
           <dd>
-            <code>{{ job.restorationId ?? '尚未确认' }}</code>
+            <code>{{ job.restorationId ?? t('m0057') }}</code>
           </dd>
         </dl>
-        <p class="data-note">恢复旧世界不回滚中央统计历史；独立检查和新一期会隔离旧采集缓存。</p>
+        <p class="data-note">{{ t('m1270') }}</p>
       </details>
     </article>
     <PaginationControl
@@ -481,7 +470,7 @@ defineExpose({ open })
           <button
             type="button"
             class="icon-button"
-            aria-label="关闭恢复窗口"
+            :aria-label="t('m1271')"
             :disabled="working"
             @click="close"
           >
@@ -489,139 +478,122 @@ defineExpose({ open })
           </button>
         </div>
         <template v-if="action === 'create' && source">
-          <p class="dialog-description">
-            来源：{{ serverName(source.serverId) }} · {{ source.fileCount ?? '未确认' }} 个文件 ·
-            {{ formatRestoreBytes(source.archiveBytes) }}
+          <p class="dialog-description">{{ t('m1272', [serverName(source.serverId), source.fileCount ?? t('m0227'), formatRestoreBytes(source.archiveBytes)]) }}
           </p>
           <template v-if="step === 1">
             <label
-              >恢复方式<select
+              >{{ t('m1273') }}<select
                 ref="first"
                 v-model="mode"
-                aria-label="恢复方式"
+                :aria-label="t('m1273')"
                 @change="changeMode"
               >
-                <option value="DISABLED">独立检查，关闭采集（推荐先检查）</option>
+                <option value="DISABLED">{{ t('m1274') }}</option>
                 <option
                   value="CONTINUE"
                   :disabled="!canContinue || source?.summary?.archiveScope === 'WORLD'"
-                >
-                  继续原一期{{ canContinue ? '' : '（原档案已封存）' }}
+                >{{ t('m1276', [canContinue ? '' : t('m1275')]) }}
                 </option>
-                <option value="FORK" :disabled="source?.summary?.archiveScope === 'WORLD'">
-                  创建新一期
-                </option>
+                <option value="FORK" :disabled="source?.summary?.archiveScope === 'WORLD'">{{ t('m0230') }}</option>
               </select></label
             >
             <p class="data-note">
               {{
                 source?.summary?.archiveScope === 'WORLD'
-                  ? '仅解压世界存档到新目录，不启动游戏，不修改插件或平台历史。备份程序需要 0.7.0 或更高版本。'
+                  ? t('m1277')
                   : mode === 'CONTINUE'
-                    ? '保留原 UUID 与中央新历史，原缓存按事件身份去重。须使用原一期执行端与当前有效插件连接密钥，并停止原游戏进入恢复维护。'
+                    ? t('m1278')
                     : mode === 'FORK'
-                      ? '新建独立档案与插件连接密钥，隔离旧缓存；不把旧聊天或统计复制到新一期。'
-                      : '保留来源身份但关闭采集，隔离旧缓存，适合独立检查。'
+                      ? t('m1279')
+                      : t('m1280')
               }}
             </p>
             <label
-              >恢复程序<select
+              >{{ t('m1281') }}<select
                 v-model="hostId"
-                aria-label="恢复程序"
+                :aria-label="t('m1281')"
                 required
                 @change="delegated = false"
               >
-                <option value="" disabled>选择已启用恢复的执行端</option>
+                <option value="" disabled>{{ t('m1282') }}</option>
                 <option v-for="item in eligible" :key="item.id" :value="item.id">
                   {{ item.name }} · {{ serverName(item.serverId) }} ·
                   {{
                     item.online
                       ? item.runtimeState === 'STOPPED'
-                        ? '维护中'
-                        : '已连接'
-                      : '离线等待'
+                        ? t('m1283')
+                        : t('m1161')
+                      : t('m1284')
                   }}
                 </option>
               </select></label
             >
-            <p v-if="!eligible.length" class="data-note">
-              尚无可用备份程序。在本地主机配置 restoreDirectory，使用 0.4.0
-              或更新的宿主工具连接后再刷新。继续原一期还要求原档案仍在记录中。
-            </p>
+            <p v-if="!eligible.length" class="data-note">{{ t('m1285') }}</p>
             <label v-if="crossHost" class="restore-check"
-              ><input v-model="delegated" type="checkbox" />确认把这份来源归档交给“{{
-                host?.name
-              }}”读取并恢复</label
+              ><input v-model="delegated" type="checkbox" />{{ t('m1286', [host?.name]) }}</label
             >
             <label
-              >新目录名称<input
+              >{{ t('m1287') }}<input
                 v-model="folder"
                 required
                 maxlength="64"
-                placeholder="例如：一期-恢复检查"
+                :placeholder="t('m1288')"
                 autocomplete="off"
             /></label>
-            <p class="data-note">
-              只填一个新名称，允许汉字、字母、数字、下划线和短横线。父目录取自主机本地配置；已存在或用过的目标名称不能覆盖。
-            </p>
+            <p class="data-note">{{ t('m1289') }}</p>
             <template v-if="mode === 'FORK'"
               ><label
-                >新一期名称<input
+                >{{ t('m1290') }}<input
                   v-model="forkName"
                   required
                   maxlength="64"
                   autocomplete="off" /></label
-              ><label>新一期开服日期<input v-model="forkDate" type="date" required /></label
+              ><label>{{ t('m1291') }}<input v-model="forkDate" type="date" required /></label
             ></template>
-            <label>恢复备注<textarea v-model="note" rows="2" maxlength="1000" /></label>
+            <label>{{ t('m1292') }}<textarea v-model="note" rows="2" maxlength="1000" /></label>
           </template>
           <template v-else-if="proposal">
             <dl class="restore-review">
-              <dt>世界快照时间</dt>
+              <dt>{{ t('m1293') }}</dt>
               <dd>{{ displayTime(source.snapshotAt ?? source.createdAt) }}</dd>
-              <dt>恢复方式</dt>
+              <dt>{{ t('m1273') }}</dt>
               <dd>{{ restoreModes[proposal.mode] }}</dd>
-              <dt>执行端</dt>
+              <dt>{{ t('m1294') }}</dt>
               <dd>{{ hostName(proposal.hostId) }} · {{ serverName(host?.serverId ?? '') }}</dd>
-              <dt>目标新目录</dt>
+              <dt>{{ t('m1295') }}</dt>
               <dd>{{ proposal.destinationName }}</dd>
-              <dt>目标档案</dt>
+              <dt>{{ t('m1296') }}</dt>
               <dd>
                 {{
                   proposal.mode === 'FORK'
                     ? proposal.forkName + ' · ' + proposal.forkStartDate
-                    : serverName(source.serverId) + '（保持原身份）'
+                    : serverName(source.serverId) + t('m1297')
                 }}
               </dd>
-              <dt>原文件摘要</dt>
+              <dt>{{ t('m1298') }}</dt>
               <dd>
-                <code>{{ source.sha256 ?? '未确认' }}</code>
+                <code>{{ source.sha256 ?? t('m0227') }}</code>
               </dd>
-              <dt>采集缓存</dt>
+              <dt>{{ t('m1299') }}</dt>
               <dd>
-                {{
-                  source.summary?.statistics?.cacheIntegrity === 'VERIFIED'
-                    ? '摘要校验通过'
-                    : '未核实'
-                }}
-                · 待传事件 {{ source.summary?.statistics?.pendingEvents ?? '未知' }}
+                {{ t('m1300', [source.summary?.statistics?.cacheIntegrity === 'VERIFIED'
+                    ? t('m0506')
+                    : t('m0507'), source.summary?.statistics?.pendingEvents ?? t('m0508')]) }}
               </dd>
-              <dt>缓存中最大已确认事件时间</dt>
+              <dt>{{ t('m0510') }}</dt>
               <dd>
                 {{ displayTime(source.summary?.statistics?.latestAcknowledgedEventAt)
-                }}<small class="data-note">不表示此前所有统计均已上传。</small>
+                }}<small class="data-note">{{ t('m1301') }}</small>
               </dd>
             </dl>
-            <p class="alert info">
-              游戏世界会回到快照时刻，中央已有历史继续保留。此归档不包含平台或插件外部数据库。执行中与结果待核实期间，归档会被占用，不能删除或自动清理旧备份。
-            </p>
+            <p class="alert info">{{ t('m1302') }}</p>
             <label class="restore-check"
               ><input
                 ref="first"
                 v-model="acknowledged"
                 :disabled="working"
                 type="checkbox"
-              />确认使用新目录，并理解文件准备完成不代表已验证实际游玩</label
+              />{{ t('m1303') }}</label
             >
           </template>
         </template>
@@ -632,23 +604,23 @@ defineExpose({ open })
           <p class="alert info">
             {{
               action === 'cancel'
-                ? '尚未开始可直接取消；已经开始须等待执行端安全收尾。原目录、临时文件与诊断都保留。'
-                : '先确认原执行进程与新目录的实际结果。此操作只记录失败或取消，不会删除现场，也不能标记为已验证游玩；再次恢复须使用新任务与新目录名。'
+                ? t('m1304')
+                : t('m1305')
             }}
           </p>
           <template v-if="action === 'resolve'"
             ><label
-              >核实结果<select
+              >{{ t('m1306') }}<select
                 ref="first"
                 v-model="outcome"
-                aria-label="核实结果"
+                :aria-label="t('m1306')"
                 :disabled="working"
               >
-                <option value="FAILED">标记失败</option>
-                <option value="CANCELLED">标记取消</option>
+                <option value="FAILED">{{ t('m1227') }}</option>
+                <option value="CANCELLED">{{ t('m1228') }}</option>
               </select></label
             ><label
-              >核实说明<input
+              >{{ t('m1307') }}<input
                 v-model="note"
                 :disabled="working"
                 required
@@ -657,15 +629,14 @@ defineExpose({ open })
         ></template>
         <p v-if="formError" class="alert error" role="alert">{{ formError }}</p>
         <div class="dialog-actions">
-          <button type="button" class="secondary" :disabled="working" @click="close">返回</button
+          <button type="button" class="secondary" :disabled="working" @click="close">{{ t('m0416') }}</button
           ><button
             v-if="action === 'create' && step === 2 && !pending"
             type="button"
             class="secondary"
             :disabled="working"
             @click="back"
-          >
-            修改方案</button
+          >{{ t('m1308') }}</button
           ><button
             class="primary"
             :disabled="
@@ -676,16 +647,16 @@ defineExpose({ open })
           >
             {{
               working
-                ? '正在处理…'
+                ? t('m0303')
                 : action === 'create'
                   ? step === 1
-                    ? '下一步，核对方案'
+                    ? t('m1309')
                     : pending
-                      ? '重试并核实原任务'
-                      : '创建恢复任务'
+                      ? t('m1310')
+                      : t('m1311')
                   : action === 'cancel'
-                    ? '确认取消恢复'
-                    : '保存核实结果'
+                    ? t('m1312')
+                    : t('m1313')
             }}
           </button>
         </div>

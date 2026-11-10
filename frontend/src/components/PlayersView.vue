@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { ref, watch } from 'vue'
 import { Search, Users, ArrowRight } from '@lucide/vue'
 import { api } from '../api'
@@ -30,38 +32,38 @@ const { data, busy, error, refresh } = useResource(
   <section class="panel data-panel">
     <div class="data-panel-heading">
       <div>
-        <h2>玩家档案</h2>
-        <p>改名后也能找到同一位玩家；名字相同的玩家会分别记录。</p>
+        <h2>{{ t('m0920') }}</h2>
+        <p>{{ t('m0921') }}</p>
       </div>
       <form class="inline-search" @submit.prevent="search = draft">
         <label class="search-field"
           ><Search :size="17" /><input
             v-model="draft"
             type="search"
-            aria-label="搜索玩家当前或历史名字"
-            placeholder="当前名字 / 历史名字"
+            :aria-label="t('m0922')"
+            :placeholder="t('m0923')"
             maxlength="80" /></label
-        ><button class="secondary">搜索</button>
+        ><button class="secondary">{{ t('m0924') }}</button>
       </form>
     </div>
     <p v-if="error" class="alert error" role="alert">
-      {{ error }}<button class="text-button" @click="refresh">重试</button>
+      {{ error }}<button class="text-button" @click="refresh">{{ t('m0337') }}</button>
     </p>
-    <div v-else-if="busy" class="small-empty" role="status">正在加载玩家…</div>
+    <div v-else-if="busy" class="small-empty" role="status">{{ t('m0925') }}</div>
     <div v-else-if="!data?.items.length" class="small-empty">
       <span class="empty-icon"><Users :size="30" /></span>
-      <h3>此范围内还没有玩家记录</h3>
-      <p>连接游戏插件后，玩家记录会出现在这里。也可以试着放宽日期筛选。</p>
+      <h3>{{ t('m0926') }}</h3>
+      <p>{{ t('m0927') }}</p>
     </div>
     <template v-else
-      ><div class="table-scroll" tabindex="0" aria-label="玩家列表">
+      ><div class="table-scroll" tabindex="0" :aria-label="t('m0928')">
         <table>
           <thead>
             <tr>
-              <th>玩家</th>
-              <th>最早记录时间</th>
-              <th>最近记录时间</th>
-              <th>操作</th>
+              <th>{{ t('m0089') }}</th>
+              <th>{{ t('m0929') }}</th>
+              <th>{{ t('m0930') }}</th>
+              <th>{{ t('m0931') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -74,7 +76,7 @@ const { data, busy, error, refresh } = useResource(
                   <div>
                     <strong>{{ player.name }}</strong>
                     <details class="identity-details">
-                      <summary>查看玩家编号</summary>
+                      <summary>{{ t('m0904') }}</summary>
                       <code class="identity-key">{{ player.key }}</code>
                     </details>
                   </div>
@@ -85,10 +87,9 @@ const { data, busy, error, refresh } = useResource(
               <td>
                 <button
                   class="text-button"
-                  :aria-label="`查看玩家 ${player.name}`"
+                  :aria-label="t('m0932', [player.name])"
                   @click="emit('select', player.key)"
-                >
-                  查看档案<ArrowRight :size="15" />
+                >{{ t('m0933') }}<ArrowRight :size="15" />
                 </button>
               </td>
             </tr>

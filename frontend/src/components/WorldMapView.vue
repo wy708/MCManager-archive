@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t, localizedUrl } from '../i18n'
+
 import { computed, ref, watch } from 'vue'
 import { ExternalLink, Map, RefreshCw } from '@lucide/vue'
 import { api } from '../api'
@@ -40,47 +42,42 @@ function reload() {
   <section class="panel world-map-workspace">
     <div class="data-panel-heading">
       <div>
-        <h2><Map :size="20" />世界地图</h2>
-        <p>拖动探索世界，切换维度，或在地图里输入坐标前往目的地。</p>
+        <h2><Map :size="20" />{{ t('m0186') }}</h2>
+        <p>{{ t('m1530') }}</p>
       </div>
       <div class="map-actions">
-        <select v-if="scope === 'all' && data?.length" v-model="selected" aria-label="地图服务器">
+        <select v-if="scope === 'all' && data?.length" v-model="selected" :aria-label="t('m1531')">
           <option v-for="map in data" :key="map.serverId" :value="map.serverId">
-            {{ map.serverName }}{{ map.configured ? '' : ' · 未连接地图' }}
+            {{ map.serverName }}{{ map.configured ? '' : t('m1532') }}
           </option>
         </select>
         <button class="secondary" :disabled="busy" @click="reload">
-          <RefreshCw :size="16" />刷新地图
-        </button>
+          <RefreshCw :size="16" />{{ t('m1533') }}</button>
         <a
           v-if="current?.viewerUrl"
           class="secondary map-open"
-          :href="current.viewerUrl"
+          :href="localizedUrl(current.viewerUrl)"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <ExternalLink :size="16" />独立打开
-        </a>
+          <ExternalLink :size="16" />{{ t('m1534') }}</a>
       </div>
     </div>
     <p v-if="error" class="alert error" role="alert">{{ error }}</p>
-    <p v-else-if="busy && !data" class="small-empty" role="status">正在连接地图…</p>
+    <p v-else-if="busy && !data" class="small-empty" role="status">{{ t('m1535') }}</p>
     <template v-else-if="current?.configured && current.viewerUrl">
       <iframe
         :key="current.serverId + ':' + frameRevision"
-        :src="current.viewerUrl"
-        :title="current.serverName + '世界地图'"
+        :src="localizedUrl(current.viewerUrl)"
+        :title="current.serverName + t('m0186')"
         class="world-map-frame"
       />
-      <p class="map-note">
-        独立地图链接可直接分享，无需登录。 地图功能与更新规则沿用原版 MipMap；游戏内可使用 /loadmap
-        批量绘制指定区域。
-      </p>
+      <p class="map-note">{{ t('m1536') }}</p>
     </template>
     <div v-else class="map-empty">
       <Map :size="42" />
-      <h3>{{ current ? '这台服务器尚未连接地图' : '先添加服务器档案' }}</h3>
-      <p>请先为这台游戏服连接地图服务。连接完成后，玩家探索过的地形会显示在这里。</p>
+      <h3>{{ current ? t('m1537') : t('m1538') }}</h3>
+      <p>{{ t('m1539') }}</p>
     </div>
   </section>
 </template>

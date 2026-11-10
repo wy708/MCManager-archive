@@ -6,6 +6,9 @@ root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path('/app')
 assets = Path(__file__).parent
 viewer = root / 'web/static/js/map.js'
 text = viewer.read_text(encoding='utf-8')
+if 'function mcmanagerMapLanguage()' not in text:
+    text = (assets / 'viewer_language.js').read_text(encoding='utf-8') + '\n' + text
+    viewer.write_text(text, encoding='utf-8')
 if 'initCoordinateJump() {' not in text:
     assert '    this.initEventListeners();' in text
     assert '  initEventListeners() {' in text

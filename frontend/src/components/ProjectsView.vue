@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { t } from '../i18n'
+
 import { computed, ref, watch, onBeforeUnmount } from 'vue'
 import { api, type ServerArchive } from '../api'
 import { statusName, type Project, type ProjectDetail } from '../projects'
@@ -26,10 +28,10 @@ async function deleteProject() {
     deleteDialog.value?.close()
     deleting.value = undefined
     editing.value = undefined
-    message.value = '工程已删除，公开链接已失效。服务器原始统计保留。'
+    message.value = t('m1030')
     await load()
   } catch (e) {
-    error.value = e instanceof Error ? e.message : '删除失败，请重试'
+    error.value = e instanceof Error ? e.message : t('m1031')
     deleteDialog.value?.close()
   } finally {
     busy.value = false
@@ -80,7 +82,7 @@ async function openExport(project: Project) {
     if (exporting.value?.id === project.id) exportRevisions.value = detail.revisions
   } catch (e) {
     if (!controller.signal.aborted)
-      exportMessage.value = e instanceof Error ? e.message : '阶段读取失败'
+      exportMessage.value = e instanceof Error ? e.message : t('m1032')
   }
   if (!controller.signal.aborted) void prepareExportRange()
 }
@@ -93,7 +95,7 @@ async function prepareExportRange() {
   exportBuild.value = ''
   exportIssues.value = []
   exportHeightBusy.value = true
-  exportMessage.value = '正在读取可导出的高度范围…'
+  exportMessage.value = t('m1033')
   const revision = exportRevision.value,
     prefix = `/servers/${project.serverId}/projects/${project.id}/phases/${revision}/scene-export`
   try {
@@ -122,22 +124,22 @@ async function prepareExportRange() {
         exportMaxY.value = saved?.maxY ?? range.maxY
         exportBuild.value = state.build
         exportHeightNotice.value =
-          `已采集模型：Y ${range.minY} ～ ${range.maxY}。` +
+          t('m1034', [range.minY, range.maxY]) +
           (saved
-            ? '已填入本浏览器保存的预览范围，请确认。'
+            ? t('m1035')
             : range.basis === 'PLAYER_PLACEMENT'
-              ? '默认从玩家放置方块的最低高度开始，请确认。'
-              : '暂无可用放置记录，默认按已采集地表估算，请确认。')
+              ? t('m1036')
+              : t('m1037'))
         exportMessage.value = ''
         return
       }
       if (['FAILED', 'UNAVAILABLE', 'WAITING'].includes(state.state)) throw new Error(state.message)
-      if (Date.now() > deadline) throw new Error('模型仍在准备中，请稍后重新打开导出窗口。')
+      if (Date.now() > deadline) throw new Error(t('m1038'))
       await new Promise((resolve) => setTimeout(resolve, 1500))
     }
   } catch (e) {
     if (!controller.signal.aborted)
-      exportMessage.value = e instanceof Error ? e.message : '高度范围读取失败'
+      exportMessage.value = e instanceof Error ? e.message : t('m1039')
   } finally {
     if (exportController === controller) exportHeightBusy.value = false
   }
@@ -154,14 +156,14 @@ async function exportModel() {
     maxY > 4095 ||
     minY > maxY
   ) {
-    exportMessage.value = '请填写有效的最低和最高导出高度（-2048 至 4095），最低不能高于最高。'
+    exportMessage.value = t('m1040')
     return
   }
   exportController?.abort()
   const controller = new AbortController()
   exportController = controller
   exportBusy.value = true
-  exportMessage.value = '正在准备所选高度的模型和贴图…'
+  exportMessage.value = t('m1041')
   const revision = exportRevision.value,
     creatures = includeCreatures.value,
     build = exportBuild.value,
@@ -182,20 +184,20 @@ async function exportModel() {
       if (state.state === 'READY') {
         const link = document.createElement('a')
         link.href = '/api' + prefix + '?' + query
-        link.download = project.name + '-阶段' + revision + '-Y' + minY + '至' + maxY + '.glb'
+        link.download = project.name + t('m1042') + revision + '-Y' + minY + t('m1043') + maxY + '.glb'
         document.body.appendChild(link)
         link.click()
         link.remove()
-        exportMessage.value = `已开始下载 Y ${minY} ～ ${maxY} 的 GLB 模型，文件内包含贴图。`
+        exportMessage.value = t('m1044', [minY, maxY])
         return
       }
       if (['FAILED', 'UNAVAILABLE', 'WAITING'].includes(state.state)) throw new Error(state.message)
-      if (Date.now() > deadline) throw new Error('模型仍在准备中，请稍后重试；转换会在后台继续。')
+      if (Date.now() > deadline) throw new Error(t('m1045'))
       await new Promise((resolve) => setTimeout(resolve, 1500))
     }
   } catch (e) {
     if (!controller.signal.aborted)
-      exportMessage.value = e instanceof Error ? e.message : '导出未完成，请重试'
+      exportMessage.value = e instanceof Error ? e.message : t('m1046')
   } finally {
     if (exportController === controller) exportBusy.value = false
   }
@@ -250,7 +252,7 @@ async function load() {
     )
     if (ticket === generation) groups.value = result
   } catch (e) {
-    if (ticket === generation) error.value = e instanceof Error ? e.message : '读取失败'
+    if (ticket === generation) error.value = e instanceof Error ? e.message : t('m1047')
   }
 }
 watch(
@@ -328,7 +330,7 @@ async function operate(action: string, project?: Project) {
     editing.value = undefined
     await load()
   } catch (e) {
-    error.value = e instanceof Error ? e.message : '操作失败。可以重试相同请求。'
+    error.value = e instanceof Error ? e.message : t('m1048')
   } finally {
     busy.value = false
   }
@@ -338,27 +340,21 @@ async function operate(action: string, project?: Project) {
   <section class="projects-admin">
     <div class="project-banner">
       <div>
-        <h2>让每一座建筑都有故事</h2>
-        <p>按服务器整理工程，记录方块与建设者，完工后永久留念。</p>
+        <h2>{{ t('m1049') }}</h2>
+        <p>{{ t('m1050') }}</p>
       </div>
-      <button v-if="!props.readonly" class="primary" @click="newProject">新建工程</button>
+      <button v-if="!props.readonly" class="primary" @click="newProject">{{ t('m1051') }}</button>
     </div>
     <details class="project-command-help">
-      <summary>在游戏里或通过 AI 管理工程</summary>
-      <p class="project-muted">
-        玩家可在游戏内使用 /project pos1、pos2 选点，再用 /project create 工程名创建。修改范围用
-        /project range 工程名；完成用 finish，继续用 resume。AI 操作会校验绑定的创建者。
-      </p>
+      <summary>{{ t('m1052') }}</summary>
+      <p class="project-muted">{{ t('m1053') }}</p>
     </details>
     <div class="project-library-tools">
-      <label>查找工程<input v-model="search" type="search" placeholder="工程名称或创建者" /></label>
+      <label>{{ t('m1054') }}<input v-model="search" type="search" :placeholder="t('m1055')" /></label>
       <div class="segmented">
-        <button :aria-pressed="stateFilter === 'all'" @click="stateFilter = 'all'">
-          全部 {{ projectCounts.all }}</button
-        ><button :aria-pressed="stateFilter === 'ACTIVE'" @click="stateFilter = 'ACTIVE'">
-          施工中 {{ projectCounts.active }}</button
-        ><button :aria-pressed="stateFilter === 'COMPLETE'" @click="stateFilter = 'COMPLETE'">
-          已封存 {{ projectCounts.complete }}
+        <button :aria-pressed="stateFilter === 'all'" @click="stateFilter = 'all'">{{ t('m1056', [projectCounts.all]) }}</button
+        ><button :aria-pressed="stateFilter === 'ACTIVE'" @click="stateFilter = 'ACTIVE'">{{ t('m1057', [projectCounts.active]) }}</button
+        ><button :aria-pressed="stateFilter === 'COMPLETE'" @click="stateFilter = 'COMPLETE'">{{ t('m1058', [projectCounts.complete]) }}
         </button>
       </div>
     </div>
@@ -369,16 +365,13 @@ async function operate(action: string, project?: Project) {
       class="project-panel project-form"
       @submit.prevent="operate(editing ? 'UPDATE' : 'CREATE', editing)"
     >
-      <h3>{{ editing ? '修改施工范围：' + editing.name : '管理员创建工程' }}</h3>
+      <h3>{{ editing ? t('m1059') + editing.name : t('m1060') }}</h3>
       <p class="project-muted">
-        {{
-          editing
-            ? '修改后开始新阶段，旧范围、地图和统计保留。'
-            : '管理员创建的工程由后台管理；玩家自己创建请使用游戏命令或已绑定的 AI。'
-        }}两个点只限定 X/Z，包含所有高度。
-      </p>
+        {{ t('m1063', [editing
+            ? t('m1061')
+            : t('m1062')]) }}</p>
       <label v-if="create"
-        >服务器<select v-model="form.serverId" required>
+        >{{ t('m0727') }}<select v-model="form.serverId" required>
           <option
             v-for="s in visible.filter((s) => s.status === 'RECORDING')"
             :key="s.id"
@@ -388,12 +381,12 @@ async function operate(action: string, project?: Project) {
           </option>
         </select></label
       >
-      <label v-if="create">工程名称<input v-model="form.name" maxlength="80" required /></label>
+      <label v-if="create">{{ t('m1064') }}<input v-model="form.name" maxlength="80" required /></label>
       <label
-        >维度<select v-model="form.dimension" :disabled="!!editing">
-          <option value="minecraft:overworld">主世界</option>
-          <option value="minecraft:nether">下界</option>
-          <option value="minecraft:the_end">末地</option>
+        >{{ t('m0586') }}<select v-model="form.dimension" :disabled="!!editing">
+          <option value="minecraft:overworld">{{ t('m0257') }}</option>
+          <option value="minecraft:nether">{{ t('m0258') }}</option>
+          <option value="minecraft:the_end">{{ t('m0259') }}</option>
         </select></label
       >
       <div class="project-coordinates">
@@ -408,61 +401,53 @@ async function operate(action: string, project?: Project) {
             required
         /></label>
       </div>
-      <button class="primary" :disabled="busy">{{ busy ? '正在保存…' : '保存' }}</button>
-      <button type="button" @click="cancelEdit">
-        取消
-      </button>
+      <button class="primary" :disabled="busy">{{ busy ? t('m0417') : t('m1065') }}</button>
+      <button type="button" @click="cancelEdit">{{ t('m0102') }}</button>
     </form>
     <section v-for="group in filteredGroups" :key="group.server.id" class="project-panel">
       <h2>{{ group.server.name }}</h2>
       <p v-if="!group.projects.length" class="project-empty">
         {{
           search || stateFilter !== 'all'
-            ? '没有符合条件的工程，试试调整搜索或状态。'
-            : '还没有工程，创建后会显示在这里。'
+            ? t('m1066')
+            : t('m1067')
         }}
       </p>
       <div class="project-cards">
         <article v-for="p in group.projects" :key="p.id" class="project-card">
           <small class="project-state-chip"
-            >{{ statusName(p.status) }} · 第 {{ p.revision }} 阶段</small
+            >{{ t('m0862', [statusName(p.status), p.revision]) }}</small
           >
           <h3>{{ p.name }}</h3>
-          <p>{{ p.creator }} 创建</p>
+          <p>{{ t('m0863', [p.creator]) }}</p>
           <p class="project-muted">
             X {{ p.minX }} ～ {{ p.maxX }} · Z {{ p.minZ }} ～ {{ p.maxZ }}
           </p>
           <div class="project-actions">
-            <a :href="p.publicUrl" target="_blank" rel="noopener">打开公开施工地图 ↗</a
-            ><a :href="p.publicUrl + '#model'" target="_blank" rel="noopener">三维建筑 ↗</a
+            <a :href="p.publicUrl" target="_blank" rel="noopener">{{ t('m1068') }}</a
+            ><a :href="p.publicUrl + '#model'" target="_blank" rel="noopener">{{ t('m1069') }}</a
             ><button
               v-if="!props.readonly && p.status === 'ACTIVE'"
               :disabled="busy"
               @click="edit(p)"
-            >
-              修改范围</button
+            >{{ t('m1070') }}</button
             ><button
               v-if="!props.readonly && p.status === 'ACTIVE'"
               :disabled="busy"
               @click="operate('COMPLETE', p)"
-            >
-              完成封存</button
+            >{{ t('m1071') }}</button
             ><button
               v-if="!props.readonly && p.status === 'COMPLETE'"
               :disabled="busy"
               @click="operate('RESUME', p)"
-            >
-              继续施工</button
-            ><button v-if="!props.readonly" :disabled="busy" @click="openExport(p)">
-              导出 3D 模型</button
+            >{{ t('m1072') }}</button
+            ><button v-if="!props.readonly" :disabled="busy" @click="openExport(p)">{{ t('m1073') }}</button
             ><button
               v-if="!props.readonly"
               class="project-delete-button"
               :disabled="busy"
               @click="confirmDelete(p)"
-            >
-              删除工程
-            </button>
+            >{{ t('m1074') }}</button>
           </div>
         </article>
       </div>
@@ -473,17 +458,16 @@ async function operate(action: string, project?: Project) {
       aria-labelledby="export-project-title"
       @cancel="cancelExport"
     >
-      <h2 id="export-project-title">导出 3D 模型</h2>
+      <h2 id="export-project-title">{{ t('m1073') }}</h2>
       <p>{{ exporting?.name }}</p>
       <label
-        >记录阶段
-        <select v-model.number="exportRevision" :disabled="exportBusy" @change="prepareExportRange">
-          <option v-for="r in exportRevisions" :key="r" :value="r">第 {{ r }} 阶段</option>
+        >{{ t('m1075') }}<select v-model.number="exportRevision" :disabled="exportBusy" @change="prepareExportRange">
+          <option v-for="r in exportRevisions" :key="r" :value="r">{{ t('m1076', [r]) }}</option>
         </select></label
       >
       <div class="export-height-range">
         <label
-          >最低导出高度 Y<input
+          >{{ t('m1077') }}<input
             v-model.number="exportMinY"
             type="number"
             min="-2048"
@@ -491,7 +475,7 @@ async function operate(action: string, project?: Project) {
             step="1"
             :disabled="exportBusy || exportHeightBusy || !exportBuild" /></label
         ><label
-          >最高导出高度 Y<input
+          >{{ t('m1078') }}<input
             v-model.number="exportMaxY"
             type="number"
             min="-2048"
@@ -501,40 +485,29 @@ async function operate(action: string, project?: Project) {
         /></label>
       </div>
       <p class="project-muted">
-        {{
-          exportHeightNotice
-        }}
-        导出包含起止两层方块，高度之外的几何不会写入文件。此设置不会修改工程采集范围。
-      </p>
-      <button v-if="!exportBuild && !exportHeightBusy" type="button" @click="prepareExportRange">
-        重新读取高度
-      </button>
+        {{ t('m1079', [exportHeightNotice]) }}</p>
+      <button v-if="!exportBuild && !exportHeightBusy" type="button" @click="prepareExportRange">{{ t('m1080') }}</button>
       <p>
         <label class="export-creatures"
           ><input
             v-model="includeCreatures"
             type="checkbox"
             :disabled="exportBusy"
-          />包含动物和怪物</label
+          />{{ t('m1081') }}</label
         >
       </p>
-      <p class="project-muted">
-        默认导出建筑、地形、盔甲架及其装备、告示牌和展示框。掉落物不记录。GLB 包含模型和贴图；在
-        Blender 中使用“文件 → 导入 → glTF 2.0”，切换“材质预览”查看贴图。水流保持采集时的形状。
-      </p>
-      <p v-if="exportIssues.length" class="project-muted">
-        当前场景有 {{ exportIssues.length }} 项内容尚未完整显示，导出也会保留这些缺口。
-      </p>
+      <p class="project-muted">{{ t('m1082') }}</p>
+      <p v-if="exportIssues.length" class="project-muted">{{ t('m1083', [exportIssues.length]) }}</p>
       <p v-if="exportMessage" role="status">{{ exportMessage }}</p>
       <div class="project-actions">
-        <button type="button" @click="cancelExport">关闭</button
+        <button type="button" @click="cancelExport">{{ t('m1084') }}</button
         ><button
           type="button"
           class="primary"
           :disabled="exportBusy || exportHeightBusy || !exportBuild"
           @click="exportModel"
         >
-          {{ exportBusy ? '正在准备…' : '下载 GLB 模型' }}
+          {{ exportBusy ? t('m1085') : t('m1086') }}
         </button>
       </div>
     </dialog>
@@ -544,25 +517,22 @@ async function operate(action: string, project?: Project) {
       aria-labelledby="delete-project-title"
       @cancel="deleting = undefined"
     >
-      <h2 id="delete-project-title">删除工程</h2>
-      <p>确定删除「{{ deleting?.name }}」吗？</p>
-      <p>
-        该工程的公开地图、三维模型、贡献统计和所有历史阶段将被清除，链接立即失效，无法通过继续施工恢复。服务器原始行为记录和总统计保留。
-      </p>
+      <h2 id="delete-project-title">{{ t('m1074') }}</h2>
+      <p>{{ t('m1087', [deleting?.name]) }}</p>
+      <p>{{ t('m1088') }}</p>
       <div class="project-actions">
         <button
           type="button"
           :disabled="busy"
           @click="cancelDelete"
-        >
-          取消</button
+        >{{ t('m0102') }}</button
         ><button
           type="button"
           class="project-delete-button"
           :disabled="busy"
           @click="deleteProject"
         >
-          {{ busy ? '正在删除…' : '确认删除' }}
+          {{ busy ? t('m1089') : t('m1090') }}
         </button>
       </div>
     </dialog>
