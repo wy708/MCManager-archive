@@ -2,6 +2,8 @@
 
 MCManager supports Simplified Chinese and English in the web workspace, login screen, public project pages and map navigation controls.
 
+[Desktop preview](images/dashboard-en-desktop.jpg) · [Mobile preview](images/dashboard-en-mobile.jpg) (synthetic data)
+
 ## Choose a language
 
 Use the language selector on the login page or in the workspace header. Public project and world-map viewers also have their own selector. The choice is saved in this browser. Switching languages reloads the current page while preserving its route, query filters and fragment; save any unfinished form first.

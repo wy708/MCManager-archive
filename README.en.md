@@ -4,7 +4,7 @@
 
 [中文](README.md) · [Getting started](docs/getting-started.md) · [Architecture](docs/architecture.md) · [Contributing](CONTRIBUTING.md)
 
-![Dashboard using synthetic demonstration data](docs/images/dashboard-en-desktop.png)
+![Dashboard using synthetic demonstration data](docs/images/dashboard-en-desktop.jpg)
 
 Track player activity, preserve construction history, explore your world and give an AI agent permission-scoped access to recorded facts.
 
