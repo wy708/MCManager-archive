@@ -1,0 +1,1 @@
+ALTER TABLE activity_stream ADD COLUMN purge_before TIMESTAMP WITH TIME ZONE;

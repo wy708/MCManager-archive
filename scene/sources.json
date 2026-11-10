@@ -1,0 +1,42 @@
+{
+  "miex": {
+    "repository": "https://github.com/BramStoutProductions/MiEx.git",
+    "revision": "631e9fc2fde8c749bf59d4c3495492e62a83ef6c",
+    "license": "BSD-3-Clause"
+  },
+  "bedrock": {
+    "repository": "https://github.com/Mojang/bedrock-samples.git",
+    "revision": "15701fa9c13923f12662984c32c124327e40e3d3",
+    "version": "1.26.60.5"
+  },
+  "javaGeometry": {
+    "version": "26.3",
+    "download": {
+      "sha1": "e877b6a07acd633fb3bb475002175cec036e7b87",
+      "size": 41483720,
+      "url": "https://piston-data.mojang.com/v1/objects/e877b6a07acd633fb3bb475002175cec036e7b87/client.jar"
+    },
+    "fontAssets": {
+      "minecraft/font/include/unifont.json": {
+        "hash": "402ded0eebd448033ef415e861a17513075f80e7",
+        "size": 3993
+      },
+      "minecraft/font/include/unifont_pua.json": {
+        "hash": "db5582c177aca966ba1a9b062cead233a262a939",
+        "size": 136
+      },
+      "minecraft/font/unifont.zip": {
+        "hash": "ccd5ac4767ce0a9c71d1dd62f2dc25449789b5dd",
+        "size": 1559654
+      },
+      "minecraft/font/unifont_jp.zip": {
+        "hash": "590470ab0f17afb73a4e41d9cb56fdbe069d275a",
+        "size": 234900
+      },
+      "minecraft/font/unifont_pua.zip": {
+        "hash": "d7caa0e3aa5eb656c51817ae4bfbf3c4d72cdaad",
+        "size": 100360
+      }
+    }
+  }
+}

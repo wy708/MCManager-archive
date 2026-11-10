@@ -1,0 +1,19 @@
+{
+  "name": "mcmanager-archive-mcp",
+  "version": "0.6.2",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:integration": "node test/integration.mjs",
+    "test:deployment": "node test/integration.mjs --deployment"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "zod": "4.6.7"
+  }
+}

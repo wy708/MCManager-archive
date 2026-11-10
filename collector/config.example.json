@@ -1,0 +1,6 @@
+{
+  "enabled": false,
+  "serverId": "REPLACE_WITH_SERVER_ARCHIVE_UUID",
+  "token": "REPLACE_WITH_COLLECTOR_TOKEN_FOR_THIS_ARCHIVE",
+  "endpoint": "http://127.0.0.1:8080/api/ingest/v1/batches"
+}

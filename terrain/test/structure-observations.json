@@ -1,0 +1,401 @@
+{
+  "version": "1.26.61.1",
+  "method": "Actual isolated BDS console locate at predicted candidates; not a block/loot survey. Temple command covers four temple variants.",
+  "binarySha256": "2443400aa2fb41eb85e0c3d93762d8031b9d229049e77a2132778fad7dced1eb",
+  "query": {
+    "profile": "bedrock-26.60",
+    "x": 0,
+    "z": 0,
+    "radius": 4096,
+    "limit": 1
+  },
+  "runs": [
+    {
+      "seed": "1",
+      "version": "1.26.61.1",
+      "rows": [
+        {
+          "dimension": "overworld",
+          "type": "village",
+          "prediction": {
+            "structure": "village",
+            "x": 152,
+            "z": 808,
+            "distanceSquared": 675968
+          },
+          "actual": {
+            "x": 152,
+            "z": 808
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:30:066 INFO] The nearest minecraft:village is at block 152, (y?), 808 (0 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "desert_pyramid",
+          "skipped": "no candidate within 4096"
+        },
+        {
+          "dimension": "overworld",
+          "type": "jungle_temple",
+          "prediction": {
+            "structure": "jungle_temple",
+            "x": 2728,
+            "z": -1928,
+            "distanceSquared": 11159168
+          },
+          "actual": {
+            "x": 3928,
+            "z": -1688
+          },
+          "sameChunk": false,
+          "output": "[2026-11-06 11:39:30:205 INFO] The nearest minecraft:temple is at block 3928, (y?), -1688 (1223 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "swamp_hut",
+          "prediction": {
+            "structure": "swamp_hut",
+            "x": 1544,
+            "z": 3304,
+            "distanceSquared": 13300352
+          },
+          "actual": {
+            "x": 1544,
+            "z": 3304
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:30:319 INFO] The nearest minecraft:temple is at block 1544, (y?), 3304 (0 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "igloo",
+          "prediction": {
+            "structure": "igloo",
+            "x": -328,
+            "z": -1208,
+            "distanceSquared": 1566848
+          },
+          "actual": {
+            "x": -328,
+            "z": -1208
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:30:505 INFO] The nearest minecraft:temple is at block -328, (y?), -1208 (0 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "monument",
+          "prediction": {
+            "structure": "monument",
+            "x": -248,
+            "z": 296,
+            "distanceSquared": 149120
+          },
+          "actual": {
+            "x": -248,
+            "z": 296
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:30:632 INFO] The nearest minecraft:monument is at block -248, (y?), 296 (0 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "pillager_outpost",
+          "prediction": {
+            "structure": "pillager_outpost",
+            "x": 464,
+            "z": -672,
+            "distanceSquared": 666880
+          },
+          "actual": {
+            "x": 472,
+            "z": -664
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:30:754 INFO] The nearest minecraft:pillager_outpost is at block 472, (y?), -664 (11 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "ruined_portal",
+          "prediction": {
+            "structure": "ruined_portal",
+            "x": 56,
+            "z": 376,
+            "distanceSquared": 144512
+          },
+          "actual": {
+            "x": 56,
+            "z": 376
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:30:876 INFO] The nearest minecraft:ruined_portal is at block 56, (y?), 376 (0 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "trial_chambers",
+          "prediction": {
+            "structure": "trial_chambers",
+            "x": 232,
+            "z": -280,
+            "distanceSquared": 132224
+          },
+          "actual": {
+            "x": 233,
+            "z": -279
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:31:003 INFO] The nearest minecraft:trial_chambers is at block 233, (y?), -279 (1 blocks away)"
+        },
+        {
+          "dimension": "nether",
+          "type": "fortress",
+          "prediction": {
+            "structure": "fortress",
+            "x": -328,
+            "z": 88,
+            "distanceSquared": 115328
+          },
+          "actual": {
+            "x": -336,
+            "z": 80
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:31:142 INFO] The nearest minecraft:fortress is at block -336, (y?), 80 (11 blocks away)"
+        },
+        {
+          "dimension": "nether",
+          "type": "bastion_remnant",
+          "prediction": {
+            "structure": "bastion_remnant",
+            "x": 376,
+            "z": 152,
+            "distanceSquared": 164480
+          },
+          "actual": {
+            "x": 376,
+            "z": 152
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:31:251 INFO] The nearest minecraft:bastion_remnant is at block 376, (y?), 152 (0 blocks away)"
+        },
+        {
+          "dimension": "nether",
+          "type": "ruined_portal",
+          "prediction": {
+            "structure": "ruined_portal",
+            "x": 136,
+            "z": 136,
+            "distanceSquared": 36992
+          },
+          "actual": {
+            "x": 136,
+            "z": 136
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:31:439 INFO] The nearest minecraft:ruined_portal is at block 136, (y?), 136 (0 blocks away)"
+        }
+      ],
+      "exit": 0
+    },
+    {
+      "seed": "-9007199254740993",
+      "version": "1.26.61.1",
+      "rows": [
+        {
+          "dimension": "overworld",
+          "type": "village",
+          "prediction": {
+            "structure": "village",
+            "x": -408,
+            "z": 136,
+            "distanceSquared": 184960
+          },
+          "actual": {
+            "x": -408,
+            "z": 136
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:55:987 INFO] The nearest minecraft:village is at block -408, (y?), 136 (0 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "desert_pyramid",
+          "prediction": {
+            "structure": "desert_pyramid",
+            "x": -152,
+            "z": 376,
+            "distanceSquared": 164480
+          },
+          "actual": {
+            "x": -808,
+            "z": 360
+          },
+          "sameChunk": false,
+          "output": "[2026-11-06 11:39:56:127 INFO] The nearest minecraft:temple is at block -808, (y?), 360 (656 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "jungle_temple",
+          "prediction": {
+            "structure": "jungle_temple",
+            "x": -360,
+            "z": 2360,
+            "distanceSquared": 5699200
+          },
+          "actual": {
+            "x": -360,
+            "z": 2360
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:56:236 INFO] The nearest minecraft:temple is at block -360, (y?), 2360 (0 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "swamp_hut",
+          "prediction": {
+            "structure": "swamp_hut",
+            "x": 2600,
+            "z": -328,
+            "distanceSquared": 6867584
+          },
+          "actual": {
+            "x": 2600,
+            "z": -328
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:56:360 INFO] The nearest minecraft:temple is at block 2600, (y?), -328 (0 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "igloo",
+          "prediction": {
+            "structure": "igloo",
+            "x": 216,
+            "z": -1208,
+            "distanceSquared": 1505920
+          },
+          "actual": {
+            "x": 216,
+            "z": -1208
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:56:485 INFO] The nearest minecraft:temple is at block 216, (y?), -1208 (0 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "monument",
+          "prediction": {
+            "structure": "monument",
+            "x": 1208,
+            "z": -1448,
+            "distanceSquared": 3555968
+          },
+          "actual": {
+            "x": 1208,
+            "z": -1448
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:56:610 INFO] The nearest minecraft:monument is at block 1208, (y?), -1448 (0 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "pillager_outpost",
+          "prediction": {
+            "structure": "pillager_outpost",
+            "x": 432,
+            "z": 736,
+            "distanceSquared": 728320
+          },
+          "actual": {
+            "x": 440,
+            "z": 744
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:56:732 INFO] The nearest minecraft:pillager_outpost is at block 440, (y?), 744 (11 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "ruined_portal",
+          "prediction": {
+            "structure": "ruined_portal",
+            "x": 88,
+            "z": 280,
+            "distanceSquared": 86144
+          },
+          "actual": {
+            "x": 88,
+            "z": 280
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:56:856 INFO] The nearest minecraft:ruined_portal is at block 88, (y?), 280 (0 blocks away)"
+        },
+        {
+          "dimension": "overworld",
+          "type": "trial_chambers",
+          "prediction": {
+            "structure": "trial_chambers",
+            "x": 24,
+            "z": -216,
+            "distanceSquared": 47232
+          },
+          "actual": {
+            "x": 7,
+            "z": -215
+          },
+          "sameChunk": false,
+          "output": "[2026-11-06 11:39:56:982 INFO] The nearest minecraft:trial_chambers is at block 7, (y?), -215 (17 blocks away)"
+        },
+        {
+          "dimension": "nether",
+          "type": "fortress",
+          "prediction": {
+            "structure": "fortress",
+            "x": -280,
+            "z": -296,
+            "distanceSquared": 166016
+          },
+          "actual": {
+            "x": -288,
+            "z": -304
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:57:107 INFO] The nearest minecraft:fortress is at block -288, (y?), -304 (11 blocks away)"
+        },
+        {
+          "dimension": "nether",
+          "type": "bastion_remnant",
+          "prediction": {
+            "structure": "bastion_remnant",
+            "x": -440,
+            "z": 216,
+            "distanceSquared": 240256
+          },
+          "actual": {
+            "x": -440,
+            "z": 216
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:57:231 INFO] The nearest minecraft:bastion_remnant is at block -440, (y?), 216 (0 blocks away)"
+        },
+        {
+          "dimension": "nether",
+          "type": "ruined_portal",
+          "prediction": {
+            "structure": "ruined_portal",
+            "x": 8,
+            "z": 200,
+            "distanceSquared": 40064
+          },
+          "actual": {
+            "x": 8,
+            "z": 200
+          },
+          "sameChunk": true,
+          "output": "[2026-11-06 11:39:57:356 INFO] The nearest minecraft:ruined_portal is at block 8, (y?), 200 (0 blocks away)"
+        }
+      ],
+      "exit": 0
+    }
+  ]
+}

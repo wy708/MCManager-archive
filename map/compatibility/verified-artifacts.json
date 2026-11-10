@@ -1,0 +1,35 @@
+{
+  "runtimeProfile": "1.26.61.1",
+  "status": "experimental-real-game-map-verified",
+  "wheel": "levistone-0.11.15.dev1+mcmanager.26611-cp312-cp312-win_amd64.whl",
+  "wheelVersion": "0.11.15.dev1+mcmanager.26611",
+  "wheelSha256": "d37046fc2d09fca82f49af482fbd0291af7078ab01c4e2819a1b55b6d28c34ec",
+  "officialExecutableSha256": "2443400aa2fb41eb85e0c3d93762d8031b9d229049e77a2132778fad7dced1eb",
+  "leviLaminaSha256": "532480311d3e1fc6389a9ead56f116404047c65e299e89224c00bb6fdd4d3e17",
+  "modVersion": "0.11.15-dev.1+mcmanager.26611",
+  "files": {
+    "endstone_runtime.dll": "b4fb0bbe9db790c8bc67ce3357824494ab9d33bd6b8b38acb3950ddb7ea8d50b",
+    "endstone/_python.cp312-win_amd64.pyd": "dec598c180c1c879dc0f2d8baa834ec6633d17749943034b9b9cd16d1a9cf7b9"
+  },
+  "reviewedAt": "2026-11-06",
+  "verified": {
+    "game": "BDS 1.26.61.1 / LL 26.60.2 with checked runtime mappings",
+    "endstoneEnabled": true,
+    "mipmap": "1.0.3+mcmanager.4",
+    "realProtocolClient": "bedrock-protocol 3.61.0 / minecraft-data 3.119.0 / protocol 2225",
+    "receivedLevelChunkPackets": 101,
+    "newBaseTilesInFinalRun": 8,
+    "testedDimension": "Overworld",
+    "exitCode": 0,
+    "managedConsoleStartStop": true,
+    "supervisorGuard": true,
+    "forceEnableCheatCommands": false,
+    "serverPropertiesAllowCheats": false,
+    "python": "portable base CPython 3.12.10"
+  },
+  "limits": [
+    "Verified on a fresh isolated world; the user remote Windows server is not accessible in this session.",
+    "Nether/End behavior, production saves, extended soak and player scale not revalidated in this rebuilt-artifact run.",
+    "A rebuilt wheel is not automatically trusted: validate it and explicitly review/update this manifest."
+  ]
+}

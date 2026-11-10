@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.png binary
+# Unified-diff context preserves upstream tabs and whitespace verbatim.
+scene/patches/*.patch -whitespace

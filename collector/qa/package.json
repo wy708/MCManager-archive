@@ -1,0 +1,9 @@
+{
+  "name": "mcmanager-collector-game-qa",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "dependencies": { "bedrock-protocol": "3.60.1" },
+  "overrides": { "cmake-js": "8.0.0", "uuid": "11.1.1" }
+}

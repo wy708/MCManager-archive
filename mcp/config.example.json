@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "mcmanager-archive": {
+      "command": "node",
+      "args": ["C:/MCManager/mcp/src/server.mjs"],
+      "env": {
+        "MCM_MCP_API_URL": "http://127.0.0.1:8080",
+        "MCM_AGENT_TOKEN": "REPLACE_WITH_INDEPENDENT_AGENT_TOKEN"
+      }
+    }
+  }
+}

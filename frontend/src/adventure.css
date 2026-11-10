@@ -1,0 +1,555 @@
+/* Shared game-journal theme. Landscape art is decorative, never live server imagery. */
+:root {
+  color: #18322d;
+  background: #f5f8fa;
+  --emerald: #15835a;
+  --sky: #226aba;
+  --amethyst: #7952b9;
+  --amber: #ae5e15;
+}
+.primary {
+  background: var(--emerald);
+  box-shadow: 0 3px 0 #0a6243;
+}
+.primary:hover:not(:disabled) {
+  background: #10704c;
+}
+.text-button {
+  color: #166746;
+}
+.secondary {
+  border-color: #ceded6;
+  background: #fafffc;
+}
+.brand-mark {
+  border-radius: 10px;
+  color: white;
+  background: linear-gradient(145deg, #87d146 0 28%, #2caa61 28% 65%, #167746 65%);
+  box-shadow: inset -6px -6px 0 #00492d22;
+}
+.brand strong {
+  color: #145c40;
+}
+.sidebar {
+  background: #fff;
+  border-color: #e4eaed;
+}
+.sidebar nav button {
+  border-radius: 10px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.sidebar nav button.active,
+.settings-nav.active {
+  color: #fff;
+  background: #17865c;
+  box-shadow: 0 3px 8px #17865c1a;
+}
+.sidebar nav button.active .nav-count {
+  color: white;
+  background: #ffffff30;
+}
+.sidebar nav button:nth-child(2):not(.active) svg {
+  color: #2688b3;
+}
+.sidebar nav button:nth-child(3):not(.active) svg {
+  color: #8b60c4;
+}
+.sidebar nav button:nth-child(4):not(.active) svg {
+  color: #c17a20;
+}
+.sidebar nav button:nth-child(5):not(.active) svg {
+  color: #28876d;
+}
+.sidebar nav button:nth-child(6):not(.active) svg {
+  color: #b86c32;
+}
+.archive-note {
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px 12px;
+  color: #fff;
+  border: 0;
+  background:
+    linear-gradient(0deg, #103f38ed, #103f3800 90%),
+    url('./assets/overworld.jpg') 65% center / cover;
+}
+.archive-note p {
+  color: #edf9ed;
+  line-height: 1.7;
+}
+.archive-note > svg {
+  color: #c0ee90;
+}
+.avatar {
+  border-radius: 9px;
+  background: #e0f1e8;
+  color: #176b4d;
+}
+.topbar {
+  height: 68px;
+  background: #fff;
+  border-color: #e5eaee;
+}
+.scope-label select {
+  background: #f6f9fc;
+  border-color: #dde5ee;
+}
+.page-heading {
+  margin-bottom: 20px;
+}
+.page-heading h1 {
+  font-size: 27px;
+}
+.eyebrow {
+  color: #4b7e68;
+}
+.muted {
+  color: #65766e;
+}
+.adventure-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 300px;
+  margin-bottom: 24px;
+  border: 1px solid #d8e9e3;
+  border-radius: 18px;
+  background: #d9edf1 url('./assets/overworld.jpg') center / cover;
+}
+.adventure-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, #fbfffc 0%, #fbfffcf5 19%, #fbfffcc9 33%, #fbfffc00 68%);
+}
+.hero-copy {
+  padding: 29px 34px 31px;
+  max-width: 560px;
+}
+.hero-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #247a54;
+  font-size: 12px;
+  font-weight: 600;
+}
+.hero-copy h2 {
+  margin-top: 12px;
+  font-size: clamp(28px, 2.8vw, 42px);
+  line-height: 1.35;
+  letter-spacing: -1px;
+  color: #123d30;
+}
+.hero-copy p {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.9;
+  color: #456653;
+}
+.hero-copy .primary {
+  margin-top: 19px;
+  min-height: 42px;
+}
+.hero-caption {
+  position: absolute;
+  bottom: 20px;
+  right: 23px;
+  font-size: 11px;
+  color: #fff;
+  background: #174339a6;
+  border: 1px solid #ffffff40;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+.panel {
+  border-color: #e0e7ed;
+  border-radius: 14px;
+  box-shadow: 0 3px 14px #1d465004;
+}
+.panel-heading h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  border-radius: 2px;
+  margin-right: 9px;
+  background: var(--emerald);
+  vertical-align: -2px;
+}
+.metric-grid {
+  gap: 15px;
+}
+.metric-card {
+  --metric-color: #155b43;
+  --metric-fill: #e7f6e9;
+  --metric-border: #d1eacb;
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  border-color: var(--metric-border);
+  background: var(--metric-fill);
+}
+.metric-card:nth-child(2) {
+  --metric-color: #205a9b;
+  --metric-fill: #e8f3ff;
+  --metric-border: #cee3f8;
+}
+.metric-card:nth-child(3) {
+  --metric-color: #674098;
+  --metric-fill: #f0eafd;
+  --metric-border: #e1d5f6;
+}
+.metric-card:nth-child(4) {
+  --metric-color: #925019;
+  --metric-fill: #fff1df;
+  --metric-border: #f4dfc1;
+}
+.metric-card .metric-icon {
+  border-radius: 11px;
+  color: var(--metric-color);
+  background: #ffffffa6;
+  box-shadow: 3px 3px 0 #ffffff55;
+}
+.metric-card div > span,
+.metric-card strong {
+  color: var(--metric-color);
+}
+.metric-card p,
+.metric-card .coverage-label {
+  color: #51665f;
+}
+.metric-card.muted-metric strong {
+  color: #68756e;
+}
+.overview-bottom {
+  grid-template-columns: minmax(0, 2fr) minmax(245px, 1fr);
+  margin-bottom: 24px;
+}
+.world-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 12px;
+  padding: 20px;
+}
+.world-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  text-align: left;
+  border: 1px solid #e0e6ed;
+  border-radius: 11px;
+  background: #fff;
+  min-width: 0;
+}
+.world-preview:hover {
+  border-color: #8bb9a3;
+  box-shadow: 0 4px 16px #175f4010;
+}
+.world-cover {
+  display: block;
+  background-position: center;
+  background-size: cover;
+}
+.scene-overworld {
+  background-image: url('./assets/overworld.jpg');
+}
+.scene-sunset {
+  background-image: url('./assets/sunset.jpg');
+}
+.scene-end {
+  background-image: url('./assets/end.jpg');
+}
+.world-preview .world-cover {
+  width: 100%;
+  height: 112px;
+}
+.world-preview-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  min-width: 0;
+}
+.world-preview strong {
+  display: block;
+  width: 100%;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.world-preview small {
+  display: block;
+  width: 100%;
+  color: #65746e;
+  font-size: 10px;
+  font-weight: 400;
+}
+.world-preview-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid #ecf0f2;
+  color: #21694d;
+  font-size: 11px;
+}
+.updates-list {
+  padding: 10px 20px 0;
+}
+.update-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 15px 0;
+  border-bottom: 1px solid #ecf0f3;
+}
+.update-item:hover .update-copy strong {
+  text-decoration: underline;
+}
+.update-item:last-child {
+  border-bottom: 0;
+}
+.update-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  color: #2568a3;
+  background: #eaf3ff;
+}
+.update-item.orange .update-icon {
+  color: #a7621e;
+  background: #fff0d9;
+}
+.update-item.violet .update-icon {
+  color: #7951aa;
+  background: #f2eafd;
+}
+.update-copy {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+.update-copy strong {
+  font-size: 12px;
+}
+.update-copy > span {
+  overflow-wrap: anywhere;
+  color: #586c63;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.update-copy small {
+  color: #6b7c73;
+  font-size: 10px;
+  font-weight: 400;
+}
+.update-item > svg {
+  margin-top: 9px;
+  color: #6f8c80;
+}
+.updates-footer {
+  margin: 5px 20px 18px;
+  font-size: 12px;
+}
+.updates-note {
+  margin: 18px 22px;
+  font-size: 12px;
+  color: #64756c;
+  line-height: 1.8;
+}
+.server-card {
+  overflow: hidden;
+  border-radius: 13px;
+  border-color: #e0e6ed;
+  background: #fff;
+}
+.archive-cover {
+  height: 146px;
+  margin: -22px -22px 20px;
+  border-bottom: 1px solid #dbe4ea;
+}
+.server-card-top .server-icon {
+  background: #e8f3ec;
+  color: #2b7955;
+  border-radius: 9px;
+}
+.status.recording {
+  color: #176744;
+  background: #ddf4e1;
+}
+.status.archived {
+  color: #665384;
+  background: #eee9f5;
+}
+.server-description,
+.server-details dt,
+.date-line {
+  color: #65776c;
+}
+.dimension-0 {
+  background: #34a66f;
+}
+.dimension-1 {
+  background: #e49639;
+}
+.dimension-2 {
+  background: #9b6fd2;
+}
+.chart-line {
+  stroke: #168c68;
+}
+table thead,
+th {
+  background-color: #f4f7fb;
+}
+.login-page {
+  background: #f7faf8;
+}
+.login-art {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: url('./assets/overworld.jpg') 65% center / cover;
+  color: #fff;
+}
+.login-art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(0deg, #103b35ed, #103b3520 90%);
+}
+.login-art .world-mark {
+  background: #ffffff19;
+  border-color: #ffffff70;
+  color: #fff;
+  backdrop-filter: blur(5px);
+}
+.login-art p,
+.login-art > span {
+  color: #fff;
+}
+.login-card {
+  border-radius: 18px;
+  box-shadow: 0 15px 60px #1c594b0d;
+}
+footer {
+  border-top: 1px solid #e0e8e8;
+  margin-top: 24px;
+  padding-top: 17px;
+  color: #62736c;
+}
+@media (max-width: 1280px) {
+  .overview-bottom {
+    grid-template-columns: 1fr;
+  }
+  .world-preview .world-cover {
+    height: 145px;
+  }
+}
+@media (max-width: 960px) {
+  .hero-copy {
+    padding: 26px;
+  }
+  .adventure-hero::before {
+    background: linear-gradient(90deg, #fbfffc 0%, #fbfffce6 38%, #fbfffc30 100%);
+  }
+  .hero-caption {
+    display: none;
+  }
+  .world-preview-grid {
+    gap: 10px;
+    padding: 16px;
+  }
+  .world-preview .world-cover {
+    height: 100px;
+  }
+}
+@media (max-width: 680px) {
+  .topbar {
+    height: 60px;
+  }
+  .page-heading h1 {
+    font-size: 25px;
+  }
+  .adventure-hero {
+    min-height: 290px;
+    margin-bottom: 18px;
+    border-radius: 13px;
+    background-position: 58% center;
+  }
+  .hero-copy {
+    padding: 23px 22px;
+    max-width: 95%;
+  }
+  .hero-copy h2 {
+    font-size: 30px;
+  }
+  .hero-copy p {
+    font-size: 12px;
+  }
+  .hero-label {
+    font-size: 11px;
+  }
+  .metric-card {
+    border-radius: 12px;
+  }
+  .metric-card .metric-icon {
+    width: 32px;
+    height: 32px;
+  }
+  .metric-card .metric-icon svg {
+    width: 21px;
+    height: 21px;
+  }
+  .world-preview-grid {
+    grid-template-columns: 1fr;
+  }
+  .world-preview {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+  }
+  .world-preview .world-cover {
+    height: 100%;
+    min-height: 150px;
+  }
+  .world-preview-body {
+    padding: 13px;
+  }
+  .world-preview strong {
+    font-size: 14px;
+  }
+  .world-preview small {
+    font-size: 11px;
+  }
+  .archive-cover {
+    height: 140px;
+    margin: -18px -18px 18px;
+  }
+  .sidebar nav button {
+    padding: 12px 16px;
+  }
+  .login-card {
+    border-radius: 14px;
+  }
+}

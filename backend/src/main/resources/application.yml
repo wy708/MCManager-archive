@@ -1,0 +1,42 @@
+server:
+  address: ${MCM_BIND_ADDRESS:127.0.0.1}
+  port: ${MCM_PORT:8080}
+  forward-headers-strategy: none
+  servlet:
+    session:
+      timeout: 8h
+      cookie:
+        http-only: true
+        same-site: strict
+        secure: ${MCM_COOKIE_SECURE:false}
+spring:
+  datasource:
+    url: ${MCM_DB_URL:jdbc:h2:file:./data/mcmanager;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;WRITE_DELAY=0}
+    username: ${MCM_DB_USER:sa}
+    password: ${MCM_DB_PASSWORD:}
+  jackson:
+    time-zone: UTC
+    deserialization:
+      fail-on-unknown-properties: true
+      accept-float-as-int: false
+    parser:
+      strict-duplicate-detection: true
+  sql:
+    init:
+      mode: never
+  flyway:
+    enabled: true
+mcmanager:
+  terrain-engine: ${MCM_TERRAIN_ENGINE:}
+  public-base-url: ${MCM_PUBLIC_BASE_URL:}
+  activity-retention-worker-enabled: ${MCM_ACTIVITY_RETENTION_WORKER_ENABLED:true}
+  backup-policy-worker-enabled: ${MCM_BACKUP_POLICY_WORKER_ENABLED:true}
+  backup-directory: ${MCM_BACKUP_DIR:./data/backups}
+  backup-node: ${MCM_BACKUP_NODE:node}
+  backup-verifier: ${MCM_BACKUP_VERIFIER:../backup/src/verify-upload.mjs}
+  backup-max-upload-bytes: ${MCM_BACKUP_MAX_UPLOAD_BYTES:17179869184}
+  backup-expanded-limit: ${MCM_BACKUP_EXPANDED_LIMIT:137438953472}
+  backup-verifier-seconds: ${MCM_BACKUP_VERIFIER_SECONDS:600}
+  statistics-zone: ${MCM_STATISTICS_ZONE:Asia/Hong_Kong}
+  admin-username: ${MCM_ADMIN_USERNAME:admin}
+  admin-password: ${MCM_ADMIN_PASSWORD:}

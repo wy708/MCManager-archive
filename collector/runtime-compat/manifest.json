@@ -1,0 +1,7 @@
+{
+  "name": "AAA-archive-runtime-compat",
+  "entry": "archive-runtime-compat.dll",
+  "version": "0.2.0",
+  "type": "preload-native",
+  "platform": "server"
+}

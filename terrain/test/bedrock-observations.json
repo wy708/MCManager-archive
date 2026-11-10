@@ -1,0 +1,3706 @@
+{
+  "gameVersion": "1.26.61.1",
+  "gameSha256": "2443400aa2fb41eb85e0c3d93762d8031b9d229049e77a2132778fad7dced1eb",
+  "source": "Actual isolated vanilla BDS worlds; Script API Dimension.getBiome; no player structures",
+  "observedDate": "2026-11-06",
+  "aliases": {
+    "hell": "nether_wastes",
+    "soulsand_valley": "soul_sand_valley",
+    "birch_forest_mutated": "old_growth_birch_forest",
+    "ice_plains": "snowy_plains",
+    "cold_taiga": "snowy_taiga",
+    "mega_taiga": "old_growth_pine_taiga",
+    "redwood_taiga_mutated": "old_growth_spruce_taiga",
+    "extreme_hills": "windswept_hills",
+    "roofed_forest": "dark_forest",
+    "stone_beach": "stony_shore",
+    "cold_beach": "snowy_beach",
+    "extreme_hills_plus_trees": "windswept_forest",
+    "mesa": "badlands"
+  },
+  "runs": [
+    {
+      "seed": "1",
+      "sourceSha256": "5b30eac557bb0a9662d82e08bf6e073a7ce8509fcc5e7013cc62d45c57467fc3",
+      "gameExitCode": 0,
+      "regions": [
+        {
+          "dimension": "overworld",
+          "x": 0,
+          "y": 64,
+          "z": 0,
+          "samples": [
+            {
+              "x": -32,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:ocean",
+              "canonical": "ocean"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:ocean",
+              "canonical": "ocean"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:ocean",
+              "canonical": "ocean"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:ocean",
+              "canonical": "ocean"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:ocean",
+              "canonical": "ocean"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:ocean",
+              "canonical": "ocean"
+            }
+          ]
+        },
+        {
+          "dimension": "overworld",
+          "x": 512,
+          "y": 64,
+          "z": 512,
+          "samples": [
+            {
+              "x": 480,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:plains",
+              "canonical": "plains"
+            }
+          ]
+        },
+        {
+          "dimension": "overworld",
+          "x": -1024,
+          "y": 64,
+          "z": 256,
+          "samples": [
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:deep_ocean",
+              "canonical": "deep_ocean"
+            }
+          ]
+        },
+        {
+          "dimension": "overworld",
+          "x": 2048,
+          "y": 64,
+          "z": -2048,
+          "samples": [
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:birch_forest",
+              "canonical": "birch_forest"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:birch_forest",
+              "canonical": "birch_forest"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:birch_forest_mutated",
+              "canonical": "old_growth_birch_forest"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:birch_forest_mutated",
+              "canonical": "old_growth_birch_forest"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:birch_forest_mutated",
+              "canonical": "old_growth_birch_forest"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:birch_forest_mutated",
+              "canonical": "old_growth_birch_forest"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:birch_forest_mutated",
+              "canonical": "old_growth_birch_forest"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:birch_forest_mutated",
+              "canonical": "old_growth_birch_forest"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:birch_forest_mutated",
+              "canonical": "old_growth_birch_forest"
+            }
+          ]
+        },
+        {
+          "dimension": "overworld",
+          "x": -4096,
+          "y": 64,
+          "z": -4096,
+          "samples": [
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:beach",
+              "canonical": "beach"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:beach",
+              "canonical": "beach"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:ocean",
+              "canonical": "ocean"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:ocean",
+              "canonical": "ocean"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:ocean",
+              "canonical": "ocean"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:beach",
+              "canonical": "beach"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:ocean",
+              "canonical": "ocean"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:ocean",
+              "canonical": "ocean"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:beach",
+              "canonical": "beach"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            }
+          ]
+        },
+        {
+          "dimension": "nether",
+          "x": 0,
+          "y": 64,
+          "z": 0,
+          "samples": [
+            {
+              "x": -32,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            }
+          ]
+        },
+        {
+          "dimension": "nether",
+          "x": 512,
+          "y": 64,
+          "z": 512,
+          "samples": [
+            {
+              "x": 480,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            }
+          ]
+        },
+        {
+          "dimension": "nether",
+          "x": -1024,
+          "y": 64,
+          "z": 256,
+          "samples": [
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            }
+          ]
+        },
+        {
+          "dimension": "nether",
+          "x": 2048,
+          "y": 64,
+          "z": -2048,
+          "samples": [
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            }
+          ]
+        },
+        {
+          "dimension": "nether",
+          "x": -4096,
+          "y": 64,
+          "z": -4096,
+          "samples": [
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:crimson_forest",
+              "canonical": "crimson_forest"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "seed": "-9007199254740993",
+      "sourceSha256": "2799f3ff217c6ebe911b4589be04eb6b6c4ef58b3e9b9f208c2f636abddaae78",
+      "gameExitCode": 0,
+      "regions": [
+        {
+          "dimension": "overworld",
+          "x": 0,
+          "y": 64,
+          "z": 0,
+          "samples": [
+            {
+              "x": -32,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:forest",
+              "canonical": "forest"
+            }
+          ]
+        },
+        {
+          "dimension": "overworld",
+          "x": 512,
+          "y": 64,
+          "z": 512,
+          "samples": [
+            {
+              "x": 480,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:mesa",
+              "canonical": "badlands"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:mesa",
+              "canonical": "badlands"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:mesa",
+              "canonical": "badlands"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:mesa",
+              "canonical": "badlands"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:mesa",
+              "canonical": "badlands"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:mesa",
+              "canonical": "badlands"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:river",
+              "canonical": "river"
+            }
+          ]
+        },
+        {
+          "dimension": "overworld",
+          "x": -1024,
+          "y": 64,
+          "z": 256,
+          "samples": [
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:desert",
+              "canonical": "desert"
+            }
+          ]
+        },
+        {
+          "dimension": "overworld",
+          "x": 2048,
+          "y": 64,
+          "z": -2048,
+          "samples": [
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:dripstone_caves",
+              "canonical": "dripstone_caves"
+            }
+          ]
+        },
+        {
+          "dimension": "overworld",
+          "x": -4096,
+          "y": 64,
+          "z": -4096,
+          "samples": [
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:cold_taiga",
+              "canonical": "snowy_taiga"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:stone_beach",
+              "canonical": "stony_shore"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:stone_beach",
+              "canonical": "stony_shore"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:stone_beach",
+              "canonical": "stony_shore"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:cold_taiga",
+              "canonical": "snowy_taiga"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:cold_taiga",
+              "canonical": "snowy_taiga"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:stone_beach",
+              "canonical": "stony_shore"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:cold_taiga",
+              "canonical": "snowy_taiga"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:cold_taiga",
+              "canonical": "snowy_taiga"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:grove",
+              "canonical": "grove"
+            }
+          ]
+        },
+        {
+          "dimension": "nether",
+          "x": 0,
+          "y": 64,
+          "z": 0,
+          "samples": [
+            {
+              "x": -32,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": -32,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": -16,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": 0,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": 16,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -32,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -16,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 0,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 16,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": 32,
+              "y": 64,
+              "z": 32,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            }
+          ]
+        },
+        {
+          "dimension": "nether",
+          "x": 512,
+          "y": 64,
+          "z": 512,
+          "samples": [
+            {
+              "x": 480,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 480,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 496,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 512,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 528,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 480,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 496,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 512,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 528,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 544,
+              "y": 64,
+              "z": 544,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            }
+          ]
+        },
+        {
+          "dimension": "nether",
+          "x": -1024,
+          "y": 64,
+          "z": 256,
+          "samples": [
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 224,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:hell",
+              "canonical": "nether_wastes"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 240,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 256,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 272,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1056,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1040,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1024,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -1008,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            },
+            {
+              "x": -992,
+              "y": 64,
+              "z": 288,
+              "biome": "minecraft:basalt_deltas",
+              "canonical": "basalt_deltas"
+            }
+          ]
+        },
+        {
+          "dimension": "nether",
+          "x": 2048,
+          "y": 64,
+          "z": -2048,
+          "samples": [
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2080,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2064,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2048,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2032,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2016,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2032,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2048,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2064,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            },
+            {
+              "x": 2080,
+              "y": 64,
+              "z": -2016,
+              "biome": "minecraft:soulsand_valley",
+              "canonical": "soul_sand_valley"
+            }
+          ]
+        },
+        {
+          "dimension": "nether",
+          "x": -4096,
+          "y": 64,
+          "z": -4096,
+          "samples": [
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4128,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4112,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4096,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4080,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4128,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4112,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4096,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4080,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            },
+            {
+              "x": -4064,
+              "y": 64,
+              "z": -4064,
+              "biome": "minecraft:warped_forest",
+              "canonical": "warped_forest"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "knownDisagreement": {
+    "seed": "-9007199254740993",
+    "dimension": "overworld",
+    "x": -4128,
+    "y": 64,
+    "z": -4064,
+    "actual": "stony_shore",
+    "prediction": "snowy_taiga"
+  }
+}

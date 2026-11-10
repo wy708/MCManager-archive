@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/FragrantResult186/cubiomes-bedrock.git",
+  "commit": "294c72ab0392dd818a91d293dbd5774d4874d64b",
+  "license": "MIT",
+  "engine": "cubiomes-bedrock-294c72ab-mcarchive1",
+  "scope": "Biome and bounded natural structure candidate predictions, not block-level terrain or player constructions",
+  "profiles": ["bedrock-26.50", "bedrock-26.60"]
+}

@@ -1,0 +1,14 @@
+{
+  "version": "0.7.0-preview.2",
+  "prerelease": true,
+  "components": {
+    "collector": "0.38.0",
+    "mcp": "0.6.2",
+    "host": "0.7.0",
+    "mapPlugin": "1.0.3+mcmanager.6"
+  },
+  "primaryGameRuntime": "Windows x64 BDS 1.26.61.1",
+  "containsGameServer": false,
+  "containsCredentials": false,
+  "containsProductionData": false
+}

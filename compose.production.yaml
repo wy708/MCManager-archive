@@ -1,0 +1,72 @@
+name: mcmanager-archive
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+
+services:
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: mcmanager
+      POSTGRES_USER: mcmanager
+      POSTGRES_PASSWORD: ${MCM_DB_PASSWORD:?Set MCM_DB_PASSWORD}
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U mcmanager -d mcmanager]
+      interval: 5s
+      timeout: 5s
+      start_period: 120s
+      retries: 24
+    restart: unless-stopped
+    logging: *logging
+  backend:
+    image: mcmanager-archive-backend:${MCM_IMAGE_TAG:?Set MCM_IMAGE_TAG}
+    environment:
+      MCM_DB_URL: jdbc:postgresql://database:5432/mcmanager
+      MCM_DB_USER: mcmanager
+      MCM_DB_PASSWORD: ${MCM_DB_PASSWORD:?Set MCM_DB_PASSWORD}
+      MCM_ADMIN_USERNAME: ${MCM_ADMIN_USERNAME:-admin}
+      MCM_ADMIN_PASSWORD: ${MCM_ADMIN_PASSWORD:?Set MCM_ADMIN_PASSWORD}
+      MCM_PUBLIC_BASE_URL: ${MCM_PUBLIC_BASE_URL:?Set MCM_PUBLIC_BASE_URL}
+      MCM_COOKIE_SECURE: ${MCM_COOKIE_SECURE:-false}
+      MCM_STATISTICS_ZONE: Asia/Hong_Kong
+      MCM_PROJECT_MAP_SOURCES: ${MCM_PROJECT_MAP_SOURCES:-}
+      MCM_ACTIVITY_RETENTION_WORKER_ENABLED: "true"
+      MCM_BACKUP_POLICY_WORKER_ENABLED: "true"
+      MCM_BACKUP_MAX_UPLOAD_BYTES: "17179869184"
+      MCM_BACKUP_EXPANDED_LIMIT: "137438953472"
+    volumes:
+      - backups:/app/data/backups
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:8080/api/auth/csrf').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      start_period: 120s
+      retries: 3
+    restart: unless-stopped
+    logging: *logging
+  web:
+    image: mcmanager-archive-web:${MCM_IMAGE_TAG:?Set MCM_IMAGE_TAG}
+    ports:
+      - "${MCM_WEB_BIND:-0.0.0.0}:${MCM_WEB_PORT:-9999}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1/api/auth/csrf]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    logging: *logging
+
+volumes:
+  database:
+  backups:

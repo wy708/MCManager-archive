@@ -1,0 +1,317 @@
+diff --git a/builtin_files/base_resource_pack/builtins/minecraft/entities/item_frame.json b/builtin_files/base_resource_pack/builtins/minecraft/entities/item_frame.json
+index fad74b2..f528538 100644
+--- a/builtin_files/base_resource_pack/builtins/minecraft/entities/item_frame.json
++++ b/builtin_files/base_resource_pack/builtins/minecraft/entities/item_frame.json
+@@ -124,7 +124,7 @@
+                     ]
+                 },
+                 {
+-                    "condition": "(thisBlock.state.Item != null) && (isMap != true)",
++                    "condition": "(thisEntity.state.Item != null) && (isMap != true)",
+                     "transform": {
+                         "translate": [ 0.0, 0.0, -7.0 ],
+                         "rotate": [ 0.0, 180.0, "-itemRotation" ],
+@@ -134,7 +134,7 @@
+                         {
+                             "type": "item",
+                             "args": {
+-                                "id": "thisEntity.state.Item.id",
++                                "id": "thisEntity.state.Item.id != null ? thisEntity.state.Item.id : thisEntity.state.Item.Name",
+                                 "properties": "thisEntity.state.Item",
+                                 "displayContext": "'fixed'"
+                             }
+@@ -142,7 +142,7 @@
+                     ]
+                 },
+                 {
+-                    "condition": "(thisBlock.state.Item != null) && (isMap == true)",
++                    "condition": "(thisEntity.state.Item != null) && (isMap == true)",
+                     "transform": {
+                         "translate": [ 0.0, 0.0, -7.0 ],
+                         "rotate": [ 0.0, 0.0, "-itemRotation" ]
+diff --git a/src/nl/bramstout/mcworldexporter/Config.java b/src/nl/bramstout/mcworldexporter/Config.java
+index be7d909..9fa9643 100644
+--- a/src/nl/bramstout/mcworldexporter/Config.java
++++ b/src/nl/bramstout/mcworldexporter/Config.java
+@@ -511,6 +511,8 @@ public class Config {
+ 			}
+ 		}
+ 		
++		// The project viewer uses linear sRGB vertex colours, not the film export gamut.
++		if(Boolean.getBoolean("mcm.preparedResources")) Color.GAMUT = ColorGamut.sRGB;
+ 		transparentOcclusion.addAll(ResourcePackBedrockEdition.transparentBlocks);
+ 		BuiltInBlockStateRegistry.load();
+ 		EntityBuiltinsRegistry.load();
+diff --git a/src/nl/bramstout/mcworldexporter/export/GeneratedTextures.java b/src/nl/bramstout/mcworldexporter/export/GeneratedTextures.java
+index 27bce34..18ac83b 100644
+--- a/src/nl/bramstout/mcworldexporter/export/GeneratedTextures.java
++++ b/src/nl/bramstout/mcworldexporter/export/GeneratedTextures.java
+@@ -63,6 +63,14 @@ public class GeneratedTextures {
+ 	}
+ 	
+ 	public static File getTextureFile(String name) {
++		String sceneDirectory=System.getProperty("mcm.generatedTexturesDir");
++		if(sceneDirectory!=null){
++			String relative=name.replace(':','/')+(name.endsWith(".png")?"":".png");
++			java.nio.file.Path root=java.nio.file.Path.of(sceneDirectory).toAbsolutePath().normalize();
++			java.nio.file.Path file=root.resolve(relative).normalize();
++			if(!file.startsWith(root))throw new IllegalArgumentException("Invalid generated texture path");
++			return file.toFile();
++		}
+ 		String texId = getTextureId(name);
+ 		if(texId.indexOf('.', texId.lastIndexOf('/') + 1) == -1)
+ 			texId = texId + ".png";
+diff --git a/src/nl/bramstout/mcworldexporter/launcher/LauncherSaveDir.java b/src/nl/bramstout/mcworldexporter/launcher/LauncherSaveDir.java
+index e9c3297..7535367 100644
+--- a/src/nl/bramstout/mcworldexporter/launcher/LauncherSaveDir.java
++++ b/src/nl/bramstout/mcworldexporter/launcher/LauncherSaveDir.java
+@@ -41,6 +41,11 @@ import nl.bramstout.mcworldexporter.resourcepack.ResourcePackSource;
+ import nl.bramstout.mcworldexporter.world.World;
+ 
+ public class LauncherSaveDir extends Launcher{
++ @Override public boolean hasSaves(){return true;}
++ @Override public boolean hasVersions(){return false;}
++ @Override public void getAllResourcePackSources(ResourcePackSourceCollector collector,nl.bramstout.mcworldexporter.parallel.Async.AsyncGroup asyncGroup){}
++
++	@Override public boolean hasResourcePacks(){ return false; }
+ 
+ 	private String name;
+ 	private File path;
+diff --git a/src/nl/bramstout/mcworldexporter/molang/MolangParser.java b/src/nl/bramstout/mcworldexporter/molang/MolangParser.java
+index 6c67315..bcdd857 100644
+--- a/src/nl/bramstout/mcworldexporter/molang/MolangParser.java
++++ b/src/nl/bramstout/mcworldexporter/molang/MolangParser.java
+@@ -141,7 +141,9 @@ public class MolangParser {
+ 				continue;
+ 			
+ 			reader.back();
++			int beforeExpression = reader.pos;
+ 			expressions.add(parseExpression(reader));
++			if(reader.pos<=beforeExpression)throw new IllegalArgumentException("Unsupported Molang expression: " + reader.code);
+ 		}
+ 		
+ 		MolangScript script = new MolangScript(expressions);
+@@ -162,7 +164,9 @@ public class MolangParser {
+ 				break;
+ 			}
+ 			
++			int beforeToken = reader.pos;
+ 			prevToken = parseToken(reader, prevToken);
++			if(reader.pos<=beforeToken)throw new IllegalArgumentException("Unsupported Molang token: " + reader.code);
+ 			tokens.add(prevToken);
+ 		}
+ 		
+@@ -584,6 +588,8 @@ public class MolangParser {
+ 	private static MolangExpression parseAccessArray(Reader reader) {
+ 		reader.read();
+ 		MolangExpression indexExpr = parseExpression(reader);
++		reader.seekNextChar();
++		if(reader.read()!=']')throw new IllegalArgumentException("Unclosed Molang index");
+ 		return new MolangOperationExpression(new MolangAccessArray(null, indexExpr));
+ 	}
+ 	
+diff --git a/src/nl/bramstout/mcworldexporter/resourcepack/ResourcePackDefaults.java b/src/nl/bramstout/mcworldexporter/resourcepack/ResourcePackDefaults.java
+index 0ae97ba..640b110 100644
+--- a/src/nl/bramstout/mcworldexporter/resourcepack/ResourcePackDefaults.java
++++ b/src/nl/bramstout/mcworldexporter/resourcepack/ResourcePackDefaults.java
+@@ -85,6 +85,7 @@ import nl.bramstout.mcworldexporter.ui.Popups;
+ public class ResourcePackDefaults {
+ 	
+ 	public static void setupDefaults() {
++		if(Boolean.getBoolean("mcm.preparedResources"))return;
+ 		MCWorldExporter.getApp().getUI().getProgressBar().setText("Setting up...");
+ 		try {
+ 			BuiltInFiles.setupBuiltInFiles(false);
+diff --git a/src/nl/bramstout/mcworldexporter/resourcepack/ResourcePacks.java b/src/nl/bramstout/mcworldexporter/resourcepack/ResourcePacks.java
+index ec43804..d34cd5d 100644
+--- a/src/nl/bramstout/mcworldexporter/resourcepack/ResourcePacks.java
++++ b/src/nl/bramstout/mcworldexporter/resourcepack/ResourcePacks.java
+@@ -423,6 +423,10 @@ public class ResourcePacks {
+ 	}
+ 	
+ 	public static File getTexture(String resource) {
++		if(System.getProperty("mcm.generatedTexturesDir")!=null && resource.startsWith("miex:")){
++			File generated=nl.bramstout.mcworldexporter.export.GeneratedTextures.getTextureFile(resource.substring(5));
++			if(generated.isFile())return generated;
++		}
+ 		ResourcePack pack = null;
+ 		for(int i = 0; i < activeResourcePacks.size(); ++i) {
+ 			pack = activeResourcePacks.get(i);
+diff --git a/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/BedrockMaterials.java b/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/BedrockMaterials.java
+index 38a8af5..a970baf 100644
+--- a/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/BedrockMaterials.java
++++ b/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/BedrockMaterials.java
+@@ -87,7 +87,7 @@ public class BedrockMaterials {
+ 				return true;
+ 			if(tints.size() == 0)
+ 				return true;
+-			Color tint = tints.get(Math.max(Math.min(tints.size() - 1, tintIndex), 9));
++			Color tint = tints.get(Math.max(Math.min(tints.size() - 1, tintIndex), 0));
+ 			if(Math.abs(tint.getR() - 1f) < 0.0001f && 
+ 					Math.abs(tint.getG() - 1f) < 0.0001f && 
+ 					Math.abs(tint.getB() - 1f) < 0.0001f && 
+@@ -124,6 +124,7 @@ public class BedrockMaterials {
+ 			}
+ 			if(data != null) {
+ 				if(data.has("layers")) {
++					layers.clear();
+ 					for(JsonElement el : data.getAsJsonArray("layers").asList()) {
+ 						if(el.isJsonObject()) {
+ 							layers.add(new MaterialLayer(el.getAsJsonObject()));
+@@ -165,7 +166,7 @@ public class BedrockMaterials {
+ 				File file = ResourcePacks.getTexture(texture);
+ 				//if(file == null)
+ 				//	file = new File(exportDir, texture);
+-				if(!file.exists())
++				if(file==null || !file.exists())
+ 					continue;
+ 				
+ 				BufferedImage img = ImageReader.readImage(file);
+diff --git a/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/ModelHandlerBedrockEdition.java b/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/ModelHandlerBedrockEdition.java
+index 5823937..095ece6 100644
+--- a/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/ModelHandlerBedrockEdition.java
++++ b/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/ModelHandlerBedrockEdition.java
+@@ -93,8 +93,24 @@ public class ModelHandlerBedrockEdition extends ModelHandler{
+ 			this.animation = data.get("animation").getAsString();
+ 	}
+ 	
++
++ private JsonObject resolvedModel(int depth) {
++  if(depth>32)throw new IllegalArgumentException("Cyclic Bedrock geometry inheritance");
++  JsonObject merged=new JsonObject();
++  if(parent!=null){ModelHandler handler=ResourcePacks.getModelHandler(parent);if(!(handler instanceof ModelHandlerBedrockEdition))throw new IllegalArgumentException("Missing Bedrock geometry parent: "+parent);merged=((ModelHandlerBedrockEdition)handler).resolvedModel(depth+1);}
++  Map<String,JsonObject> bones=new java.util.LinkedHashMap<>();
++  if(merged.has("bones"))for(JsonElement el:merged.getAsJsonArray("bones")){JsonObject bone=el.getAsJsonObject();bones.put(bone.get("name").getAsString().toLowerCase(),bone.deepCopy());}
++  if(data.has("bones"))for(JsonElement el:data.getAsJsonArray("bones")){
++   JsonObject bone=el.getAsJsonObject();String key=bone.get("name").getAsString().toLowerCase();JsonObject combined=bones.getOrDefault(key,new JsonObject());
++   if(bone.has("reset")&&bone.get("reset").getAsBoolean())combined.remove("cubes");
++   for(Entry<String,JsonElement> entry:bone.entrySet())combined.add(entry.getKey(),entry.getValue().deepCopy());bones.put(key,combined);
++  }
++  for(Entry<String,JsonElement> entry:data.entrySet())if(!entry.getKey().equals("bones"))merged.add(entry.getKey(),entry.getValue().deepCopy());
++  JsonArray boneList=new JsonArray();for(JsonObject bone:bones.values())boneList.add(bone);merged.add("bones",boneList);return merged;
++ }
+ 	@Override
+ 	public void getGeometry(Model model) {
++		if(parent!=null){new ModelHandlerBedrockEdition(null,resolvedModel(0)).getGeometry(model);return;}
+ 		// Bedrock Edition geometry is always double sided.
+ 		// If the model isn't already double sided and we need
+ 		// double sided to be true to correctly show the model,
+@@ -143,7 +159,7 @@ public class ModelHandlerBedrockEdition extends ModelHandler{
+ 		for(JsonElement boneEl : bones.asList()) {
+ 			JsonObject boneObj = boneEl.getAsJsonObject();
+ 			
+-			if(boneObj.has("cubes")) {
++			if(boneObj.has("cubes") && !(boneObj.has("neverRender") && boneObj.get("neverRender").getAsBoolean())) {
+ 				for(JsonElement cubeEl : boneObj.get("cubes").getAsJsonArray().asList()) {
+ 					JsonObject cubeObj = cubeEl.getAsJsonObject();
+ 					
+@@ -309,7 +325,7 @@ public class ModelHandlerBedrockEdition extends ModelHandler{
+ 			
+ 			Vector3f baseRotation = readVector3f(boneObj.get("bind_pose_rotation"));
+ 			
+-			if(boneObj.has("cubes")) {
++			if(boneObj.has("cubes") && !(boneObj.has("neverRender") && boneObj.get("neverRender").getAsBoolean())) {
+ 				for(JsonElement cubeEl : boneObj.get("cubes").getAsJsonArray().asList()) {
+ 					JsonObject cubeObj = cubeEl.getAsJsonObject();
+ 					
+diff --git a/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/RenderControllerBedrockEdition.java b/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/RenderControllerBedrockEdition.java
+index 324a27f..7130e11 100644
+--- a/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/RenderControllerBedrockEdition.java
++++ b/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/RenderControllerBedrockEdition.java
+@@ -98,7 +98,9 @@ public class RenderControllerBedrockEdition {
+ 			}
+ 		}
+ 		if(data.has("textures")) {
+-			JsonArray texturesObj = data.getAsJsonArray("textures");
++			JsonArray texturesObj = new JsonArray();
++			if(data.get("textures").isJsonArray()) texturesObj = data.getAsJsonArray("textures");
++			else texturesObj.add(data.get("textures"));
+ 			for(JsonElement el : texturesObj.asList()) {
+ 				textures.add(MolangParser.parse(el.getAsString()));
+ 			}
+diff --git a/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/ResourcePackBedrockEdition.java b/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/ResourcePackBedrockEdition.java
+index 8e95ea1..28f5a9b 100644
+--- a/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/ResourcePackBedrockEdition.java
++++ b/src/nl/bramstout/mcworldexporter/resourcepack/bedrock/ResourcePackBedrockEdition.java
+@@ -449,7 +449,7 @@ public class ResourcePackBedrockEdition extends ResourcePack{
+ 								if(components.has("minecraft:water_appearance")) {
+ 									JsonObject waterAppearance = components.getAsJsonObject("minecraft:water_appearance");
+ 									if(waterAppearance.has("surface_color")) {
+-										JsonElement surfaceColor = waterAppearance.getAsJsonArray("surface_color");
++										JsonElement surfaceColor = waterAppearance.get("surface_color");
+ 										
+ 										Color color = BiomeBedrockEdition.parseTint(surfaceColor);
+ 										biome.setColor("minecraft:water", color);
+diff --git a/src/nl/bramstout/mcworldexporter/resourcepack/java/FontJava.java b/src/nl/bramstout/mcworldexporter/resourcepack/java/FontJava.java
+index f406e64..d4df87b 100644
+--- a/src/nl/bramstout/mcworldexporter/resourcepack/java/FontJava.java
++++ b/src/nl/bramstout/mcworldexporter/resourcepack/java/FontJava.java
+@@ -51,6 +51,7 @@ import nl.bramstout.mcworldexporter.resourcepack.ResourcePacks;
+ public class FontJava extends Font{
+ 
+ 	private Map<Integer, Character> characters;
++	private final java.util.List<UnihexSource> unicodeSources=new java.util.ArrayList<>();
+ 	
+ 	public FontJava(JsonObject data) {
+ 		characters = new HashMap<Integer, Character>();
+@@ -74,6 +75,8 @@ public class FontJava extends Font{
+ 					parseSpace(providerObj);
+ 				}else if(type.equals("reference")) {
+ 					parseReference(providerObj);
++				}else if(type.equals("unihex")) {
++					parseUnihex(providerObj);
+ 				}
+ 			}
+ 		}
+@@ -188,6 +191,7 @@ public class FontJava extends Font{
+ 					JsonObject refData = Json.read(file).getAsJsonObject();
+ 					FontJava refFont = new FontJava(refData);
+ 					characters.putAll(refFont.characters);
++					unicodeSources.addAll(refFont.unicodeSources);
+ 				}catch(Exception ex) {
+ 					ex.printStackTrace();
+ 				}
+@@ -198,7 +202,42 @@ public class FontJava extends Font{
+ 	
+ 	@Override
+ 	public Character getCharacterInfo(int codepoint) {
+-		return characters.getOrDefault(Integer.valueOf(codepoint), null);
++		Character found=characters.get(codepoint);if(found!=null)return found;
++		for(UnihexSource source:unicodeSources){found=source.character(codepoint);if(found!=null){characters.put(codepoint,found);return found;}}
++		return null;
++	}
++
++	private void parseUnihex(JsonObject provider){
++		if(!provider.has("hex_file"))return;
++		String id=provider.get("hex_file").getAsString();
++		File file=ResourcePacks.getFile(id.replace(".zip",""),"",".zip","assets");
++		if(file==null||!file.isFile())return;
++		try{unicodeSources.add(new UnihexSource(file,provider));}catch(Exception e){throw new RuntimeException("Cannot load Unicode font "+id,e);}
++	}
++	private static final class UnihexSource {
++		final Map<Integer,String> glyphs=new HashMap<>();final Map<Integer,String> pages=new HashMap<>();
++		final java.util.List<int[]> overrides=new java.util.ArrayList<>();final String digest;
++		UnihexSource(File file,JsonObject provider)throws Exception {
++			digest=java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(java.nio.file.Files.readAllBytes(file.toPath()))).substring(0,20);
++			try(var zip=new java.util.zip.ZipFile(file)){var entries=zip.entries();while(entries.hasMoreElements()){var entry=entries.nextElement();if(!entry.getName().endsWith(".hex"))continue;
++				try(var lines=new java.io.BufferedReader(new java.io.InputStreamReader(zip.getInputStream(entry),java.nio.charset.StandardCharsets.US_ASCII))){String line;while((line=lines.readLine())!=null){int colon=line.indexOf(':');if(colon<1)continue;String bits=line.substring(colon+1).trim();if(bits.length()<32||bits.length()>128||bits.length()%32!=0)continue;glyphs.put(Integer.parseInt(line.substring(0,colon),16),bits);}}
++			}}
++			if(provider.has("size_overrides"))for(var value:provider.getAsJsonArray("size_overrides")){var o=value.getAsJsonObject();overrides.add(new int[]{o.get("from").getAsString().codePointAt(0),o.get("to").getAsString().codePointAt(0),o.get("left").getAsInt(),o.get("right").getAsInt()});}
++		}
++		Character character(int codepoint){
++			String bits=glyphs.get(codepoint);if(bits==null)return null;int width=bits.length()/4,left=width,right=-1;
++			for(int row=0;row<16;row++){long value=Long.parseUnsignedLong(bits.substring(row*bits.length()/16,(row+1)*bits.length()/16),16);for(int x=0;x<width;x++)if((value&(1L<<(width-1-x)))!=0){left=Math.min(left,x);right=Math.max(right,x);}}
++			for(int[] override:overrides)if(codepoint>=override[0]&&codepoint<=override[1]){left=override[2];right=override[3];break;}
++			if(right<left)return new Character(null,0f,0f,0f,0f,0f,0f,0f);
++			int page=codepoint>>>8;String texture=pages.get(page);
++			if(texture==null){
++				var bitmap=new BufferedImage(512,256,BufferedImage.TYPE_INT_ARGB);
++				for(int slot=0;slot<256;slot++){String glyph=glyphs.get((page<<8)+slot);if(glyph==null)continue;int w=glyph.length()/4;for(int row=0;row<16;row++){long value=Long.parseUnsignedLong(glyph.substring(row*glyph.length()/16,(row+1)*glyph.length()/16),16);for(int x=0;x<w;x++)if((value&(1L<<(w-1-x)))!=0)bitmap.setRGB((slot%16)*32+x,(slot/16)*16+row,0xffffffff);}}
++				texture=nl.bramstout.mcworldexporter.export.GeneratedTextures.writeTexture("font/unihex_"+digest+"_"+Integer.toHexString(page),bitmap);pages.put(page,texture);
++			}
++			float visible=right-left+1;int slot=codepoint&255;
++			return new Character(texture,visible/16f,1f,7f/8f,((slot%16)*32+left)/512f,(slot/16)/16f,visible/512f,1f/16f);
++		}
+ 	}
+ 
+ }

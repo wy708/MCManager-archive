@@ -1,0 +1,28 @@
+# One instance and one volume per archive. Set MCM_MAP_SERVER_ID to that archive UUID.
+services:
+  backend:
+    environment:
+      MCM_MAP_PUBLIC_URLS: ${MCM_MAP_SERVER_ID:?Set the map server archive UUID}=${MCM_MAP_PUBLIC_URL:-http://127.0.0.1:18091}/maps/${MCM_MAP_SERVER_ID}/
+  mipmap:
+    build: ./map
+    image: mcmanager-mipmap:local
+    volumes:
+      - map-tiles:/app/data
+    restart: unless-stopped
+    cpus: 1.0
+    mem_limit: 768m
+  map-web:
+    image: nginx:stable-alpine
+    environment:
+      MCM_MAP_INGEST_KEY: ${MCM_MAP_INGEST_KEY:?Set a random map upload key}
+      MCM_MAP_SERVER_ID: ${MCM_MAP_SERVER_ID}
+      NGINX_ENVSUBST_FILTER: ^MCM_MAP_(INGEST_KEY|SERVER_ID)$$
+    volumes:
+      - ./map/nginx.conf.template:/etc/nginx/templates/default.conf.template:ro
+    ports:
+      - "${MCM_MAP_BIND:-127.0.0.1}:${MCM_MAP_PORT:-18091}:80"
+    depends_on:
+      - mipmap
+    restart: unless-stopped
+volumes:
+  map-tiles:

@@ -1,0 +1,25 @@
+CREATE TABLE game_backups (
+    id UUID PRIMARY KEY,
+    server_id UUID NOT NULL REFERENCES server_archives(id),
+    request_id UUID NOT NULL UNIQUE,
+    source_backup_id UUID,
+    kind VARCHAR(16) NOT NULL CHECK (kind IN ('MANUAL', 'AUTOMATIC', 'FINAL')),
+    status VARCHAR(24) NOT NULL CHECK (status IN ('AWAITING_UPLOAD', 'RECEIVING', 'VERIFYING', 'READY', 'FAILED', 'DELETING', 'DELETED', 'MISSING')),
+    note VARCHAR(1000) NOT NULL,
+    permanent BOOLEAN NOT NULL,
+    expected_bytes BIGINT NOT NULL CHECK (expected_bytes > 0),
+    received_bytes BIGINT NOT NULL DEFAULT 0,
+    archive_bytes BIGINT,
+    source_bytes BIGINT,
+    file_count INTEGER,
+    sha256 VARCHAR(64),
+    attempt_id UUID,
+    summary_json TEXT,
+    failure_code VARCHAR(48),
+    snapshot_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    UNIQUE (server_id, source_backup_id)
+);
+CREATE INDEX idx_game_backups_server_created ON game_backups(server_id, created_at, id);

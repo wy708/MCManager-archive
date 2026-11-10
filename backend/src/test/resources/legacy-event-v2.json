@@ -1,0 +1,20 @@
+{
+  "source": "Actual V2 backend canonical event hash before chat schema extension",
+  "sourceCommit": "e045673",
+  "realGameplay": false,
+  "event": {
+    "eventId": "ee6cb294-9ac2-46c2-8851-22b3fbceb27f",
+    "kind": "COUNTER",
+    "at": "2026-10-26T08:05:54.006Z",
+    "player": {
+      "identityType": "XUID",
+      "identity": "7455002142739130054",
+      "name": "Native-Contract-QA"
+    },
+    "dimension": "minecraft:overworld",
+    "metric": "blocks.mined",
+    "value": 3,
+    "subject": "minecraft:stone"
+  },
+  "payloadHash": "00751967913b77c6055f3dc611c66b9e3a757fac218abe44a4e42abc0d7e42a7"
+}

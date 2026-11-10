@@ -1,0 +1,48 @@
+services:
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: mcmanager
+      POSTGRES_USER: mcmanager
+      POSTGRES_PASSWORD: ${MCM_DB_PASSWORD:?Set MCM_DB_PASSWORD in .env}
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mcmanager -d mcmanager"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      MCM_DB_URL: jdbc:postgresql://database:5432/mcmanager
+      MCM_DB_USER: mcmanager
+      MCM_DB_PASSWORD: ${MCM_DB_PASSWORD:?Set MCM_DB_PASSWORD in .env}
+      MCM_ADMIN_USERNAME: ${MCM_ADMIN_USERNAME:-admin}
+      MCM_ADMIN_PASSWORD: ${MCM_ADMIN_PASSWORD:?Set MCM_ADMIN_PASSWORD in .env}
+      MCM_PUBLIC_BASE_URL: ${MCM_PUBLIC_BASE_URL:-}
+      MCM_COOKIE_SECURE: ${MCM_COOKIE_SECURE:-false}
+      MCM_STATISTICS_ZONE: ${MCM_STATISTICS_ZONE:-Asia/Hong_Kong}
+      MCM_ACTIVITY_RETENTION_WORKER_ENABLED: ${MCM_ACTIVITY_RETENTION_WORKER_ENABLED:-true}
+      MCM_BACKUP_MAX_UPLOAD_BYTES: ${MCM_BACKUP_MAX_UPLOAD_BYTES:-17179869184}
+      MCM_BACKUP_EXPANDED_LIMIT: ${MCM_BACKUP_EXPANDED_LIMIT:-137438953472}
+      MCM_BACKUP_POLICY_WORKER_ENABLED: ${MCM_BACKUP_POLICY_WORKER_ENABLED:-true}
+    volumes:
+      - backups:/app/data/backups
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+  web:
+    build: ./frontend
+    ports:
+      - "${MCM_WEB_BIND:-127.0.0.1}:${MCM_WEB_PORT:-8088}:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+volumes:
+  database:
+  backups:

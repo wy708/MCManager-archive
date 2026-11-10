@@ -1,0 +1,9 @@
+{
+  "name": "mcmanager-archive-backup-host",
+  "version": "0.7.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": { "test": "node --test --test-concurrency=1 test/*.test.mjs" },
+  "dependencies": { "tar": "7.5.22" }
+}

@@ -1,0 +1,73 @@
+--- a/xmake.lua
++++ b/xmake.lua
+@@ -1,6 +1,7 @@
+ add_rules("mode.debug", "mode.release")
+ 
+-add_repositories("levimc-repo https://github.com/LiteLDev/xmake-repo.git")
++add_repositories("map-compat-levimc " .. os.getenv("MCM_MAP_LEVIMC_REPO"))
++add_repositories("map-compat-xmake " .. os.getenv("MCM_MAP_XMAKE_REPO"))
+ add_repositories("local-repo repository")
+ 
+ add_requires("aklomp-base64 0.5.2", {configs = {cxflags = "-clang:-Wno-error"}})
+@@ -9,11 +10,11 @@
+ add_requires("cpptrace 1.0.4")
+ add_requires("date 3.0.4")
+ add_requires("entt v4.0.0")
+-add_requires("expected-lite v0.9.0")
+-add_requires("fmt 12.1.0")
+-add_requires("glm 1.0.3")
++add_requires("expected-lite v0.8.0")
++add_requires("fmt 11.2.0")
++add_requires("glm 1.0.1")
+ add_requires("magic_enum v0.9.7")
+-add_requires("gsl v4.2.2")
++add_requires("gsl v4.2.0")
+ add_requires("pybind11 3.0.1")
+ -- clang-cl disables C++ exceptions by default, and xmake's
+ -- package snippet check only injects /EHsc for the "cl" tool, so compile checks
+@@ -22,14 +23,23 @@
+ add_requires("replxx 2021.11.25")
+ add_requires("toml++ v3.3.0")
+ add_requires("zstr v1.0.7")
+-add_requires("demangler")
+-add_requires("raknet")
++add_requires("demangler v20.0.0")
++add_requires("raknet 4.081")
+ add_requires("libdeflate v1.25")
+ 
+ add_requires("microsoft-detours a1dd93fddfbba5ad07992edbaf4a296dcfca8d6f")
+ 
+-add_requires("levilamina 26.60.*", {configs = {target_type = "server"}})
+-add_requires("levibuildscript")
++-- Fixed LL 26.60.2 ABI; BDS 1.26.61.1 also requires the checked runtime adapter.
++add_requires("nlohmann_json v3.12.0", "pfr 2.1.1", "parallel-hashmap v2.0.0", "concurrentqueue v1.0.4")
++add_requires("leveldb 1.23", "rapidjson 2025.02.05", "type_safe v0.2.4", "pcg_cpp v1.0.0", "symbolprovider v1.3.0", "stb 2025.03.14")
++add_includedirs(path.join(os.getenv("MCM_MAP_LL_SOURCE"), "src-server"), path.join(os.getenv("MCM_MAP_LL_SOURCE"), "src"))
++add_linkdirs(path.join(os.getenv("MCM_MAP_LL_SDK"), "lib"))
++add_links("LeviLamina")
++add_packages("nlohmann_json", "pfr", "parallel-hashmap", "concurrentqueue")
++add_packages("entt", "expected-lite", "fmt", "gsl", "glm", "leveldb", "magic_enum", "rapidjson", "type_safe", "pcg_cpp", "symbolprovider", "stb")
++add_defines("LL_PLAT_S", "_HAS_CXX23=1", "ENTT_SPARSE_PAGE=4096", "ENTT_PACKED_PAGE=128", "ENTT_NO_MIXIN", "FMT_USE_FULL_CACHE_DRAGONBOX=1")
++add_cxflags("/utf-8", "-Wno-microsoft-include", "-Wno-invalid-offsetof", "-Wno-microsoft-cast", {tools={"clang_cl"}})
++add_requires("levibuildscript 0.6.2")
+ 
+ set_project("endstone")
+ set_languages("c++20")
+@@ -81,7 +91,7 @@
+     add_cxflags("/utf-8 /O2 /DNDEBUG /Gy")
+     add_defines("PYBIND11_DETAILED_ERROR_MESSAGES")
+     add_deps("endstone")
+-    add_packages("levilamina", "pybind11", "microsoft-detours")
++    add_packages("pybind11", "microsoft-detours")
+     set_symbols("debug")
+     after_build(function (target)
+         os.cp("endstone/endstone", "bin/EndstoneRuntime/")
+@@ -106,7 +116,7 @@
+     remove_files("endstone/src/endstone/core/server.cpp")
+     remove_files("endstone/src/endstone/core/network/stun_client.cpp")
+     add_deps("bedrock")
+-    add_packages("moodycamelconqueue", "cpptrace", "date", "replxx", "pybind11", "toml++", "zstr", "libdeflate", "levilamina", {public = true})
++    add_packages("moodycamelconqueue", "cpptrace", "date", "replxx", "pybind11", "toml++", "zstr", "libdeflate", {public = true})
+ 
+ target("endstone_runtime")
+     set_kind("shared")

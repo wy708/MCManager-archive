@@ -1,0 +1,9 @@
+{
+  "target": "1.26.61.1/26.60.2",
+  "symbolCount": 932,
+  "tableSHA256": "5ec54120362d91a23d6c9ae991d5e7da18c6a274978ab2905b89cd61e9c2e350",
+  "loadedExecutableSHA256": "1952b19ec9d66edf0bedc9eb0db422cd84ba5f1ae67feb2e30d07511d773f63e",
+  "officialExecutableSHA256": "2443400aa2fb41eb85e0c3d93762d8031b9d229049e77a2132778fad7dced1eb",
+  "preLoaderSHA256": "5cab8d82f3c26012b4baa5a70822035b7c4474f13aa3d42135aaac609232874f",
+  "leviLaminaSHA256": "532480311d3e1fc6389a9ead56f116404047c65e299e89224c00bb6fdd4d3e17"
+}

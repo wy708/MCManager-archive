@@ -1,0 +1,13 @@
+.git
+.tools
+.cache
+.env
+.env.*
+**/node_modules
+**/target
+**/dist
+**/data
+**/backups
+collector/build
+collector/.xmake
+*.log

@@ -1,0 +1,15 @@
+{
+  "runtimeProfile": "1.26.61.1",
+  "levistone": { "url": "https://github.com/LiteLDev/LeviStone.git", "commit": "f574b4dd6e723131afc9ef28ca0a6fd845713870" },
+  "endstoneCommit": "b4aaa87d2c5305e7d340168f824ac2e2ea722e44",
+  "levilamina": "26.60.2",
+  "levilaminaCommit": "ec76722309ef163d213f3ed4cf8a269e150028ef",
+  "levimcRepositoryCommit": "192f00805cb7160e4cd83ac90c58b22e0bb99d8f",
+  "xmakeRepository": { "url": "https://github.com/xmake-io/xmake-repo.git", "commit": "c741c0d977b613672a8da4cda2862ae8c171a3eb" },
+  "compiler": "22.1.8",
+  "python": "3.12.10",
+  "wheelVersion": "0.11.15.dev1+mcmanager.26611",
+  "modVersion": "0.11.15-dev.1+mcmanager.26611",
+  "buildPythonPackages": ["setuptools==84.2.1", "setuptools_scm==10.3.4", "wheel==0.48.0", "build==1.6.1"],
+  "runtimeDependencies": ["aiohappyeyeballs==2.7.1", "aiohttp==3.14.5", "aiosignal==1.4.0", "asyncio==4.0.0", "attrs==26.1.0", "certifi==2026.10.23", "charset-normalizer==3.5.2", "click==8.5.0", "frozenlist==1.8.0", "idna==3.20", "importlib-metadata==10.1.0", "importlib-resources==7.1.0", "lazy-loader==0.6", "markdown-it-py==4.2.0", "mdurl==0.1.2", "multidict==7.2.1", "numpy==2.5.4", "packaging==26.3", "pkginfo==2.0", "propcache==0.5.4", "psutil==7.2.2", "pygments==2.21.0", "pyyaml==6.0.3", "requests==2.34.2", "rich==15.0.0", "tomlkit==0.15.2", "typing-extensions==4.16.0", "urllib3==2.8.0", "yarl==1.25.1", "zipp==4.1.2"]
+}
