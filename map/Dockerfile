@@ -38,6 +38,8 @@ RUN python /tmp/patch_layers.py
 RUN python /tmp/patch_initial_view.py
 RUN python /tmp/patch_coordinate_jump.py
 RUN python /tmp/patch_project_maps.py
+COPY patch_memory.py /tmp/patch_memory.py
+RUN python /tmp/patch_memory.py
 RUN python audit_materials.py
 RUN useradd --uid 10001 --create-home mapper && chown -R mapper:mapper /app
 USER mapper

@@ -46,3 +46,21 @@ docker compose -f compose.yaml -f .tools/map-generated/compose.json up -d --buil
 未采集区域仍为空白。坐标跳转只移动浏览器视角，不传送玩家、不触发扫描。大范围 `/loadmap` 会增加游戏负载；原版命令可能清除现有 tickingarea，正式世界使用前确认上游行为。
 
 [透明方块](../docs/世界地图透明方块更新.md) · [上传优化](../docs/世界故事馆与上传优化.md) · [MipMap MIT](MIPMAP-LICENSE.txt)
+
+## 地图服务内存与缩略图维护
+
+`patch_memory.py` 保留 256 个待处理区块的容量，但队列只保存序列化后的 JSON 字节，绘制时才恢复方块对象。单个队列载荷上限为 2 MiB，因此排队载荷最多约 512 MiB；进程、通信缓冲、纹理和洞穴缓存还会额外占用内存。Compose 默认内存限制调整为 1536 MiB，该数字不是整个地图进程的固定用量或任意负载下的保证。
+
+定时缩略图维护只重建来源比目标更新、或目标缺失的瓦片，写锁仅覆盖一个父瓦片；区块更新仍即时向上更新全部缩放层级。已有地形、纹理精度和下界连通计算规则保持不变。
+
+队列已满时返回 HTTP 503 和 `Retry-After: 2`，不返回成功。旧版发送器未必会自动重试；失败区块需要后续采集刷新。HTTP 200 仍表示进入内存绘制队列，并不保证已写入磁盘，进程崩溃前尚未绘制的任务无法仅靠重启恢复。
+
+已启动地图容器后，执行 `docker compose -f compose.yaml -f compose.map.yaml exec -T mipmap sh -c 'PYTHONPATH=/app python -' < map/test_memory.py` 可验证序列化队列容量、超限拒绝、忙碌响应、负坐标缩略图刷新与未变化瓦片不重写。
+
+### Memory and thumbnail maintenance
+
+Pending chunks retain the original capacity of 256, but the queue stores serialized JSON instead of expanded block objects. Each payload is limited to 2 MiB; queued payloads can total 512 MiB, excluding process, IPC, texture, and cave-cache memory. The default container limit is 1536 MiB, not a guarantee for arbitrary workloads.
+
+Periodic maintenance rebuilds only missing or stale thumbnails and locks one parent tile at a time. Incremental updates still propagate through every zoom level without changing existing terrain or rendering precision.
+
+A full queue returns HTTP 503 with `Retry-After: 2`. Older senders may not retry; later collection refreshes are needed. HTTP 200 acknowledges an in-memory queue entry, not durable rendering. The command above runs regression checks in an existing map container.

@@ -10,7 +10,7 @@ services:
       - map-tiles:/app/data
     restart: unless-stopped
     cpus: 1.0
-    mem_limit: 768m
+    mem_limit: 1536m
   map-web:
     image: nginx:stable-alpine
     environment:
