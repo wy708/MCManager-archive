@@ -6,6 +6,7 @@ import { api, type ServerArchive } from '../api'
 import { gameName } from '../gameNames'
 import DataChart from './DataChart.vue'
 import { compactChartNumber } from '../chartNumbers'
+import { calendarDays } from '../chartData'
 import type { EChartsOption } from 'echarts'
 const props = defineProps<{ scope: string; servers: ServerArchive[] }>()
 const emit = defineEmits<{ select: [id: string] }>()
@@ -63,9 +64,11 @@ const totals = computed(() => {
   }))
 })
 const trend = computed<EChartsOption>(() => {
-  const days = [...new Set(report.value?.trend.map((r) => r.date))].sort()
+  const end = report.value?.date ?? ''
+  const start = end ? new Date(Date.parse(end + 'T00:00:00Z') - 6 * 86400000).toISOString().slice(0, 10) : ''
+  const days = calendarDays(start, end)
   return {
-    tooltip: { trigger: 'axis', renderMode: 'richText' },
+    tooltip: { trigger: 'axis', renderMode: 'richText', confine: true },
     legend: { top: 0, left: 'center', type: 'scroll', itemGap: 18 },
     grid: { left: 12, right: 16, top: 56, bottom: 20, containLabel: true },
     xAxis: {
@@ -73,12 +76,13 @@ const trend = computed<EChartsOption>(() => {
       data: days,
       axisLabel: { formatter: (value: string) => value.slice(5), hideOverlap: true, margin: 12 },
     },
-    yAxis: { type: 'value', name: t('m0684'), axisLabel: { formatter: compactChartNumber } },
+    yAxis: { type: 'value', name: t('m0684'), minInterval: 1, axisLabel: { formatter: compactChartNumber } },
     series: ['blocks.placed', 'blocks.mined'].map((metric) => ({
       type: 'line' as const,
       name: labels[metric],
       connectNulls: false,
-      smooth: true,
+      smooth: false,
+      symbolSize: 7,
       data: days.map((day) => {
         const row = report.value?.trend.find((r) => r.date === day && r.metric === metric)
         return row ? Number(row.value) : null
@@ -87,8 +91,8 @@ const trend = computed<EChartsOption>(() => {
   }
 })
 const blocks = computed<EChartsOption>(() => ({
-  tooltip: { trigger: 'axis', renderMode: 'richText' },
-  grid: { left: 130, right: 30, bottom: 30 },
+  tooltip: { trigger: 'axis', renderMode: 'richText', confine: true },
+  grid: { left: 8, right: 18, top: 20, bottom: 20, containLabel: true },
   xAxis: {
     type: 'value',
     splitNumber: 3,
@@ -106,7 +110,7 @@ const blocks = computed<EChartsOption>(() => ({
           ' · ' +
           (r.metric === 'blocks.placed' ? t('m0685') : t('m0686')),
       ),
-    axisLabel: { width: 120, overflow: 'truncate' },
+    axisLabel: { width: 105, overflow: 'truncate' },
   },
   series: [
     {

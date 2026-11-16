@@ -1,0 +1,81 @@
+import { test, expect, type Locator } from '@playwright/test'
+
+async function option(chart: Locator) {
+  await chart.scrollIntoViewIfNeeded()
+  await expect(chart.locator('svg')).toBeVisible()
+  return chart.evaluate(el => {
+    const o = (el as any).__vueParentComponent.props.option
+    return { x: o.xAxis, y: o.yAxis, series: o.series, legend: o.legend }
+  })
+}
+
+for (const width of [390, 1440]) test(`chart meaning and sparse observations ${width}`, async ({ page }, info) => {
+  test.setTimeout(90000)
+  await page.setViewportSize({width, height: 950})
+  const errors: string[] = []
+  page.on('pageerror', error => errors.push(error.message))
+  await page.goto('/?lang=zh-CN')
+  await page.getByLabel('密码', {exact: true}).fill('e2e-admin-password-2026')
+  await page.getByRole('button', {name: '进入工作台'}).click()
+  await expect(page.locator('main h1')).toHaveText('今天的方块世界')
+  const csrf = await (await page.request.get('/api/auth/csrf')).json()
+  const response = await page.request.post('/api/servers', {headers: {[csrf.headerName]: csrf.token}, data: {name:'Chart presentation fixtures',startDate:'2020-01-01',description:'Isolated synthetic data'}})
+  expect(response.ok()).toBeTruthy()
+  const {id} = await response.json()
+  const days = ['2026-11-10','2026-11-11','2026-11-12','2026-11-13','2026-11-14','2026-11-15','2026-11-16']
+  await page.route(`**/api/servers/${id}/daily-report*`, route => route.fulfill({json:{serverName:'Chart presentation fixtures',date:days[6],timezone:'Asia/Hong_Kong',recordedPlayers:1,totals:[],projects:[],notice:'Synthetic missing-day fixture',materials:[{block:'minecraft:stone',metric:'blocks.placed',value:'123456'}],trend:[{date:days[0],metric:'blocks.placed',value:'10'},{date:days[6],metric:'blocks.placed',value:'20'}]}}))
+  await page.goto(`/reports?server=${id}`)
+  const report = await option(page.getByRole('img',{name:'七天放置与挖掘趋势'}))
+  expect(report.x.data).toEqual(days)
+  expect(report.series[0].data).toEqual([10,null,null,null,null,null,20])
+  expect(report.series[0].smooth).toBe(false)
+  expect(report.series[0].connectNulls).toBe(false)
+  await page.locator('.report-charts').screenshot({path:info.outputPath(`daily-${width}.png`)})
+  const base = {generatedAt:new Date().toISOString(),from:days[0],to:days[6],zone:'Asia/Hong_Kong',hours:[{weekday:0,hour:12,millis:3600000}],contributions:[],hotspots:[],heights:[{day:days[0],dimension:'minecraft:overworld',y:-16,metric:'blocks.placed',value:10},{day:days[6],dimension:'minecraft:overworld',y:8,metric:'blocks.placed',value:20}],ranking:[],coverage:null,notices:[]}
+  const players=[{player:'a',name:'Builder with a long name',online:3600000,placed:10,mined:100,planted:0,harvested:0,chat:4,travel:1250000},{player:'b',name:'Second builder',online:7200000,placed:20,mined:50,planted:1,harvested:0,chat:2,travel:2500000}]
+  await page.route('**/api/statistics/exploration?*', route=>route.fulfill({json:base}))
+  await page.route('**/api/statistics/exploration/extended?*', route=>route.fulfill({json:{...base,serverName:'Chart presentation fixtures',daily:[{day:days[0],metric:'blocks.placed',amount:10},{day:days[2],metric:'blocks.placed',amount:0},{day:days[6],metric:'blocks.placed',amount:20}],players,runtime:[],milestones:[]}}))
+  await page.goto(`/exploration?server=${id}`)
+  const view=page.locator('.explore-chart')
+  await page.locator('.explore-tabs').getByRole('button',{name:'活动趋势',exact:true}).click()
+  let opts=await option(view.locator('.data-chart'))
+  expect(opts.x.data).toEqual(days)
+  expect(opts.series[0].type).toBe('line')
+  expect(opts.series[0].stack).toBeUndefined()
+  expect(opts.series[0].data).toEqual([50,null,0,null,null,null,100])
+  await view.locator('.activity-values summary').click()
+  await expect(view.locator('.activity-values')).toContainText('无记录')
+  await view.screenshot({path:info.outputPath(`activity-${width}.png`)})
+  await page.locator('.explore-tabs').getByRole('button',{name:'玩家雷达',exact:true}).click()
+  await option(view.locator('.data-chart'))
+  const tooltip=await view.locator('.data-chart').evaluate(el=>{
+    const o=(el as any).__vueParentComponent.props.option, data=o.series[0].data[0]
+    return o.tooltip.formatter({data,value:data.value})
+  })
+  expect(tooltip).toContain('1,250')
+  expect(tooltip).toContain('50/100')
+  await page.locator('.story-categories button').nth(2).click()
+  await page.locator('.explore-tabs').getByRole('button',{name:'地下施工',exact:true}).click()
+  opts=await option(view.locator('.data-chart'))
+  expect(opts.y.data).toEqual(['-16','-8','0','8'])
+  expect(opts.series[0].data).toEqual([[0,0,10],[6,3,20]])
+  await view.screenshot({path:info.outputPath(`height-${width}.png`)})
+  await page.route('**/api/statistics/exploration/extended?*', route=>route.fulfill({json:{...base,serverName:'Chart presentation fixtures',daily:[{day:days[0],metric:'blocks.placed',amount:0}],players:[],runtime:[],milestones:[]}}))
+  await page.goto(`/exploration?server=${id}`)
+  await page.locator('.explore-tabs').getByRole('button',{name:'活动趋势',exact:true}).click()
+  opts=await option(view.locator('.data-chart'))
+  expect(opts.series[0].data).toEqual([0,null,null,null,null,null,null])
+  await expect(view.locator('.no-extra-data')).toHaveCount(0)
+  const first=Date.parse('2026-11-16T12:00:00Z')
+  await page.route(`**/api/servers/${id}/runtime?*`, route=>route.fulfill({json:{serverName:'Chart presentation fixtures',state:'NO_DATA',generatedAt:new Date().toISOString(),from:new Date(first-60000).toISOString(),to:new Date(first+30000).toISOString(),bucketSeconds:10,latest:null,points:[{at:new Date(first).toISOString(),hostNetworkReceiveBps:1048576,hostNetworkSendBps:2048,players:1},{at:new Date(first+10000).toISOString(),hostNetworkReceiveBps:2097152,hostNetworkSendBps:null,players:2}],events:[],eventsTruncated:false,notice:'Synthetic network unit fixture'}}))
+  await page.goto(`/runtime?server=${id}`)
+  const network=page.locator('.runtime-charts').first().locator('.data-chart').nth(2)
+  opts=await option(network)
+  expect(opts.y.name).toBe('MiB/s')
+  expect(opts.series[0].data.filter((p: any)=>p[1]!=null).map((p: any)=>p[1])).toEqual([1,2])
+  expect(opts.series[0].connectNulls).toBe(false)
+  await network.evaluate(el=>el.scrollIntoView({block:'center'}))
+  await network.screenshot({path:info.outputPath(`network-${width}.png`)})
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
+  expect(errors).toEqual([])
+})

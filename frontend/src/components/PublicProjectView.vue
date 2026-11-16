@@ -7,6 +7,7 @@ import { api, ApiError } from '../api'
 import { gameName } from '../gameNames'
 import { blockIcon, statusName, type ProjectDetail } from '../projects'
 import DataChart from './DataChart.vue'
+import { compactChartNumber } from '../chartNumbers'
 import ProjectMapView from './ProjectMapView.vue'
 import type { EChartsOption } from 'echarts'
 const ProjectModelView=defineAsyncComponent(()=>import('./ProjectModelView.vue'))
@@ -35,8 +36,8 @@ const people = computed(() => {
   }
   return [...rows.values()].sort((a,b) => b.placed + b.removed - a.placed - a.removed)
 })
-const chart = computed<EChartsOption>(() => ({ tooltip: { trigger: 'axis', renderMode: 'richText' }, legend: { top: 0 }, grid: { top: 40, left: 110, right: 25, bottom: 35 },
-  xAxis: { type: 'value', minInterval: 1 }, yAxis: { type: 'category', inverse: true, data: people.value.slice(0,20).map(p => p.name), axisLabel: { width: 95, overflow: 'truncate' } },
+const chart = computed<EChartsOption>(() => ({ tooltip: { trigger: 'axis', renderMode: 'richText', confine: true }, legend: { top: 0 }, grid: { top: 40, left: 110, right: 25, bottom: 35 },
+  xAxis: { type: 'value', minInterval: 1, splitNumber: 2, axisLabel: { formatter: compactChartNumber, hideOverlap: true } }, yAxis: { type: 'category', inverse: true, data: people.value.slice(0,20).map(p => p.name), axisLabel: { width: 95, overflow: 'truncate' } },
   series: [{ type: 'bar', name: t('m0685'), stack: 'work', data: people.value.slice(0,20).map(p=>p.placed) }, { type: 'bar', name: t('m1015'), stack: 'work', data: people.value.slice(0,20).map(p=>p.removed) }] }))
 function iconFailed(event: Event) { (event.target as HTMLImageElement).style.visibility = 'hidden' }
 const date = (value: string | null) => value ? new Date(value).toLocaleString(formatLocale) : t('m1092')

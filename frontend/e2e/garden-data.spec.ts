@@ -178,7 +178,7 @@ test('populated dashboard, deferred charts, grouped stories and chat discovery',
   )
   await page.goto('/exploration?server=' + server.id)
   const groups = [
-    ['伙伴与日常', ['服务器作息', '活动河流', '服务器时钟', '玩家气泡', '玩家雷达']],
+    ['伙伴与日常', ['服务器作息', '活动趋势', '服务器时钟', '玩家气泡', '玩家雷达']],
     ['建造与协作', ['建筑协作', '贡献流向', '材料拼图', '施工旭日', '建设榜回放', '成长时间轴']],
     ['探索与运行', ['建设热区', '地下施工', '运行分布']],
   ] as const
@@ -198,6 +198,8 @@ test('populated dashboard, deferred charts, grouped stories and chat discovery',
       if (await chart.count()) {
         await chart.scrollIntoViewIfNeeded()
         await expect(chart.locator('svg')).toBeVisible()
+        await chart.evaluate(el => el.scrollIntoView({block:'center'}))
+        await chart.screenshot({path:info.outputPath('chart-'+tab+'-mobile.png')})
       }
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390)
       if (tab === '材料拼图' || tab === '贡献流向') {

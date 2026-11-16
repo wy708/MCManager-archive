@@ -5,6 +5,7 @@ import {computed,onBeforeUnmount,ref,shallowRef,watch} from 'vue'
 import {api,type ServerArchive} from '../api'
 import DataChart from './DataChart.vue'
 import {compactChartNumber} from '../chartNumbers'
+import {byteRateUnit} from '../chartData'
 import type {EChartsOption} from 'echarts'
 import {runtimeSeries,type RuntimeMetric} from '../runtimeSeries'
 const props=defineProps<{scope:string;servers:ServerArchive[]}>()
@@ -33,8 +34,11 @@ const memory=(v:number|null|undefined)=>v==null?'—':(v/1073741824).toFixed(2)+
 const duration=(ms:number|undefined)=>ms==null?'—':t('m0273', [Math.floor(ms/3600000), Math.floor(ms/60000)%60])
 const time=(v:string)=>new Date(v).toLocaleString(formatLocale,{hour12:false})
 function chart(key:RuntimeMetric,name:string,max?:number):EChartsOption{
- const values=data.value?runtimeSeries(data.value,key):[]
- return {tooltip:{trigger:'axis',renderMode:'richText'},grid:{left:58,right:20,top:25,bottom:40},xAxis:{type:'time'},yAxis:{type:'value',min:0,max,name,axisLabel:{formatter:compactChartNumber,hideOverlap:true}},series:[{name,type:'line',data:values,connectNulls:false,showSymbol:true,symbolSize:5,smooth:false,lineStyle:{width:2},areaStyle:{opacity:.08}}]}
+ const raw=data.value?runtimeSeries(data.value,key):[]
+ const unit=key==='hostNetworkReceiveBps'||key==='hostNetworkSendBps'?byteRateUnit(raw.map(point=>point[1])):{divisor:1,unit:name}
+ const values=raw.map(([at,value])=>[at,value==null?null:value/unit.divisor])
+ name=unit.unit
+ return {tooltip:{trigger:'axis',renderMode:'richText',confine:true,valueFormatter:(v:any)=>v==null?t('chart_no_record'):Number(v).toLocaleString(formatLocale,{maximumFractionDigits:2})+' '+name},grid:{left:58,right:20,top:25,bottom:40},xAxis:{type:'time',splitNumber:3,axisLabel:{hideOverlap:true}},yAxis:{type:'value',min:0,max,name,minInterval:key==='players'?1:undefined,splitNumber:4,axisLabel:{formatter:compactChartNumber,hideOverlap:true}},series:[{name,type:'line',data:values,connectNulls:false,showSymbol:true,symbolSize:5,smooth:false,lineStyle:{width:2},areaStyle:{opacity:.08}}]}
 }
 const hostMemoryPercent=computed(()=>latest.value?.hostMemoryTotalBytes&&latest.value.hostMemoryAvailableBytes!=null?(1-latest.value.hostMemoryAvailableBytes/latest.value.hostMemoryTotalBytes)*100:null)
 const speed=(v:number|null|undefined)=>v==null?'—':v>=1048576?(v/1048576).toFixed(2)+' MiB/s':(v/1024).toFixed(1)+' KiB/s'

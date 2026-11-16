@@ -8,6 +8,7 @@ import type { Exploration, ExplorationDetails } from '../exploration'
 import { blockIcon } from '../projects'
 import { gameName } from '../gameNames'
 import { compactChartNumber } from '../chartNumbers'
+import { heightBands } from '../chartData'
 import DataChart from './DataChart.vue'
 const MoreCharts = defineAsyncComponent(() => import('./ExplorationMoreCharts.vue'))
 const extraTabs = [
@@ -198,7 +199,7 @@ const hourOption = computed<EChartsOption>(() => ({
   },
   grid: { left: 35, right: 20, top: 25, bottom: 75 },
   xAxis: { type: 'category', data: Array.from({ length: 24 }, (_, i) => String(i)), name: t('m0782') },
-  yAxis: { type: 'category', data: weekdays, name: t('m0783') },
+  yAxis: { type: 'category', inverse: true, data: weekdays, name: t('m0783') },
   visualMap: {
     min: 0,
     max: Math.max(1, ...(data.value?.hours ?? []).map((r) => r.millis / 3600000)),
@@ -245,9 +246,15 @@ const networkOption = computed<EChartsOption>(() => {
       {
         type: 'graph',
         layout: 'circular',
+        left: 45,
+        right: 100,
+        top: 45,
+        bottom: 55,
         roam: true,
         draggable: true,
         label: { show: true, position: 'right', width: 90, overflow: 'truncate' },
+        labelLayout: { hideOverlap: true },
+        emphasis: { focus: 'adjacency', label: { show: true } },
         lineStyle: { opacity: 0.45, curveness: 0.15 },
         data: ids.map((id) => ({
           id,
@@ -340,7 +347,8 @@ const materialsOption = computed<EChartsOption>(() => {
         roam: false,
         breadcrumb: { show: false },
         nodeClick: false,
-        label: { show: true, formatter: '{b}\n{c}' },
+        label: { show: true, formatter: '{b}\n{c}', overflow: 'truncate' },
+        labelLayout: { hideOverlap: true },
         itemStyle: { borderColor: '#fff', borderWidth: 3, gapWidth: 3 },
         data: first,
       },
@@ -356,7 +364,7 @@ const heightOption = computed<EChartsOption>(() => {
   const rows = (data.value?.heights ?? []).filter(
       (r) => r.dimension === dimension.value && r.metric === metric.value,
     ),
-    levels = [...new Set(rows.map((r) => Number(r.y)))].sort((a, b) => a - b)
+    levels = heightBands(rows.map((r) => Number(r.y)))
   return {
     tooltip: {
       ...tip,
@@ -405,7 +413,7 @@ const rankRows = computed(() => {
 const raceOption = computed<EChartsOption>(() => ({
   tooltip: { ...tip, trigger: 'axis' },
   grid: { left: 105, right: 55, top: 20, bottom: 30 },
-  xAxis: { type: 'value', axisLabel: { formatter: compactChartNumber } },
+  xAxis: { type: 'value', minInterval: 1, splitNumber: 3, axisLabel: { formatter: compactChartNumber, hideOverlap: true } },
   yAxis: {
     type: 'category',
     inverse: true,
@@ -416,7 +424,7 @@ const raceOption = computed<EChartsOption>(() => ({
     {
       type: 'bar',
       data: rankRows.value.map((r) => r.value),
-      label: { show: true, position: 'right' },
+      label: { show: true, position: 'right', formatter: (p: any) => compactChartNumber(Number(p.value)) },
       itemStyle: { borderRadius: [0, 6, 6, 0] },
     },
   ],
@@ -497,6 +505,10 @@ function play() {
       </p>
       <MoreCharts v-if="isExtra" :tab="tab" :server="server" :base="data" :snapshots="extendedSnapshots" />
       <template v-if="!isExtra">
+        <p v-if="tab==='height'" class="muted">{{t('chart_height_gaps')}}</p>
+        <p v-if="tab==='flow'" class="muted">{{t('chart_flow_scope')}}</p>
+        <p v-if="tab==='network'" class="muted">{{t('chart_network_scope')}}</p>
+        <p v-if="tab==='race'" class="muted">{{t('chart_ranking_scope')}}</p>
         <div class="explore-controls">
           <label v-if="['network', 'flow', 'materials'].includes(tab)"
             >{{ t('m0088') }}<select v-model="project">

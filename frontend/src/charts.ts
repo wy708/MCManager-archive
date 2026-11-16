@@ -1,7 +1,6 @@
 import { use, init } from 'echarts/core'
-import { BarChart, LineChart, PieChart, HeatmapChart, GraphChart, SankeyChart, TreemapChart, ThemeRiverChart, ScatterChart, SunburstChart, BoxplotChart, RadarChart, CustomChart } from 'echarts/charts'
+import { BarChart, LineChart, PieChart, HeatmapChart, GraphChart, SankeyChart, TreemapChart, ScatterChart, SunburstChart, BoxplotChart, RadarChart, CustomChart } from 'echarts/charts'
 import {
-  SingleAxisComponent,
   RadarComponent,
   GridComponent,
   TooltipComponent,
@@ -20,8 +19,8 @@ use([
   GraphChart,
   SankeyChart,
   TreemapChart,
-  ThemeRiverChart, ScatterChart, SunburstChart, BoxplotChart, RadarChart, CustomChart,
-  SingleAxisComponent, RadarComponent,
+  ScatterChart, SunburstChart, BoxplotChart, RadarChart, CustomChart,
+  RadarComponent,
   GridComponent,
   TooltipComponent,
   LegendComponent,
