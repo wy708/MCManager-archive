@@ -222,4 +222,9 @@ const blocks = computed<EChartsOption>(() => ({
     grid-template-columns: 1fr;
   }
 }
+@media (max-width: 480px) {
+  .report-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .report-totals article { min-width: 0; padding: 16px 14px; }
+  .report-totals strong { font-size: 20px; line-height: 1.4; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+}
 </style>

@@ -98,7 +98,22 @@ try {
   const issued = await admin('/api/agents', { name: 'MCP 测试助手', grants: [{ serverId: server.id, scopes: ['STATS_READ', 'CHAT_READ', 'CHAT_SEND', 'QQ_BIND', 'WORLD_READ'] }] });
   cleanupAgent = issued.account.id;
   await connect(issued.token);
-  const listed = await client.listTools(); assert.equal(listed.tools.length, 38);
+  const listed = await client.listTools();
+  const toolNames = listed.tools.map(item => item.name);
+  assert.equal(new Set(toolNames).size, toolNames.length, 'Duplicate MCP tool name');
+  assert.ok(toolNames.length >= 38, 'Previously supported MCP tools disappeared');
+  for (const name of ['list_servers', 'get_server_runtime', 'get_container_history'])
+    assert.ok(toolNames.includes(name), `Missing tool: ${name}`);
+  evidence.toolCount = toolNames.length;
+  // Exercise optional ledger tools when this distribution advertises them.
+  if (toolNames.includes('get_item_history') || toolNames.includes('trace_item_entity')) {
+    assert.ok(toolNames.includes('get_item_history') && toolNames.includes('trace_item_entity'));
+    const history = await tool('get_item_history', { serverId: server.id });
+    assert.deepEqual(history.items, []);
+    const entityHistory = await tool('trace_item_entity', { serverId: server.id, entityRef: bootId + ':123' });
+    assert.deepEqual(entityHistory.items, []);
+    evidence.checks.push('advertised item history and entity trace tools queried through real MCP');
+  }
   const noContainerHistory = await tool('get_container_history', { serverId: server.id, dimension: 'minecraft:overworld', x: 1, y: 64, z: 1 });
   assert.deepEqual(noContainerHistory.items, []);
   assert.ok(noContainerHistory.dataNotice.includes('无记录不代表无人操作'));

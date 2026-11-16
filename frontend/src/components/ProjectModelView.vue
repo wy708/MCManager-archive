@@ -243,7 +243,6 @@ onBeforeUnmount(()=>{alive=false;clearInterval(historyTimer);clearInterval(playT
     </div>
     </div>
     <p v-if="error" role="alert" class="project-error model-error">{{ error }}</p>
-    <p class="project-muted model-pick-hint">{{ t('m1005') }}</p>
     <div ref="host" class="model-canvas"><div v-if="!ready&&!error" class="model-placeholder">{{ busy ? loadingStage : (status ? systemMessage(status.message) : undefined) ?? t('m1006') }}</div><span v-if="ready&&(busy||status?.state==='BUILDING'||status?.state==='QUEUED')" class="model-updating">{{ busy ? loadingStage : (status ? systemMessage(status.message) : undefined) }}</span></div>
     <section v-if="selectedBlock||blockBusy||blockError" class="model-block-info" :aria-label="t('m1007')">
       <button class="block-close" :aria-label="t('m1008')" @click="clearSelection">×</button>
@@ -251,7 +250,8 @@ onBeforeUnmount(()=>{alive=false;clearInterval(historyTimer);clearInterval(playT
       <template v-if="selectedBlock"><h3>{{ selectedBlock.block?blockLabel(selectedBlock.block.name):t('m1010') }}</h3><p>X {{ selectedBlock.x }} · Y {{ selectedBlock.y }} · Z {{ selectedBlock.z }}</p><p>{{ t('m1011', [dateLabel(selectedBlock.observedAt)]) }}</p><p v-if="selectedBlock.extra&&selectedBlock.extra.name!=='minecraft:air'">{{ t('m1012', [blockLabel(selectedBlock.extra.name)]) }}</p><details v-if="selectedBlock.block?.states"><summary>{{ t('m1013') }}</summary><pre>{{ selectedBlock.block.states }}</pre></details>
       <h4>{{ t('m1014') }}</h4><ul v-if="selectedBlock.events.length"><li v-for="(event,i) in selectedBlock.events" :key="i">{{ t('m1016', [dateLabel(event.occurredAt), event.player, event.operation==='PLACE'?t('m0685'):t('m1015'), blockLabel(event.block)]) }}</li></ul><p v-else>{{ t('m1017') }}</p><p v-if="selectedBlock.more">{{ t('m1018') }}</p><small>{{ systemMessage(selectedBlock.notice) }}</small></template>
     </section>
-    <p class="project-muted">{{ t('m1019', [heightNotice]) }}<br/>{{ t('m1020') }}<br/>{{ t('m1021') }}<br/>{{ t('m1024', [ready ? t('m1022', [triangles.toLocaleString(formatLocale)]) : (status ? systemMessage(status.message) : undefined), observedAt ? new Date(observedAt).toLocaleString(formatLocale) : t('m1023')]) }}</p>
+    <p class="project-muted model-view-status">{{ t('m1024', [ready ? t('m1022', [triangles.toLocaleString(formatLocale)]) : (status ? systemMessage(status.message) : undefined), observedAt ? new Date(observedAt).toLocaleString(formatLocale) : t('m1023')]) }}</p>
+    <details class="project-muted model-view-help"><summary>{{ t('model_view_help') }}</summary><p>{{ t('m1021') }}</p><p>{{ t('m1005') }}</p><p>{{ t('m1019', [heightNotice]) }}</p><p>{{ t('m1020') }}</p></details>
     <p v-if="ready&&status?.state==='FAILED'" class="project-error">{{ t('m1025') }}</p>
     <details v-if="issues.length" class="project-error"><summary>{{ t('m1026', [issues.length]) }}</summary><ul><li v-for="(issue,index) in issues" :key="index">{{ issueText(issue) }}</li></ul></details>
     <details class="project-muted"><summary>{{ t('m1027') }}</summary><p>{{ t('m1028') }}</p><p>{{ t('m1029') }}</p></details>
@@ -273,4 +273,17 @@ onBeforeUnmount(()=>{alive=false;clearInterval(historyTimer);clearInterval(playT
 @media(max-width:700px),(hover:none) and (pointer:coarse){.model-navigation{display:none}.model-expanded .model-toolbars{display:none}}
 
 .model-controls{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;margin:8px 0 14px}.model-controls label{display:grid;gap:4px;font-size:12px;color:#587566}.model-controls .model-entity-toggle{display:flex;flex-direction:row;align-items:center;gap:6px;align-self:center}.model-controls .model-entity-toggle input{width:16px;height:16px;accent-color:#138357}.model-controls input{width:100px;padding:8px;border:1px solid #c3d7cb;border-radius:8px;color:#174e3d}.model-canvas{position:relative;height:60vh;min-height:320px;max-height:720px;border-radius:12px;overflow:hidden;background:#eef5f1}.model-canvas :deep(canvas){display:block;width:100%;height:100%;touch-action:none}.model-placeholder{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:#627d6c;pointer-events:none;z-index:1}.model-updating{position:absolute;right:12px;top:12px;padding:8px 12px;border-radius:20px;background:#fff9;color:#37694a;font-size:12px;pointer-events:none}details ul{max-height:220px;overflow:auto;overflow-wrap:anywhere}@media(max-width:600px){.model-canvas{height:48vh}.model-controls{gap:6px}.model-controls .model-entity-toggle{display:flex;flex-direction:row;align-items:center;gap:6px;align-self:center}.model-controls .model-entity-toggle input{width:16px;height:16px;accent-color:#138357}.model-controls input{width:90px}.model-controls button{font-size:12px;padding:8px}}
+/* On phones, the building comes before the detailed controls. */
+@media(max-width:700px){
+  .project-model:not(.model-expanded){display:flex;flex-direction:column;gap:12px}
+  .project-model:not(.model-expanded)>*{order:4;margin-top:0;margin-bottom:0}
+  .project-model:not(.model-expanded)>.model-canvas{order:0;flex:none;height:52svh;min-height:280px;max-height:540px}
+  .project-model:not(.model-expanded)>.model-view-status{order:1;font-size:12px;line-height:1.6}
+  .project-model:not(.model-expanded)>.model-toolbars{order:2}
+  .project-model:not(.model-expanded)>.model-error{order:-1}
+  .model-controls button{min-height:42px}
+  .model-history p{line-height:1.6}
+}
+.model-view-help{padding:12px 14px;background:#f5f9f6;border:1px solid #dbe8e0;border-radius:10px;line-height:1.8}
+.model-view-help summary{cursor:pointer;color:#285d49}
 </style>

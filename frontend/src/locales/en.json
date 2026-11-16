@@ -2085,5 +2085,6 @@
   "m2084": "Player status cannot be empty",
   "m2085": "Player snapshot identity mismatch",
   "m2086": "Invalid wait time",
-  "m2087": "Query interrupted"
+  "m2087": "Query interrupted",
+  "model_view_help": "View controls and height guide"
 }

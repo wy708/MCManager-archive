@@ -97,6 +97,16 @@ for (const width of [1440, 390])
     await expect(viewer.locator('.project-model')).toContainText(/已显示 [1-9]/, {
       timeout: 120000,
     })
+    const help = viewer.locator('.model-view-help')
+    await expect(help).not.toHaveAttribute('open', '')
+    await help.locator('summary').click()
+    await expect(help).toHaveAttribute('open', '')
+    await help.locator('summary').click()
+    if (width === 390) {
+      const canvasPosition = await viewer.locator('.model-canvas').boundingBox()
+      const controlsPosition = await viewer.locator('.model-toolbars').boundingBox()
+      expect(canvasPosition!.y).toBeLessThan(controlsPosition!.y)
+    }
     await expect(viewer.getByRole('button', { name: '查看这一层' })).toBeEnabled()
     expect(
       await viewer.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
