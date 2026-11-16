@@ -21,13 +21,17 @@ class RestoreController {
     record Ready(@NotNull UUID runId,@NotNull UUID attemptId,@NotNull UUID restorationId,@NotNull UUID sourceBackupId,@NotNull UUID targetServerId,
                  @NotNull @Pattern(regexp="DISABLED|CONTINUE|FORK") String mode,@NotNull @Size(max=64) String destinationName,@NotNull @Pattern(regexp="[a-f0-9]{64}") String sha256,@Min(1) int fileCount) {}
     private final RestoreJobs jobs;
-    RestoreController(RestoreJobs jobs){this.jobs=jobs;}
+    private final IdlePolls polls;
+    RestoreController(RestoreJobs jobs,IdlePolls polls){this.jobs=jobs;this.polls=polls;}
     @GetMapping("/restores") Object list(@RequestParam(required=false) UUID serverId,@RequestParam(defaultValue="0") int page,@RequestParam(defaultValue="20") int size){return jobs.list(serverId,page,size);}
     @GetMapping("/restores/{id}") Object find(@PathVariable UUID id){return jobs.find(id);}
-    @PostMapping("/backups/{id}/restores") ResponseEntity<?> create(@PathVariable UUID id,@Valid @RequestBody Request request){return ResponseEntity.status(201).body(jobs.create(id,request));}
+    @PostMapping("/backups/{id}/restores") ResponseEntity<?> create(@PathVariable UUID id,@Valid @RequestBody Request request){var job=jobs.create(id,request);polls.wake("backup:"+request.hostId());return ResponseEntity.status(201).body(job);}
     @PostMapping("/restores/{id}/cancel") Object cancel(@PathVariable UUID id){return jobs.cancel(id);}
     @PostMapping("/restores/{id}/resolve") Object resolve(@PathVariable UUID id,@Valid @RequestBody HostController.Resolution request){return jobs.resolve(id,request);}
-    @PostMapping("/host/v1/restores/claim") ResponseEntity<?> claim(@AuthenticationPrincipal BackupHosts.Identity identity,@Valid @RequestBody HostController.ClaimRequest request){var value=jobs.claim(identity,request);return value==null?ResponseEntity.noContent().build():ResponseEntity.ok(value);}
+    @PostMapping("/host/v1/restores/claim") Object claim(@AuthenticationPrincipal BackupHosts.Identity identity,@Valid @RequestBody HostController.ClaimRequest request){
+        // Existing hosts poll restores and backups in sequence, so either kind of work must wake both waits.
+        return polls.poll("backup:"+identity.hostId(),()->{var value=jobs.claim(identity,request);return value==null?ResponseEntity.noContent().build():ResponseEntity.ok(value);},value->value.getStatusCode().value()==204,4);
+    }
     @GetMapping("/host/v1/restores/{id}") Object own(@AuthenticationPrincipal BackupHosts.Identity identity,@PathVariable UUID id){return jobs.own(identity,id);}
     @PostMapping("/host/v1/restores/{id}/start") Object start(@AuthenticationPrincipal BackupHosts.Identity identity,@PathVariable UUID id,@Valid @RequestBody HostController.Lease request){return jobs.start(identity,id,request);}
     @PostMapping("/host/v1/restores/{id}/renew") Object renew(@AuthenticationPrincipal BackupHosts.Identity identity,@PathVariable UUID id,@Valid @RequestBody HostController.Lease request){return jobs.renew(identity,id,request);}

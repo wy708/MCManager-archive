@@ -1,6 +1,7 @@
 import { t } from './i18n'
 import * as THREE from 'three'
 import { loadSceneAssets } from './sceneAssetPool'
+import { textureAnimation } from './sceneTextureAnimation'
 
 export interface SceneFace { points:number[]; uvs:number[]; texture:string; doubleSided:boolean; vertexColor?:number[]; shadingMode?:string }
 export interface SceneModel { x:number; y:number; z:number; entity:boolean; yaw?:number; type?:string; moving?:boolean; faces:SceneFace[] }
@@ -79,22 +80,22 @@ export async function createProjectScene(data:ProjectScene,textureUrl:(file:stri
           const frames=animation.frames,height=animation.height
           if(!Number.isInteger(height)||height<1||height>bitmap.height||bitmap.height%height!==0||!Array.isArray(frames)||frames.length<2||frames.length%2!==0||frames.length>16384||frames.some((n,i)=>!Number.isInteger(n)||(i%2===0?(n<0||n>=bitmap.height/height):(n<1||n>12000)))){bitmap.close();throw new Error(t('m0226'))}
           const canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=height;const context=canvas.getContext('2d')!
-          image=canvas;const total=frames.filter((_,i)=>i%2===1).reduce((a,b)=>a+b,0)*50
-          let previous=-1;          updates.push(time=>{
-            // At most 20 updates per second; texture animation does not fetch or change the archived scene.
-            const tick=Math.floor(time/50);if(tick===previous)return false;previous=tick
-            let elapsed=(tick*50)%total,index=0
-            while(elapsed>=frames[index+1]!*50){elapsed-=frames[index+1]!*50;index+=2}
-            const frame=frames[index]!,mix=animation.interpolate?elapsed/(frames[index+1]!*50):0
+          image=canvas;const sample=textureAnimation(frames,animation.interpolate)
+          const draw=(frame:number,next:number,mix:number)=>{
             // Bitmaps are flipped for WebGL. Frame zero is consequently at the bottom of the source image.
             context.globalCompositeOperation='copy';context.globalAlpha=1-mix;context.drawImage(bitmap,0,bitmap.height-(frame+1)*height,bitmap.width,height,0,0,bitmap.width,height)
-            if(mix>0){const next=frames[(index+2)%frames.length]!;context.globalCompositeOperation='lighter';context.globalAlpha=mix;context.drawImage(bitmap,0,bitmap.height-(next+1)*height,bitmap.width,height,0,0,bitmap.width,height)}
+            if(mix>0){context.globalCompositeOperation='lighter';context.globalAlpha=mix;context.drawImage(bitmap,0,bitmap.height-(next+1)*height,bitmap.width,height,0,0,bitmap.width,height)}
             context.globalCompositeOperation='source-over';context.globalAlpha=1
+          }
+          updates.push(time=>{
+            // Held frames need neither another texture upload nor a whole-scene render.
+            const frame=sample(time);if(!frame)return false
+            draw(frame.frame,frame.next,frame.mix)
             const found=loaded.get(file);if(found)found.needsUpdate=true
             return true
           })
           // Drawing before upload also prevents the first render from showing the whole strip.
-          context.drawImage(bitmap,0,bitmap.height-height,bitmap.width,height,0,0,bitmap.width,height)
+          const first=sample(0)!;draw(first.frame,first.next,first.mix)
         }
         const texture=new THREE.Texture(image);if(animation)texture.flipY=false;texture.needsUpdate=true;texture.colorSpace=THREE.SRGBColorSpace;texture.magFilter=THREE.NearestFilter;texture.minFilter=THREE.NearestMipmapNearestFilter;texture.wrapS=texture.wrapT=THREE.RepeatWrapping
         const canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;const context=canvas.getContext('2d')!;context.drawImage(bitmap,0,0)

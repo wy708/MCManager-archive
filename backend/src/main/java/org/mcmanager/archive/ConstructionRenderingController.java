@@ -5,6 +5,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import org.springframework.web.context.request.WebRequest;
 
 @RestController
 class ConstructionRenderingController {
@@ -19,11 +20,15 @@ class ConstructionRenderingController {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(rendering.status(id,revision));
     }
     @GetMapping("/api/public/projects/{id}/phases/{revision}/scene/{build}/{file}")
-    ResponseEntity<StreamingResponseBody> asset(@PathVariable UUID id,@PathVariable int revision,@PathVariable UUID build,@PathVariable String file,@RequestParam(required=false) Integer minY,@RequestParam(required=false) Integer maxY)throws java.io.IOException{
+    ResponseEntity<StreamingResponseBody> asset(@PathVariable UUID id,@PathVariable int revision,@PathVariable UUID build,@PathVariable String file,@RequestParam(required=false) Integer minY,@RequestParam(required=false) Integer maxY,WebRequest request)throws java.io.IOException{
         if(minY!=null||maxY!=null)ConstructionSceneRanges.validate(minY,maxY);
         var asset=rendering.asset(id,revision,build,file);
-        if(file.equals("scene.json")&&minY!=null){StreamingResponseBody body=output->rendering.writeRange(asset,output,minY,maxY);return ResponseEntity.ok().cacheControl(CacheControl.noStore()).contentType(MediaType.APPLICATION_JSON).body(body);}
-        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).contentLength(java.nio.file.Files.size(asset)).contentType(file.endsWith(".png")?MediaType.IMAGE_PNG:MediaType.APPLICATION_JSON).body(output->java.nio.file.Files.copy(asset,output));
+        // Build assets are immutable, but availability is not: require revalidation
+        // so a deleted project returns 404 before considering a matching ETag.
+        String etag="\""+build+":"+file+(file.equals("scene.json")&&minY!=null?":"+minY+":"+maxY:"")+"\"";
+        if(request.checkNotModified(etag))return ResponseEntity.status(HttpStatus.NOT_MODIFIED).cacheControl(CacheControl.noCache()).eTag(etag).build();
+        if(file.equals("scene.json")&&minY!=null){StreamingResponseBody body=output->rendering.writeRange(asset,output,minY,maxY);return ResponseEntity.ok().cacheControl(CacheControl.noCache()).eTag(etag).contentType(MediaType.APPLICATION_JSON).body(body);}
+        return ResponseEntity.ok().cacheControl(CacheControl.noCache()).eTag(etag).contentLength(java.nio.file.Files.size(asset)).contentType(file.endsWith(".png")?MediaType.IMAGE_PNG:MediaType.APPLICATION_JSON).body(output->java.nio.file.Files.copy(asset,output));
     }
     @GetMapping("/api/public/projects/{id}/phases/{revision}/scene/{build}/height-range")
     ConstructionRendering.HeightRange heightRange(@PathVariable UUID id,@PathVariable int revision,@PathVariable UUID build)throws java.io.IOException{return rendering.heightRange(id,revision,build);}

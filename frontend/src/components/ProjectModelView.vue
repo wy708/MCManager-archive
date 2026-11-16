@@ -14,6 +14,7 @@ interface SceneStatus {state:string;message:string;build:string|null;version:num
 const host=ref<HTMLDivElement>(),error=ref(''),busy=ref(false),showMoving=ref(false),status=ref<SceneStatus>(),ready=ref(false),triangles=ref(0),issues=ref<string[]>([]),observedAt=ref<string|null>(null),minY=ref(-64),maxY=ref(319)
 let alive=true,timer:ReturnType<typeof setInterval>|undefined,animationTimer:ReturnType<typeof setInterval>|undefined,controller=new AbortController(),displayed:string|null=null
 let renderer:THREE.WebGLRenderer|undefined,scene:THREE.Scene,camera:THREE.PerspectiveCamera,controls:OrbitControls,observer:ResizeObserver,object:SceneObject|undefined,radius=10,span=20,manualHeight=false
+let viewportObserver:IntersectionObserver|undefined,inViewport=false
 interface HeightRange {minY:number;maxY:number;suggestedMinY:number;basis:'PLAYER_PLACEMENT'|'SURFACE_ESTIMATE'}
 const fullRange=ref<HeightRange>(),heightNotice=ref('')
 const loadingStage=ref(t('m0941'))
@@ -101,7 +102,8 @@ function startMove(event:PointerEvent,direction:MoveDirection){
   moveFrame=requestAnimationFrame(tick)
 }
 function clickMove(event:MouseEvent,direction:MoveDirection){if(event.detail===0)moveView(direction,.12)}
-function visibilityChanged(){if(document.hidden)stopMove()}
+function animate(){if(inViewport&&!document.hidden&&object?.update(performance.now()))render()}
+function visibilityChanged(){if(document.hidden)stopMove();else animate()}
 let chosenRange:HeightPreference|undefined
 const savedHeight=readHeight(props.id)
 if(savedHeight){chosenRange={...savedHeight};manualHeight=true;minY.value=savedHeight.minY;maxY.value=savedHeight.maxY}
@@ -212,14 +214,16 @@ onMounted(()=>{
     renderer.domElement.addEventListener('pointerdown',pointerDown);renderer.domElement.addEventListener('pointermove',pointerMoved);renderer.domElement.addEventListener('pointerup',pointerUp);renderer.domElement.addEventListener('pointercancel',()=>{pointerStart=null})
     scene.add(new THREE.HemisphereLight(0xffffff,0x778878,2));const light=new THREE.DirectionalLight(0xffffff,2);light.position.set(30,60,20);scene.add(light)
     observer=new ResizeObserver(resize);observer.observe(host.value!);fit();resize()
+    viewportObserver=new IntersectionObserver(entries=>{inViewport=entries.some(entry=>entry.isIntersecting);if(inViewport)animate()})
+    viewportObserver.observe(host.value!)
     renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();stopMove();ready.value=false;error.value=t('m0972');controller.abort();loadController?.abort();clearInterval(timer);clearInterval(animationTimer)})
-    animationTimer=setInterval(()=>{if(!document.hidden&&object?.update(performance.now()))render()},50)
+    animationTimer=setInterval(animate,50)
     void load();timer=setInterval(()=>{if(!document.hidden)void load()},5000)
     void readHistory();historyTimer=setInterval(()=>{if(!document.hidden)void readHistory()},60000)
     playTimer=setInterval(()=>{if(!playing.value||busy.value||document.hidden||!ready.value||displayedHistory!==selectedHistory.value)return;const next=orderedFrames.value[frameIndex.value+1];if(next)selectedHistory.value=next.id;else playing.value=false},3000)
   }catch{error.value=t('m0973')}
 })
-onBeforeUnmount(()=>{alive=false;clearInterval(historyTimer);clearInterval(playTimer);clearSelection();void exitFullscreen();document.removeEventListener('fullscreenchange',fullscreenChanged);document.removeEventListener('webkitfullscreenchange',fullscreenChanged);restorePage();stopMove();window.removeEventListener('blur',stopMove);document.removeEventListener('visibilitychange',visibilityChanged);window.removeEventListener('keydown',escapeView);controller.abort();loadController?.abort();clearInterval(timer);clearInterval(animationTimer);observer?.disconnect();controls?.dispose();clear();renderer?.dispose();renderer?.forceContextLoss()})
+onBeforeUnmount(()=>{alive=false;clearInterval(historyTimer);clearInterval(playTimer);clearSelection();void exitFullscreen();document.removeEventListener('fullscreenchange',fullscreenChanged);document.removeEventListener('webkitfullscreenchange',fullscreenChanged);restorePage();stopMove();window.removeEventListener('blur',stopMove);document.removeEventListener('visibilitychange',visibilityChanged);window.removeEventListener('keydown',escapeView);controller.abort();loadController?.abort();clearInterval(timer);clearInterval(animationTimer);observer?.disconnect();viewportObserver?.disconnect();controls?.dispose();clear();renderer?.dispose();renderer?.forceContextLoss()})
 </script>
 <template>
   <Teleport to="body" :disabled="!expanded">

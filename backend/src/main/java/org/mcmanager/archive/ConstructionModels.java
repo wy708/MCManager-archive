@@ -80,6 +80,11 @@ class ConstructionModels {
         jdbc.update("UPDATE construction_model_sections SET has_scene=? WHERE project_id=? AND revision=? AND sx=? AND sy=? AND sz=?",hasScene,plan.id(),plan.revision(),section.x(),section.y(),section.z());
         return Map.of("accepted",true,"changed",changed);
     }
+    // Asset access needs revocation/existence, not a scan of every captured section.
+    void requirePhase(UUID project,int revision) {
+        if(jdbc.queryForList("SELECT 1 FROM construction_phases WHERE project_id=? AND revision=?",Integer.class,project,revision).isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"工程阶段不存在");
+    }
     Status status(UUID project,int revision) {
         var phases=jdbc.queryForList("SELECT model_version,status FROM construction_phases WHERE project_id=? AND revision=?",project,revision);
         if(phases.isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND,"工程阶段不存在");

@@ -32,7 +32,7 @@ class ConstructionRendering {
     }
     private final ConstructionModels models;private final JdbcTemplate jdbc;private final ObjectMapper json;private final TransactionTemplate transaction;private final ConstructionHistory history;
     private final String runner,node;private final Path root;
-    private final Map<Phase,Job> latest=new LinkedHashMap<>();private final Map<UUID,Job> builds=new LinkedHashMap<>();
+    private final Map<Phase,Job> latest=new LinkedHashMap<>();private final ConcurrentMap<UUID,Job> builds=new ConcurrentHashMap<>();
     record HeightRange(int minY,int maxY,int suggestedMinY,String basis) {}
     private final Map<UUID,HeightRange> heightRanges=new ConcurrentHashMap<>();
     private final Map<Path,RangeExport> exports=new ConcurrentHashMap<>();
@@ -108,11 +108,19 @@ class ConstructionRendering {
             if(e instanceof InterruptedException)Thread.currentThread().interrupt();
         }finally{if(job.process!=null&&job.process.isAlive())terminate(job.process);job.process=null;job.finishedAt=System.currentTimeMillis();}
     }
-    synchronized Path asset(UUID id,int revision,UUID build,String file){
-        models.status(id,revision);
+    Path asset(UUID id,int revision,UUID build,String file){
+        // Recheck the phase on every request, including conditional HTTP requests.
+        // A cached immutable build must not grant access after project deletion.
+        models.requirePhase(id,revision);
         if(!file.equals("scene.json")&&!file.matches("[a-f0-9]{64}\\.png"))throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        var job=builds.get(build);if(job==null)job=restore(new Phase(id,revision),build);
-        if(job==null||!job.phase.equals(new Phase(id,revision))||!job.state.equals("READY"))throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        var phase=new Phase(id,revision);var job=builds.get(build);
+        if(job==null){
+            // Restoring a durable build and checking files do not hold the global
+            // baker/cleanup monitor. Reuse its metadata for subsequent textures.
+            var restored=restore(phase,build);
+            if(restored!=null){var existing=builds.putIfAbsent(build,restored);job=existing==null?restored:existing;}
+        }
+        if(job==null||!job.phase.equals(phase)||!job.state.equals("READY"))throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         var path=job.directory.resolve("output").resolve(file);
         if(!Files.isRegularFile(path))throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         return path;
