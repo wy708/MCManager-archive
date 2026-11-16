@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { t, formatLocale } from '../i18n'
 
-import {computed,onBeforeUnmount,ref,watch} from 'vue'
+import {computed,onBeforeUnmount,ref,shallowRef,watch} from 'vue'
 import {api,type ServerArchive} from '../api'
 import DataChart from './DataChart.vue'
 import {compactChartNumber} from '../chartNumbers'
@@ -12,7 +12,7 @@ const emit=defineEmits<{select:[id:string]}>()
 interface Sample {at:string;receivedAt:string;uptimeMillis:number;tps:number|null;cpuPercent:number|null;workingSetBytes:number|null;privateBytes:number|null;hostMemoryTotalBytes:number|null;hostMemoryAvailableBytes:number|null;players:number;lastTickAt:string|null;maxTickIntervalMillis:number;stopped:boolean;hostCpuPercent:number|null;hostLogicalProcessors:number|null;hostNetworkReceiveBps:number|null;hostNetworkSendBps:number|null;hostDisks:{drive:string;totalBytes:number;availableBytes:number}[]|null}
 interface Point {at:string;samples:number;tps:number|null;cpuPercent:number|null;memoryMiB:number|null;players:number;maxTickIntervalMillis:number;hostCpuPercent:number|null;hostMemoryUsedPercent:number|null;hostNetworkReceiveBps:number|null;hostNetworkSendBps:number|null}
 interface Report {serverName:string;state:string;generatedAt:string;from:string;to:string;bucketSeconds:number;latest:Sample|null;points:Point[];events:{at:string;type:string;message:string}[];eventsTruncated:boolean;notice:string}
-const data=ref<Report>(),hours=ref(1),error=ref(''),loading=ref(false)
+const data=shallowRef<Report>(),hours=ref(1),error=ref(''),loading=ref(false)
 let controller:AbortController|undefined,timer:ReturnType<typeof setTimeout>|undefined,request=0,disposed=false
 async function load(reset=false){
  clearTimeout(timer);controller?.abort();const seq=++request;if(reset)data.value=undefined

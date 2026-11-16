@@ -4,7 +4,7 @@ import { weekdays, formatLocale, systemMessage, t } from '../i18n'
 import { ref, shallowRef, computed, watch, onBeforeUnmount, defineAsyncComponent } from 'vue'
 import type { EChartsOption } from 'echarts'
 import { api, type ServerArchive } from '../api'
-import type { Exploration } from '../exploration'
+import type { Exploration, ExplorationDetails } from '../exploration'
 import { blockIcon } from '../projects'
 import { gameName } from '../gameNames'
 import { compactChartNumber } from '../chartNumbers'
@@ -80,6 +80,8 @@ const section = computed(() => {
   return ({ map: 'hotspots', height: 'heights', race: 'ranking' } as Record<string, string>)[tab.value] ?? 'metadata'
 })
 const snapshots = new Map<string, Exploration>()
+// Keep extended snapshots for the lifetime of this page, including category switches.
+const extendedSnapshots = new Map<string, ExplorationDetails>()
 watch(
   () => props.servers,
   () => {
@@ -97,7 +99,7 @@ async function load() {
   playing.value = false
   project.value = ''
   day.value = ''
-  if (!server.value) return
+  if (!server.value) { busy.value = false; return }
   busy.value = true
   try {
     const params = new URLSearchParams({ serverId: server.value, part: section.value })
@@ -493,7 +495,7 @@ function play() {
       <p class="muted">
         {{ t('m0795', [data.from, data.to, ['Asia/Hong_Kong', 'Asia/Shanghai'].includes(data.zone) ? 'UTC+8' : data.zone, new Date(data.generatedAt).toLocaleTimeString(formatLocale)]) }}
       </p>
-      <KeepAlive><MoreCharts v-if="isExtra" :tab="tab" :server="server" :base="data" /></KeepAlive>
+      <MoreCharts v-if="isExtra" :tab="tab" :server="server" :base="data" :snapshots="extendedSnapshots" />
       <template v-if="!isExtra">
         <div class="explore-controls">
           <label v-if="['network', 'flow', 'materials'].includes(tab)"

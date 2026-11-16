@@ -60,7 +60,8 @@ onMounted(() => {
   )
   visibility.observe(element.value)
 })
-watch(() => props.option, render, { deep: true })
+// Callers replace computed options; traversing every data point adds no useful dependency.
+watch(() => props.option, render)
 onBeforeUnmount(() => {
   disposed = true
   visibility?.disconnect()

@@ -9,11 +9,11 @@ import {gameName} from '../gameNames'
 import {compactChartNumber} from '../chartNumbers'
 import DataChart from './DataChart.vue'
 
-const props=defineProps<{tab:string;server:string;base:Exploration}>()
+const props=defineProps<{tab:string;server:string;base:Exploration;snapshots:Map<string,ExplorationDetails>}>()
 const data=shallowRef<ExplorationDetails>(),error=ref(''),busy=ref(false),runtimeMetric=ref('host_cpu'),chosen=ref<string[]>([])
 let controller:AbortController|undefined
 const section=computed(()=>({river:'daily',bubble:'players',radar:'players',box:'runtime',timeline:'milestones'} as Record<string,string>)[props.tab])
-const snapshots=new Map<string,ExplorationDetails>()
+const snapshots=props.snapshots
 async function load(){
  controller?.abort();const request=new AbortController();controller=request;data.value=undefined;busy.value=true;error.value=''
  try {
@@ -45,7 +45,7 @@ const eventTime=(at:string)=>new Intl.DateTimeFormat(formatLocale,{timeZone:prop
 const timeline=computed<EChartsOption>(()=>({tooltip:{...tip,formatter:(p:any)=>`${p.data.name}\n${eventLabels[p.data.kind]}${p.data.revision?t('m0740')+p.data.revision+t('m0741'):''}\n${eventTime(p.data.at)}`},grid:{left:110,right:30,top:30,bottom:80},xAxis:{type:'time',axisLabel:{hideOverlap:true,formatter:(v:number)=>new Intl.DateTimeFormat(formatLocale,{timeZone:props.base.zone,month:'2-digit',day:'2-digit'}).format(v)}},yAxis:{type:'category',data:Object.values(eventLabels),axisLabel:{width:95,overflow:'truncate'}},dataZoom:[{type:'slider',bottom:10},{type:'inside'}],series:[{type:'scatter',symbol:'diamond',symbolSize:14,data:data.value?.milestones.map(e=>({...e,value:[Date.parse(e.at),eventLabels[e.kind]],itemStyle:{color:['#259875','#728bde','#b18ada','#e5ad51'][Object.keys(eventLabels).indexOf(e.kind)]}}))}]}))
 const radarAxes=[['placed',t('m0709')],['mined',t('m0686')],['planted',t('m0711')],['harvested',t('m0712')],['travel',t('m0713')],['chat',t('m0742')]] as const
 const radar=computed<EChartsOption>(()=>{const players=data.value?.players??[],maxima=radarAxes.map(([key])=>Math.max(1,...players.map(p=>Number(p[key]))));return {tooltip:{...tip},legend:{type:'scroll',bottom:0},radar:{radius:'65%',indicator:radarAxes.map(([,name])=>({name,max:100})),splitArea:{areaStyle:{color:['#f6faf8','#eef5f2']}}},series:[{type:'radar',areaStyle:{opacity:.1},data:players.filter(p=>chosen.value.includes(p.player)).slice(0,3).map(p=>({name:p.name,value:radarAxes.map(([key],i)=>Math.round(Number(p[key])/maxima[i]!*1000)/10)}))}]}})
-const options=computed(()=>({river:river.value,clock:clock.value,bubble:bubble.value,sunburst:sunburst.value,box:box.value,timeline:timeline.value,radar:radar.value}[props.tab]))
+const options=computed(()=>({river,clock,bubble,sunburst,box,timeline,radar}[props.tab as 'river']?.value))
 const titles:Record<string,string>={river:t('m0743'),clock:t('m0744'),bubble:t('m0745'),sunburst:t('m0746'),box:t('m0747'),timeline:t('m0748'),radar:t('m0749')}
 const explanations:Record<string,string>={river:t('m0750'),clock:t('m0751'),bubble:t('m0752'),sunburst:t('m0753'),box:t('m0754'),timeline:t('m0755'),radar:t('m0756')}
 const empty=computed(()=>props.tab==='box'?!runtimeRows.value.length:props.tab==='clock'?!props.base.hours.length:props.tab==='sunburst'?!props.base.contributions.some(c=>c.operation==='PLACE'):props.tab==='timeline'?!data.value?.milestones.length:props.tab==='river'?!riverData.value.some(a=>a.raw.some(v=>v!=null&&v>0)):!data.value?.players.length)

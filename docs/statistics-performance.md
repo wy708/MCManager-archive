@@ -60,3 +60,17 @@ latency, cache state, and network bandwidth still affect the latter.
 玩家查询保持原有“历史事件或每日汇总中存在记录”的规则，不缩短统计时间、不抽样，
 也不遗漏仅有事件或仅有导入汇总的玩家。新增索引减少重复扫描，静态脚本和统计结果
 通过 gzip 减少传输量。无需更新游戏插件。
+
+## Chart switching and rendering
+
+Extended chart snapshots are owned by the story page, so switching categories
+and remounting a chart does not discard its unexpired response. Entries remain
+bounded to eight per dataset family, with server and date range in the key.
+Expired entries are fetched again; no cross-page or persistent browser cache is
+introduced. Only the selected extended chart evaluates its computed options.
+
+Chart consumers supply replacement computed options. The shared renderer watches
+those replacements without recursively traversing every data point, and runtime
+reports use shallow reactivity because each refresh replaces the entire report.
+The regression flow covers category round trips and expiry, in addition to the
+initial partial requests and mobile layout.

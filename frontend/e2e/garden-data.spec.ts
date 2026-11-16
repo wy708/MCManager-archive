@@ -209,10 +209,13 @@ test('populated dashboard, deferred charts, grouped stories and chat discovery',
       }
     }
   }
-  expect(requests.filter((url) => url.includes('/statistics/exploration?'))).toHaveLength(1)
-  expect(requests.filter((url) => url.includes('/statistics/exploration/extended?'))).toHaveLength(
-    1,
-  )
+  // Each dataset is requested once across all charts; unused datasets stay unloaded.
+  expect(requests.filter(url => url.includes('/statistics/exploration?'))
+    .map(url => new URL(url).searchParams.get('part')).sort())
+    .toEqual(['contributions', 'heights', 'hotspots', 'hours', 'metadata', 'ranking'])
+  expect(requests.filter(url => url.includes('/statistics/exploration/extended?'))
+    .map(url => new URL(url).searchParams.get('part')).sort())
+    .toEqual(['daily', 'milestones', 'players', 'runtime'])
   await page.goto('/reports?server=' + server.id)
   const reportChart = page.getByRole('img', { name: '七天放置与挖掘趋势' })
   await reportChart.scrollIntoViewIfNeeded()
