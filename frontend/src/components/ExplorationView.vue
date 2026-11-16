@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { weekdays, formatLocale, systemMessage, t } from '../i18n'
 
-import { ref, computed, watch, onBeforeUnmount, defineAsyncComponent } from 'vue'
+import { ref, shallowRef, computed, watch, onBeforeUnmount, defineAsyncComponent } from 'vue'
 import type { EChartsOption } from 'echarts'
 import { api, type ServerArchive } from '../api'
 import type { Exploration } from '../exploration'
@@ -63,7 +63,7 @@ const tab = ref<Tab>('hours'),
   selected = ref(''),
   from = ref(''),
   to = ref(''),
-  data = ref<Exploration>(),
+  data = shallowRef<Exploration>(),
   error = ref(''),
   busy = ref(false),
   dimension = ref('minecraft:overworld'),
@@ -74,6 +74,12 @@ const tab = ref<Tab>('hours'),
   playing = ref(false)
 let controller: AbortController | undefined, timer: ReturnType<typeof setInterval> | undefined
 const server = computed(() => (props.scope === 'all' ? selected.value : props.scope))
+const section = computed(() => {
+  if (['hours', 'clock'].includes(tab.value)) return 'hours'
+  if (['network', 'flow', 'materials', 'sunburst'].includes(tab.value)) return 'contributions'
+  return ({ map: 'hotspots', height: 'heights', race: 'ranking' } as Record<string, string>)[tab.value] ?? 'metadata'
+})
+const snapshots = new Map<string, Exploration>()
 watch(
   () => props.servers,
   () => {
@@ -94,14 +100,18 @@ async function load() {
   if (!server.value) return
   busy.value = true
   try {
-    const params = new URLSearchParams({ serverId: server.value })
+    const params = new URLSearchParams({ serverId: server.value, part: section.value })
     if (from.value) params.set('from', from.value)
     if (to.value) params.set('to', to.value)
-    const result = await api<Exploration>('/statistics/exploration?' + params, {
-      signal: request.signal,
-    })
+    const key = params.toString()
+    const saved = snapshots.get(key)
+    const result = saved && Date.parse(saved.generatedAt) > Date.now() - 120_000
+      ? saved
+      : await api<Exploration>('/statistics/exploration?' + params, { signal: request.signal })
     if (request.signal.aborted) return
     data.value = result
+    snapshots.set(key, result)
+    while (snapshots.size > 8) snapshots.delete(snapshots.keys().next().value!)
     frame.value = days.value.length - 1
   } catch (e) {
     if (!request.signal.aborted) error.value = e instanceof Error ? e.message : t('m0780')
@@ -109,7 +119,7 @@ async function load() {
     if (controller === request) busy.value = false
   }
 }
-watch(server, load, { immediate: true })
+watch([server, section], load, { immediate: true })
 watch(tab, () => {
   playing.value = false
 })
@@ -549,7 +559,7 @@ function play() {
             ><strong>{{ count.toLocaleString(formatLocale) }}</strong>
           </li>
         </ul>
-        <div v-if="['map', 'height'].includes(tab)" class="explore-coverage">{{ t('m0808', [Number(data.coverage.recorded_blocks).toLocaleString(formatLocale), Number(data.coverage.positioned_blocks).toLocaleString(formatLocale), data.coverage.retention_days]) }}</div>
+        <div v-if="['map', 'height'].includes(tab) && data.coverage" class="explore-coverage">{{ t('m0808', [Number(data.coverage.recorded_blocks).toLocaleString(formatLocale), Number(data.coverage.positioned_blocks).toLocaleString(formatLocale), data.coverage.retention_days]) }}</div>
         <details class="explore-notes">
           <summary>{{ t('m0809') }}</summary>
           <p v-for="n in data.notices" :key="n">{{ systemMessage(n) }}</p>

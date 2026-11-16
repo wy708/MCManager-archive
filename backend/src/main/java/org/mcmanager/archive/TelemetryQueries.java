@@ -99,7 +99,16 @@ class TelemetryQueries {
         return new Scope(daily, events, params);
     }
     private String population(Scope scope) {
-        return "SELECT player_key FROM telemetry_events" + scope.events() + " UNION SELECT player_key FROM daily_statistics" + scope.daily();
+        return "SELECT p.player_key FROM players p WHERE " + populationPredicate(scope);
+    }
+    private String populationPredicate(Scope scope) {
+        // Test membership once per player instead of sorting every historical event.
+        // Keep both sources: event-only players and imported daily statistics count too.
+        // Preserve index order in a scalar first-match lookup. PostgreSQL can
+        // otherwise choose repeated sequential scans for highly uneven players.
+        return "((SELECT 1 FROM telemetry_events" + scope.events()
+                + " AND telemetry_events.player_key=p.player_key ORDER BY server_id,occurred_at LIMIT 1) IS NOT NULL OR EXISTS (SELECT 1 FROM daily_statistics"
+                + scope.daily() + " AND daily_statistics.player_key=p.player_key))";
     }
     private long selectedServers(Filter filter) {
         return filter.serverId() == null ? jdbc.queryForObject("SELECT COUNT(*) FROM server_archives", Map.of(), Long.class) : 1;
@@ -182,7 +191,7 @@ class TelemetryQueries {
     }
     Page<PlayerRow> players(Filter filter, String search, int page, int pageSize) {
         page(page, pageSize); Scope scope = scope(filter);
-        String where = " WHERE p.player_key IN (" + population(scope) + ")";
+        String where = " WHERE " + populationPredicate(scope);
         if (search != null && !search.isBlank()) {
             check(search.length() <= 80, "搜索词过长");
             String escaped = search.toLowerCase(Locale.ROOT).replace("!", "!!").replace("%", "!%").replace("_", "!_");

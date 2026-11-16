@@ -12,13 +12,15 @@ class ExplorationController {
     @GetMapping("/api/statistics/exploration/extended")
     ResponseEntity<ExplorationDetails.Snapshot> extended(@RequestParam UUID serverId,
         @RequestParam(required=false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate from,
-        @RequestParam(required=false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate to){
-        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(details.get(serverId,from,to));
+        @RequestParam(required=false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate to,
+        @RequestParam(defaultValue="all") String part){
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(details.get(serverId,from,to,part));
     }
     @GetMapping("/api/statistics/exploration")
     ResponseEntity<ExplorationStatistics.Snapshot> get(@RequestParam UUID serverId,
         @RequestParam(required=false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate from,
-        @RequestParam(required=false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate to){
-        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(statistics.get(serverId,from,to));
+        @RequestParam(required=false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) LocalDate to,
+        @RequestParam(defaultValue="all") String part){
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(statistics.get(serverId,from,to,part));
     }
 }

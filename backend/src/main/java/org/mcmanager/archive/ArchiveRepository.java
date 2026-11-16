@@ -33,10 +33,10 @@ class ArchiveRepository {
         return jdbc.query("SELECT * FROM server_archives WHERE id = ? FOR UPDATE", this::row, id).stream().findFirst();
     }
     boolean hasTelemetry(UUID id) {
-        return jdbc.queryForObject("SELECT (SELECT COUNT(*) FROM telemetry_events WHERE server_id=?) + (SELECT COUNT(*) FROM container_audit WHERE server_id=?)", Long.class, id, id) > 0;
+        return Boolean.TRUE.equals(jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM telemetry_events WHERE server_id=?) OR EXISTS(SELECT 1 FROM container_audit WHERE server_id=?) OR EXISTS(SELECT 1 FROM item_ledger WHERE server_id=?)", Boolean.class, id, id, id));
     }
     java.time.Instant latestTelemetry(UUID id) {
-        OffsetDateTime latest = jdbc.queryForObject("SELECT MAX(occurred_at) FROM (SELECT occurred_at FROM telemetry_events WHERE server_id=? UNION ALL SELECT occurred_at FROM container_audit WHERE server_id=?) events", OffsetDateTime.class, id, id);
+        OffsetDateTime latest = jdbc.queryForObject("SELECT MAX(at) FROM (SELECT MAX(occurred_at) AS at FROM telemetry_events WHERE server_id=? UNION ALL SELECT MAX(occurred_at) FROM container_audit WHERE server_id=? UNION ALL SELECT MAX(occurred_at) FROM item_ledger WHERE server_id=?) events", OffsetDateTime.class, id, id, id);
         return latest == null ? null : latest.toInstant();
     }
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { weekdays, systemMessage, t, formatLocale } from '../i18n'
 
-import {computed,ref,watch,onBeforeUnmount} from 'vue'
+import {computed,ref,shallowRef,watch,onBeforeUnmount} from 'vue'
 import type {EChartsOption} from 'echarts'
 import {api} from '../api'
 import type {Exploration,ExplorationDetails} from '../exploration'
@@ -10,11 +10,22 @@ import {compactChartNumber} from '../chartNumbers'
 import DataChart from './DataChart.vue'
 
 const props=defineProps<{tab:string;server:string;base:Exploration}>()
-const data=ref<ExplorationDetails>(),error=ref(''),busy=ref(false),runtimeMetric=ref('host_cpu'),chosen=ref<string[]>([])
+const data=shallowRef<ExplorationDetails>(),error=ref(''),busy=ref(false),runtimeMetric=ref('host_cpu'),chosen=ref<string[]>([])
 let controller:AbortController|undefined
-async function load(){controller?.abort();const request=new AbortController();controller=request;data.value=undefined;busy.value=true;error.value='';
- try{const result=await api<ExplorationDetails>('/statistics/exploration/extended?'+new URLSearchParams({serverId:props.server,from:props.base.from,to:props.base.to}),{signal:request.signal});if(!request.signal.aborted){data.value=result;chosen.value=result.players.slice(0,3).map(p=>p.player)}}catch(e){if(!request.signal.aborted)error.value=e instanceof Error?e.message:t('m0708')}finally{if(controller===request)busy.value=false}}
-watch(()=>[props.server,props.base.from,props.base.to,props.base.generatedAt],load,{immediate:true})
+const section=computed(()=>({river:'daily',bubble:'players',radar:'players',box:'runtime',timeline:'milestones'} as Record<string,string>)[props.tab])
+const snapshots=new Map<string,ExplorationDetails>()
+async function load(){
+ controller?.abort();const request=new AbortController();controller=request;data.value=undefined;busy.value=true;error.value=''
+ try {
+  if(!section.value){data.value={generatedAt:props.base.generatedAt,from:props.base.from,to:props.base.to,zone:props.base.zone,serverName:'',daily:[],players:[],runtime:[],milestones:[],notices:props.base.notices};return}
+  const params=new URLSearchParams({serverId:props.server,from:props.base.from,to:props.base.to,part:section.value})
+  const key=params.toString(),saved=snapshots.get(key)
+  const result=saved&&Date.parse(saved.generatedAt)>Date.now()-120_000?saved:await api<ExplorationDetails>('/statistics/exploration/extended?'+params,{signal:request.signal})
+  if(!request.signal.aborted){data.value=result;snapshots.set(key,result);while(snapshots.size>8)snapshots.delete(snapshots.keys().next().value!);chosen.value=result.players.slice(0,3).map(p=>p.player)}
+ }catch(e){if(!request.signal.aborted)error.value=e instanceof Error?e.message:t('m0708')}
+ finally{if(controller===request)busy.value=false}
+}
+watch(()=>[props.server,props.base.from,props.base.to,props.base.generatedAt,section.value],load,{immediate:true})
 onBeforeUnmount(()=>controller?.abort())
 const tip={trigger:'item' as const,renderMode:'richText' as const,confine:true}
 const days=computed(()=>{const list:string[]=[];for(let d=Date.parse(props.base.from+'T00:00:00Z');d<=Date.parse(props.base.to+'T00:00:00Z');d+=86400000)list.push(new Date(d).toISOString().slice(0,10));return list})

@@ -719,6 +719,13 @@ class TelemetryIntegrationTest {
         var host=details.runtime().stream().filter(r->"host_cpu".equals(r.get("metric"))).findFirst().orElseThrow();
         assertThat(((Number)host.get("samples")).intValue()).isEqualTo(5);assertThat(((Number)host.get("q1")).doubleValue()).isEqualTo(20);assertThat(((Number)host.get("median")).doubleValue()).isEqualTo(30);assertThat(((Number)host.get("q3")).doubleValue()).isEqualTo(40);
         assertThat(explorationDetails.get(server,date,date)).isSameAs(details);
+        var runtimeOnly=explorationDetails.get(server,date,date,"runtime");
+        assertThat(runtimeOnly.runtime()).isEqualTo(details.runtime());
+        assertThat(runtimeOnly.daily()).isEmpty();assertThat(runtimeOnly.players()).isEmpty();assertThat(runtimeOnly.milestones()).isEmpty();
+        assertThat(explorationDetails.get(server,date,date,"daily").daily()).isEqualTo(details.daily());
+        assertThat(explorationDetails.get(server,date,date,"players").players()).isEqualTo(details.players());
+        assertThat(explorationDetails.get(server,date,date,"milestones").milestones()).isEqualTo(details.milestones());
+        mvc.perform(get("/api/statistics/exploration/extended?serverId="+server+"&part=invalid").with(user("reader").roles("VIEWER"))).andExpect(status().isBadRequest());
         var other=archives.create("其他主机","",date).id();assertThat(explorationDetails.get(other,date,date).runtime()).isEmpty();
         mvc.perform(get("/api/statistics/exploration/extended?serverId="+server).with(user("reader").roles("VIEWER"))).andExpect(status().isOk());
         mvc.perform(get("/api/statistics/exploration/extended?serverId="+server)).andExpect(status().isUnauthorized());
@@ -737,6 +744,16 @@ class TelemetryIntegrationTest {
         assertThat(result.hotspots()).hasSize(1);assertThat(((Number)result.hotspots().getFirst().get("x")).intValue()).isEqualTo(-32);assertThat(((Number)result.hotspots().getFirst().get("z")).intValue()).isEqualTo(-64);
         assertThat(((Number)result.heights().getFirst().get("y")).intValue()).isEqualTo(-8);assertThat(result.contributions()).hasSize(2);assertThat(((Number)result.ranking().getFirst().get("value")).intValue()).isEqualTo(3);
         assertThat(exploration.get(server,date,date.plusDays(1))).isSameAs(result);
+        var hoursOnly=exploration.get(server,date,date.plusDays(1),"hours");
+        assertThat(hoursOnly.hours()).isEqualTo(result.hours());assertThat(hoursOnly.hotspots()).isEmpty();
+        assertThat(hoursOnly.contributions()).isEmpty();assertThat(hoursOnly.coverage()).isNull();
+        assertThat(exploration.get(server,date,date.plusDays(1),"contributions").contributions()).isEqualTo(result.contributions());
+        var hotspotsOnly=exploration.get(server,date,date.plusDays(1),"hotspots");
+        assertThat(hotspotsOnly.hotspots()).isEqualTo(result.hotspots());assertThat(hotspotsOnly.coverage()).isEqualTo(result.coverage());
+        assertThat(exploration.get(server,date,date.plusDays(1),"heights").heights()).isEqualTo(result.heights());
+        assertThat(exploration.get(server,date,date.plusDays(1),"ranking").ranking()).isEqualTo(result.ranking());
+        assertThat(exploration.get(server,date,date.plusDays(1),"metadata").coverage()).isNull();
+        mvc.perform(get("/api/statistics/exploration?serverId="+server+"&part=invalid").with(user("reader").roles("VIEWER"))).andExpect(status().isBadRequest());
         var other=archives.create("另一个服","",date).id();assertThat(exploration.get(other,date,date.plusDays(1)).ranking()).isEmpty();
         org.assertj.core.api.Assertions.assertThatThrownBy(()->exploration.get(server,date.minusDays(32),date)).isInstanceOf(org.springframework.web.server.ResponseStatusException.class);
         mvc.perform(get("/api/statistics/exploration?serverId="+server+"&from="+date+"&to="+date.plusDays(1)).with(user("reader").roles("VIEWER"))).andExpect(status().isOk());
@@ -1455,6 +1472,20 @@ class TelemetryIntegrationTest {
         assertThat(collector.get("coverage").size()).isEqualTo(1);
         ObjectNode invalidChange = batch(); invalidChange.set("capabilities", json.createArrayNode().add(capability("blocks.mined", "EXACT", "test-v1", true)));
         send(token, invalidChange).andExpect(status().isConflict());
+    }
+    @Test void indexedPopulationKeepsEventOnlyAndDailyOnlyPlayersWithoutCountingOrphans() throws Exception {
+        var second=counter("blocks.placed",2,"minecraft:stone");second.set("player",player("987654321","Bob"));
+        send(token,batch(counter("blocks.placed",1,"minecraft:stone"),second)).andExpect(status().isOk());
+        jdbc.update("DELETE FROM daily_statistics WHERE server_id=? AND player_key=?",server,"xuid:123456789");
+        jdbc.update("DELETE FROM telemetry_events WHERE server_id=? AND player_key=?",server,"xuid:987654321");
+        var at=TelemetryService.time(base);
+        jdbc.update("INSERT INTO players(player_key,current_name,name_observed_at,first_seen_at,last_seen_at) VALUES (?,?,?,?,?)","xuid:555555555","No retained records",at,at,at);
+        assertThat(admin("/api/statistics/summary?serverId="+server).get("playerCount").asInt()).isEqualTo(2);
+        assertThat(admin("/api/players?serverId="+server).get("total").asInt()).isEqualTo(2);
+        assertThat(admin("/api/players?serverId="+server+"&search=Bob").get("total").asInt()).isEqualTo(1);
+        assertThat(admin("/api/statistics/summary?serverId="+server+"&dimension=minecraft:nether").get("playerCount").asInt()).isZero();
+        var nextDay=base.atZone(zone).toLocalDate().plusDays(1);
+        assertThat(admin("/api/players?serverId="+server+"&fromDate="+nextDay).get("total").asInt()).isZero();
     }
     @Test void blockSubcategoriesAndDeathDetailsAreQueryableWithoutDoubleCounting() throws Exception {
         send(token, batch(counter("blocks.mined", 4, "minecraft:oak_log"), counter("blocks.mined", 7, "minecraft:diamond_ore"), counter("blocks.mined", 2, "minecraft:stone"), death("fall"), death("lava"))).andExpect(status().isOk());

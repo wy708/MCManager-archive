@@ -5,7 +5,7 @@ export interface RankRow {day:string;player:string;player_name:string;value:numb
 export interface Exploration {
  generatedAt:string;from:string;to:string;zone:string;hours:{weekday:number;hour:number;millis:number}[];
  contributions:Contribution[];hotspots:Hotspot[];heights:HeightCell[];ranking:RankRow[];
- coverage:{recorded_events:number;recorded_blocks:number;positioned_blocks:number;retention_days:number;purge_before:string|null};notices:string[];
+ coverage:{recorded_events:number;recorded_blocks:number;positioned_blocks:number;retention_days:number;purge_before:string|null}|null;notices:string[];
 }
 
 export interface PlayerActivity {player:string;name:string;online:number;placed:number;mined:number;planted:number;harvested:number;chat:number;travel:number}
