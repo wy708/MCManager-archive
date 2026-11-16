@@ -74,3 +74,16 @@ those replacements without recursively traversing every data point, and runtime
 reports use shallow reactivity because each refresh replaces the entire report.
 The regression flow covers category round trips and expiry, in addition to the
 initial partial requests and mobile layout.
+
+## Verify the effective proxy configuration
+
+A bind-mounted proxy configuration overrides the file inside the web image.
+When upgrading, merge compression directives into that mounted configuration
+while preserving map and upload routes. Back it up before replacing it, validate
+it with `nginx -t`, and recreate or reload the web service. Verify a sufficiently
+large statistics response and JavaScript asset with `Accept-Encoding: gzip`;
+checking the image contents alone does not prove compression is active.
+
+Immutable scene assets use ETags with mandatory revalidation. A matching request
+can return 304 with no body, but phase existence is checked first so deleting a
+project still revokes access. These optimizations do not remove model geometry.
